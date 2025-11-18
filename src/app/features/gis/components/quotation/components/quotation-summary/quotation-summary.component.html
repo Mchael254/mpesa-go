@@ -12,10 +12,12 @@
     <div class="header mx-4 mt-2 mb-2">
       <ul class="nav">
         <li class="nav-item">
-          <a class="nav-link sub-title active" data-bs-toggle="tab" id="nav-summary-tab" aria-controls="nav-summary"
-            data-bs-target="#nav-summary">Quotation Summary</a>
+          <!-- <a class="nav-link sub-title active" data-bs-toggle="tab" id="nav-summary-tab" aria-controls="nav-summary"
+            data-bs-target="#nav-summary">Quotation Summary</a> -->
+          <a class="nav-link sub-title active" (click)="activeQuoteTab='summary'" id="nav-summary-tab"
+            data-bs-toggle="tab" aria-controls="nav-summary" data-bs-target="#nav-summary">Quotation summary</a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link sub-title" data-bs-toggle="tab" id="nav-quotation-other-details-tab"
             aria-controls="nav-quotation-other-details" data-bs-target="#nav-quotation-other-details">Quotation Other
             Details</a>
@@ -23,6 +25,19 @@
         <li class="nav-item">
           <a class="nav-link sub-title" data-bs-toggle="tab" id="nav-reports-tab" aria-controls="nav-authorization"
             data-bs-target="#nav-reports">Reports and documents</a>
+        </li> -->
+        <li class="nav-item">
+          <a class="nav-link sub-title" (click)="activeQuoteTab='otherDetails'" id="nav-quotation-other-details-tab"
+            data-bs-toggle="tab" aria-controls="nav-quotation-other-details"
+            data-bs-target="#nav-quotation-other-details">
+            Quotation other details
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link sub-title" (click)="activeQuoteTab='reports'" id="nav-reports-tab" data-bs-toggle="tab"
+            aria-controls="nav-authorization" data-bs-target="#nav-reports">
+            Reports and documents
+          </a>
         </li>
       </ul>
     </div>
@@ -145,13 +160,15 @@
             <div class="col-md-4 d-flex">
               <p class="label w-50">Sum Insured</p>
               <p class="content w-50">
-                {{ quotationView?.sumInsured | number }}
+                {{ quotationView?.sumInsured | currency: currencyObj?.prefix :
+                'symbol' : '1.2-2'}}
               </p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Marketer Comm.</p>
               <p class="content w-50">
-                {{ quotationView?.marketerCommissionAmount | number }}
+                {{ quotationView?.marketerCommissionAmount | currency: currencyObj?.prefix :
+                'symbol' : '1.2-2' }}
               </p>
             </div>
           </div>
@@ -159,7 +176,8 @@
           <div class="row mb-2">
             <div class="col-md-4 d-flex">
               <p class="label w-50">Comm amt.</p>
-              <p class="content w-50">{{ quotationView?.commissionAmount }}</p>
+              <p class="content w-50">{{ quotationView?.commissionAmount | currency: currencyObj?.prefix :
+                'symbol' : '1.2-2' }}</p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Comments</p>
@@ -178,15 +196,21 @@
               View Client Profile
             </a>
 
-
             <!-- <button class="btn btn-outline-primary custom-outline-btn" style="margin-right: 10px; margin-left: 20px"
-              (click)="editQuotationDetails()" [disabled]="viewQuoteFlag">
-              Edit details
-            </button> -->
-            <button class="btn btn-outline-primary custom-outline-btn" style="margin-right: 10px; margin-left: 20px"
               (click)="editQuotationDetails()" [disabled]="isEditDisabled()">
               Edit details
-            </button>
+            </button> -->
+            <span [pTooltip]="isEditDisabled() ? 'No further action — quotation already authorized.' : null"
+              tooltipPosition="top">
+              <button class="btn custom-outline-btn"
+                [ngClass]="isEditDisabled() ? 'btn-secondary' : 'btn-outline-primary'"
+                style="margin-right: 10px; margin-left: 20px" (click)="editQuotationDetails()"
+                [disabled]="isEditDisabled()">
+                Edit details
+              </button>
+            </span>
+
+
 
           </div>
         </div>
@@ -800,7 +824,7 @@
                         </li>
                         <li class="nav-item">
                           <a class="nav-link " [class.active]="activeRiskDetailsTab === 'documents'"
-                            (click)="activeRiskDetailsTab = 'documents'">
+                            (click)="activeRiskDetailsTab = 'documents'; onDocumetTabSelect(selectedRisk)">
                             Documents
                           </a>
                         </li>
@@ -1893,49 +1917,49 @@
 
           <!-- Exceptions Table -->
           <div *ngIf="!exceptionsCollapsed">
-            <p-table [value]="exceptionsData" [scrollable]="true" scrollHeight="200px" responsiveLayout="scroll"
+            <!-- <p-table [value]="exceptionsData" [scrollable]="true" scrollHeight="200px" responsiveLayout="scroll"
               [paginator]="exceptionsData?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
               [tableStyle]="{ 'width': '100%' }">
               <ng-template pTemplate="header">
                 <tr>
-                  <th><p-checkbox name="selectAll" [(ngModel)]="selectAll" (onChange)="toggleAll()"
-                      [binary]="true"></p-checkbox></th>
-                  <th pSortableColumn="id">
+                  <th class="flexible-header1"><p-checkbox name="selectAll" [(ngModel)]="selectAll"
+                      (onChange)="toggleAll()" [binary]="true"></p-checkbox></th>
+                  <th class="flexible-header1" pSortableColumn="id">
                     ID
                     <p-sortIcon field="id"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="description">
+                  <th class="flexible-header1" pSortableColumn="description">
                     Description
                     <p-sortIcon field="description"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="remark">
+                  <th class="flexible-header1" pSortableColumn="remark">
                     Remarks
                     <p-sortIcon field="remark"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="authorized">
+                  <th class="flexible-header1" pSortableColumn="authorized">
                     Authorized
                     <p-sortIcon field="authorized"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="setStandard">
+                  <th class="flexible-header1" pSortableColumn="setStandard">
                     Set standard
                     <p-sortIcon field="setStandard"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="usedStandard">
+                  <th class="flexible-header1" pSortableColumn="usedStandard">
                     Used standard
                     <p-sortIcon field="usedStandard"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="authorizedBy">
+                  <th class="flexible-header1" pSortableColumn="authorizedBy">
                     Authorized by
                     <p-sortIcon field="authorizedBy"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="authorizedDate">
+                  <th class="flexible-header1" pSortableColumn="authorizedDate">
                     <span style="white-space: nowrap;">
                       Authorized date
                       <p-sortIcon field="authorizedDate"></p-sortIcon>
@@ -1970,7 +1994,52 @@
                   </td>
                 </tr>
               </ng-template>
+            </p-table> -->
+            <p-table [value]="exceptionsData" [(selection)]="selectedExceptions" dataKey="code"
+              [paginator]="exceptionsData?.length > 10" [rows]="5" [scrollable]="true" responsiveLayout="scroll"
+              styleClass="p-datatable-striped" [rowHover]="true" [rowsPerPageOptions]="[5, 10,20]">
+
+              <!-- Table Header -->
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                  </th>
+                  <th *ngFor="let col of exceptionsColumns" [hidden]="!col.visible" [pSortableColumn]="col.field"
+                    class="flexible-header1">
+                    {{ col.header }}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                  </th>
+                </tr>
+              </ng-template>
+
+              <!-- Table Body -->
+              <ng-template pTemplate="body" let-exception>
+                <tr [pSelectableRow]="exception">
+                  <td>
+                    <p-tableCheckbox [value]="exception" [disabled]="exception.isAuthorized === 'Y'"
+                      [pTooltip]="exception.isAuthorized === 'Y' ? 'This exception has already been authorized' : null"
+                      tooltipPosition="top">
+                    </p-tableCheckbox>
+
+                  </td>
+                  <td *ngFor="let col of exceptionsColumns" [hidden]="!col.visible" class="flexible-header1">
+                    {{ getCellValue(exception, col.field) }}
+                  </td>
+                </tr>
+              </ng-template>
+
+              <!-- Empty Message -->
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td [attr.colspan]="exceptionsColumns.length + 1" class="text-center text-muted py-3">
+                    No exceptions available for this product.
+                  </td>
+                </tr>
+              </ng-template>
             </p-table>
+
+
           </div>
 
         </div>
@@ -2147,7 +2216,8 @@
 
         <!-- Left-side buttons -->
         <div class="d-flex gap-2 flex-wrap">
-          <button
+
+          <!-- <button
             style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"
             (click)="navigateToRiskCenter()" [disabled]="viewQuoteFlag">
             {{ 'gis.quotation.back' | translate }}
@@ -2156,12 +2226,47 @@
           <button type="button" class="btn btn-outline-primary" (click)="openReassignQuotationModal()"
             [disabled]="afterRejectQuote||viewQuoteFlag">
             {{ "gis.quotation.reassign" | translate }}
-          </button>
+          </button> -->
 
-          <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
+          <!-- <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
             [disabled]="afterRejectQuote||viewQuoteFlag">
             {{ 'gis.quotation.reject' | translate }}
-          </button>
+          </button> -->
+          <!-- Back Button -->
+          <!-- Back Button -->
+          <span class="mt-2"
+            [pTooltip]="afterRejectQuote || viewQuoteFlag ? 'No further action — quotation already authorized.' : null"
+            tooltipPosition="top">
+            <button (click)="navigateToRiskCenter()" [disabled]="viewQuoteFlag"
+              [ngStyle]="viewQuoteFlag ? { color: '#6c757d', cursor: 'not-allowed', 'text-decoration': 'none' } : { color: '#00529B', cursor: 'pointer', 'text-decoration': 'underline' }"
+              style="border: none; background: transparent;">
+              {{ 'gis.quotation.back' | translate }}
+            </button>
+          </span>
+
+          <!-- Reassign Button -->
+          <span
+            [pTooltip]="afterRejectQuote || viewQuoteFlag ? 'No further action — quotation already authorized.' : null"
+            tooltipPosition="top">
+            <button type="button "
+              [ngClass]="afterRejectQuote || viewQuoteFlag ? 'btn btn-secondary' : 'btn btn-outline-primary'"
+              [disabled]="afterRejectQuote || viewQuoteFlag" (click)="openReassignQuotationModal()">
+              {{ "gis.quotation.reassign" | translate }}
+            </button>
+          </span>
+
+          <!-- Reject Button -->
+          <span
+            [pTooltip]="afterRejectQuote || viewQuoteFlag ? 'No further action — quotation already authorized.' : null"
+            tooltipPosition="top">
+            <button type="button"
+              [ngClass]="afterRejectQuote || viewQuoteFlag ? 'btn btn-secondary' : 'btn btn-outline-primary'"
+              [disabled]="afterRejectQuote || viewQuoteFlag" (click)="openRejectQuotationModal()">
+              {{ 'gis.quotation.reject' | translate }}
+            </button>
+          </span>
+
+
         </div>
 
 
@@ -2245,74 +2350,80 @@
           <div class="tab-content mt-3 mb-4">
             <!-- OTP content -->
             <div class="tab-pane fade show active" *ngIf="activeConsentTab === 'otp'">
-  
-<!-- Share method selection -->
-<div class="method-options mt-2">
-  <div class="method-option" *ngFor="let method of shareMethods"
-    (click)="!method.disabled && onShareMethodChange(method.value)"
-    [class.selected]="shareQuoteData.selectedMethod  === method.value" [class.disabled]="method.disabled">
-    <i class="far fa-circle" *ngIf="shareQuoteData.selectedMethod  !== method.value"></i>
-    <i class="fas fa-dot-circle" *ngIf="shareQuoteData.selectedMethod   === method.value"></i>
-    <span class="ps-2">{{ method.label }}</span>
-    <span class="custom-tooltip" *ngIf="method.disabled">{{ method.tooltip }}</span>
-  </div>
-</div>
-<form [formGroup]="shareForm">
-  <!-- Email input (shown when email is selected) -->
-  <div *ngIf="shareQuoteData.selectedMethod  === 'email'" class="row mt-2">
-    <label for="email" class="label quote-label">Email address<span class="required"></span></label>
-    <div class="row">
-      <div class="col-sm-9">
-        <input id="email" type="email" formControlName="email" class="form-control form-control-sm"
-          placeholder="Enter email address" (blur)="shareForm.get('email')?.markAsTouched()" />
-        <div *ngIf="shareForm.get('email')?.touched && shareForm.get('email')?.invalid"
-          class="text-danger mt-1">
-          <small *ngIf="shareForm.get('email')?.errors?.['required']">Email is required.</small>
-          <small *ngIf="shareForm.get('email')?.errors?.['email']">Please enter a valid email
-            address.</small>
-        </div>
-      </div>
-      <div class="col-sm-3">
-        <button type="button" class="btn btn-outline-primary btn-sm fw-bold" (click)="generateOTP()">Send
-          OTP</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- SMS input (shown when SMS is selected) -->
-  <div *ngIf="shareQuoteData.selectedMethod  === 'sms'" class="row mt-2">
-    <label for="smsNumber" class="label quote-label">Phone Number<span class="required"></span></label>
-    <div class="row">
-      <div class="col-sm-9">
-        <input id="smsNumber" type="tel" formControlName="smsNumber" class="form-control form-control-sm"
-          placeholder="0712345678 or +254712345678" (blur)="shareForm.get('smsNumber')?.markAsTouched()" />
-        <div *ngIf="shareForm.get('smsNumber')?.touched && shareForm.get('smsNumber')?.invalid"
-          class="text-danger mt-1">
-          <small *ngIf="shareForm.get('smsNumber')?.errors?.['required']">Phone number is required.</small>
-          <small *ngIf="shareForm.get('smsNumber')?.errors?.['pattern']">Please enter a  phone number.</small>
-        </div>
-      </div>
-      <div class="col-sm-3">
-        <button type="button" class="btn btn-outline-primary btn-sm fw-bold" (click)="generateOTP()">Send
-          OTP</button>
-      </div>
-    </div>
-  </div>
+              <!-- Share method selection -->
+              <div class="method-options mt-2">
+                <div class="method-option" *ngFor="let method of shareMethods"
+                  (click)="!method.disabled && onShareMethodChange(method.value)"
+                  [class.selected]="shareQuoteData.selectedMethod  === method.value" [class.disabled]="method.disabled">
+                  <i class="far fa-circle" *ngIf="shareQuoteData.selectedMethod  !== method.value"></i>
+                  <i class="fas fa-dot-circle" *ngIf="shareQuoteData.selectedMethod   === method.value"></i>
+                  <span class="ps-2">{{ method.label }}</span>
+                  <span class="custom-tooltip" *ngIf="method.disabled">{{ method.tooltip }}</span>
+                </div>
+              </div>
+              <form [formGroup]="shareForm">
+                <!-- Email input (shown when email is selected) -->
+                <div *ngIf="shareQuoteData.selectedMethod  === 'email'" class="row mt-2">
+                  <label for="email" class="label quote-label">Email address<span class="required"></span></label>
+                  <div class="row">
+                    <div class="col-sm-9">
+                      <input id="email" type="email" formControlName="email" class="form-control form-control-sm"
+                        placeholder="Enter email address" (blur)="shareForm.get('email')?.markAsTouched()" />
+                      <div *ngIf="shareForm.get('email')?.touched && shareForm.get('email')?.invalid"
+                        class="text-danger mt-1">
+                        <small *ngIf="shareForm.get('email')?.errors?.['required']">Email is required.</small>
+                        <small *ngIf="shareForm.get('email')?.errors?.['email']">Please enter a valid email
+                          address.</small>
+                      </div>
+                    </div>
+                    <div class="col-sm-3">
+                      <button type="button" class="btn btn-outline-primary btn-sm fw-bold" (click)="generateOTP()">Send
+                        OTP</button>
+                    </div>
+                  </div>
+                </div>
 
-  <!-- OTP input (shown after OTP is generated) -->
-  <div *ngIf="otpGenerated" class="row mt-3">
-    <div class="col-sm-9">
-      <label for="otp" class="label quote-label">Enter OTP<span class="required"></span></label>
-      <input id="otp" type="text" formControlName="otp" class="form-control form-control-sm" maxlength="6" />
-      <div *ngIf="shareForm.get('otp')?.touched && shareForm.get('otp')?.invalid"
-        class="text-danger mt-1">
-        <small *ngIf="shareForm.get('otp')?.errors?.['required']">OTP is required.</small>
-        <small *ngIf="shareForm.get('otp')?.errors?.['minlength'] || shareForm.get('otp')?.errors?.['maxlength']">OTP must be 6 digits.</small>
-      </div>
-    </div>
-    <div class="col-sm-3"></div>
-  </div>
-</form>
+                <!-- SMS input (shown when SMS is selected) -->
+                <div *ngIf="shareQuoteData.selectedMethod  === 'sms'" class="row mt-2">
+                  <label for="smsNumber" class="label quote-label">Phone Number<span class="required"></span></label>
+                  <div class="row">
+                    <div class="col-sm-9">
+                      <input id="smsNumber" type="tel" formControlName="smsNumber" class="form-control form-control-sm"
+                        placeholder="0712345678 or +254712345678"
+                        (blur)="shareForm.get('smsNumber')?.markAsTouched()" />
+                      <div *ngIf="shareForm.get('smsNumber')?.touched && shareForm.get('smsNumber')?.invalid"
+                        class="text-danger mt-1">
+                        <small *ngIf="shareForm.get('smsNumber')?.errors?.['required']">Phone number is
+                          required.</small>
+                        <small *ngIf="shareForm.get('smsNumber')?.errors?.['pattern']">Please enter a phone
+                          number.</small>
+                      </div>
+                    </div>
+                    <div class="col-sm-3">
+                      <button type="button" class="btn btn-outline-primary btn-sm fw-bold" (click)="generateOTP()">Send
+                        OTP</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- OTP input (shown after OTP is generated) -->
+                <div *ngIf="otpGenerated" class="row mt-3">
+                  <div class="col-sm-9">
+                    <label for="otp" class="label quote-label">Enter OTP<span class="required"></span></label>
+                    <input id="otp" type="text" formControlName="otp" class="form-control form-control-sm"
+                      maxlength="6" />
+                    <div *ngIf="shareForm.get('otp')?.touched && shareForm.get('otp')?.invalid"
+                      class="text-danger mt-1">
+                      <small *ngIf="shareForm.get('otp')?.errors?.['required']">OTP is required.</small>
+                      <small
+                        *ngIf="shareForm.get('otp')?.errors?.['minlength'] || shareForm.get('otp')?.errors?.['maxlength']">OTP
+                        must be 6 digits.</small>
+                    </div>
+                  </div>
+                  <div class="col-sm-3"></div>
+                </div>
+              </form>
             </div>
 
             <!-- Upload tab placeholder -->
@@ -2427,18 +2538,27 @@
             </div>
           </div>
 
+          <!-- quotation sending options -->
           <h6 class="share_via_title text-primary ms-2">Share via</h6>
-          <p-tabView [(activeIndex)]="activeIndex" class="custom-tabs">
-            <!-- SMS Tab (disabled style with tooltip) -->
+          <p-tabView [(activeIndex)]="activeIndex" class="custom-tabs" (onChange)="onTabChange($event)">
+            <!-- SMS Tab -->
             <p-tabPanel header="SMS">
               <ng-template pTemplate="header">
-                <span class="text-muted" pTooltip="Feature coming soon" tooltipPosition="top">
-                  SMS
-                </span>
+                <span>SMS</span>
               </ng-template>
-              <div class="p-3">
-                <p class="text-secondary">SMS feature coming soon...</p>
-              </div>
+              <form [formGroup]="viewDocForm">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="quote-label">Phone Number <span class="text-danger">*</span></label>
+                    <input pInputText type="tel" class="form-control" formControlName="phoneNumber"
+                      placeholder="e.g., 0712345678" maxlength="10" />
+                    <div *ngIf="viewDocForm.get('phoneNumber')?.invalid && viewDocForm.get('phoneNumber')?.touched"
+                      class="text-danger small">
+                      Please enter exactly 10 digits (e.g., 0712345678)
+                    </div>
+                  </div>
+                </div>
+              </form>
             </p-tabPanel>
 
             <!-- Email Tab -->
@@ -2500,8 +2620,9 @@
               <button type="button" class="btn btn-outline-primary btn-sm me-3" data-bs-dismiss="modal">
                 Cancel
               </button>
-              <button type="button" class="btn btn-primary btn-sm" (click)="sendReportViaEmail()">
-                Send
+              <button type="button" class="btn btn-primary btn-sm" (click)="sendReportViaEmail()"
+                [disabled]="activeIndex === 0 ? viewDocForm.get('phoneNumber')?.invalid : viewDocForm.get('to')?.invalid">
+                {{ activeIndex === 0 ? 'Send SMS' : 'Send Email' }}
               </button>
             </div>
           </div>
@@ -2520,10 +2641,15 @@
     </div>
 
     <!-- quotation report  -->
-    <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">
+    <!-- <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">
       <app-quotation-report></app-quotation-report>
 
+    </div> -->
+    <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">
+      <app-quotation-report *ngIf="activeQuoteTab === 'reports'"></app-quotation-report>
     </div>
+
+
 
 
 

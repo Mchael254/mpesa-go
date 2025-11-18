@@ -7,7 +7,7 @@ import {
   EditRisk,
   ExceptionPayload,
   OtpPayload,
-  premiumPayloadData,
+  PremiumPayloadDto,
   QuotationComment,
   quotationDTO, QuotationReportDto,
   quotationRisk,
@@ -35,10 +35,11 @@ import { ExternalClaimExp } from '../../../policy/data/policy-dto';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { UtilService } from '../../../../../../shared/services';
 import { map } from "rxjs/operators";
-import { QuotationsDTO, riskClause, riskPeril, UpdatePremiumDto } from 'src/app/features/gis/data/quotations-dto';
+import { PolicyElectronicDataDTO, QuotationsDTO, riskClause, riskPeril, UpdatePremiumDto } from 'src/app/features/gis/data/quotations-dto';
 import { ComputationPayloadDto, PremiumComputationRequest, ProductLevelPremium } from "../../data/premium-computation";
 import { QuotationDetailsRequestDto } from "../../data/quotation-details";
 import { EmailDto } from "../../../../../../shared/data/common/email-dto";
+import { DmsDocument, SingleDmsDocument } from 'src/app/shared/data/common/dmsDocument';
 
 @Injectable({
   providedIn: 'root'
@@ -364,11 +365,12 @@ export class QuotationsService {
   }
 
   sendEmail(data: EmailDto): Observable<any> {
-    return this.http.post<any>(`/${this.notificationUrl}/email/send`, JSON.stringify(data), this.httpOptions)
+    return this.http.post<any>(`/${this.notificationUrl}api/v2/email/send`, JSON.stringify(data), this.httpOptions)
   }
 
   sendSms(data) {
-    return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data), this.httpOptions)
+    return this.http.post(`/${this.notificationUrl}/api/v2/sms/send`, JSON.stringify(data), this.httpOptions)
+
   }
 
   getUserProfile() {
@@ -648,7 +650,7 @@ export class QuotationsService {
 
 
 
-  authoriseExceptions(exception: ExceptionPayload): Observable<any> {
+  authoriseExceptions(exception: ExceptionPayload[]): Observable<any> {
 
     return this.api.POST(
       `v2/quotation-exceptions/authorise`,
@@ -850,7 +852,7 @@ export class QuotationsService {
     )
   }
 
-  updatePremium(quotationCode: any, data: premiumPayloadData) {
+  updatePremium(quotationCode: any, data: PremiumPayloadDto[]) {
 
     return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,).pipe(
       retry(1),
@@ -895,7 +897,7 @@ export class QuotationsService {
     return this.api.GET(`v2/quotation/convert-to-normal-quot?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
-  updateQuotePremium(quotationCode: number, payload: UpdatePremiumDto) {
+  updateQuotePremium(quotationCode: number, payload: PremiumPayloadDto[]) {
     return this.api.POST(
       `v2/quotation/update-premium/${quotationCode}`,
       payload,
@@ -1008,9 +1010,9 @@ export class QuotationsService {
   }
 
   //perils
-  getSubclassSectionPeril(subclassCode: number, pageNo: number = 1, pageSize: number = 20): Observable<any> {
+  getSubclassSectionPeril(subclassCode: number, pageNo: number = 0, pageSize: number = 20): Observable<any> {
 
-    return this.api.GET<any[]>(`api/v1/subclass-section-perils/${subclassCode}?pageNo=${pageNo}&pageSize=${pageSize}`, API_CONFIG.GIS_SETUPS_BASE_URL);
+    return this.api.GET<any[]>(`api/v1/subclass-section-perils/subclass/${subclassCode}?pageNo=${pageNo}&pageSize=${pageSize}`, API_CONFIG.GIS_SETUPS_BASE_URL);
 
   }
 
@@ -1150,8 +1152,8 @@ export class QuotationsService {
   }
 
 
-  generateOTP(payload: OtpPayload) {
-    return this.api.POST<any>(`v2/otp/generate-and-send`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+  generateOTP(payload: OtpPayload, method: 'SMS' | 'EMAIL' | 'WHATSAPP') {
+    return this.api.POST<any>(`v2/otp/generate-and-send?method=${method}`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     );
@@ -1300,13 +1302,46 @@ export class QuotationsService {
     return this.api.GET<Observable<any>>(`users/${userId}/systems`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL)
   }
 
-  getAllTickets(): Observable<any> {
-    const params = {
-      pageNo: 0,
-      pageSize: 10,
-      sortField: 'createdDate',
-      sortOrder: 'asc'
+  // getAllTickets(): Observable<any> {
+  //   const params = {
+  //     pageNo: 0,
+  //     pageSize: 10,
+  //     sortField: 'createdDate',
+  //     sortOrder: 'desc'
+  //   };
+
+  //   return this.api.GET<any>(
+  //     'v1/tickets',
+  //     API_CONFIG.GIS_TICKETING_SERVICE,
+  //     params
+  //   );
+  // }
+  getAllTickets(
+    pageNo: number = 0,
+    pageSize: number = 100,
+    sortField: string = 'createdDate',
+    sortOrder: string = 'desc',
+    ticketName?: string,
+    referenceNo?: string,
+    client?: string,
+    ticketAssignee?: string,
+    intermediary?: string,
+    dateFrom?: string,
+  ): Observable<any> {
+    const params: any = {
+      pageNo,
+      pageSize,
+      sortField,
+      sortOrder
     };
+
+    // Add optional filters if they are provided
+    if (ticketName) params.ticketName = ticketName;
+    if (referenceNo) params.referenceNo = referenceNo;
+    if (client) params.client = client;
+    if (ticketAssignee) params.ticketAssignee = ticketAssignee;
+    if (intermediary) params.intermediary = intermediary;
+    if (dateFrom) params.dateFrom = dateFrom;
 
     return this.api.GET<any>(
       'v1/tickets',
@@ -1314,6 +1349,8 @@ export class QuotationsService {
       params
     );
   }
+
+
   fetchExceptions(systemModule: string = 'Q', quotationCode: Number) {
 
     return this.api.GET<Observable<any>>(`v1/gis-exceptions?systemModule=${systemModule}&quotationCode=${quotationCode}`, API_CONFIG.GIS_COMMONS_SERVICE).pipe(
@@ -1361,6 +1398,7 @@ export class QuotationsService {
       catchError(this.errorHandl)
     );
   }
+
   changeTicketStatus(ticketPayload: any) {
     return this.api.POST<any>(
       `/v1/process-flow/move-to-task`,
@@ -1368,6 +1406,7 @@ export class QuotationsService {
       API_CONFIG.GIS_TICKETING_SERVICE
     );
   }
+
   undoMakeReady(quotationCode: number) {
     return this.api.POST<any>(
       `v2/quotation/undo-make-ready?quotationCode=${quotationCode}`,
@@ -1376,10 +1415,139 @@ export class QuotationsService {
     );
   }
 
+  sendNormalQuotationSms(message: string, phoneNumber: string, sendDate?: string | null) {
+    const payload = {
+      scheduledDate: null,
+      smsMessages: [
+        {
+          message,
+          sendDate: sendDate || new Date().toISOString(),
+          systemCode: 0,
+          telephoneNumber: phoneNumber
+        }
+      ]
+    };
+
+    return this.http.post(
+      `/${this.notificationUrl}/api/v2/sms/send`,
+      JSON.stringify(payload),
+      this.httpOptions
+    );
+  }
+
+  uploadRiskDocs(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `v1/documents/valuation`,
+      JSON.stringify(data), API_CONFIG.GIS_COMMONS_SERVICE
+    );
+  }
+  fetchRiskDocs(riskId: number): Observable<DmsDocument[]> {
+    const params = new HttpParams()
+      .set('riskId', `${riskId}`);
+
+    return this.api.GET<DmsDocument[]>(`v1/documents/riskId?${params}`, API_CONFIG.GIS_COMMONS_SERVICE);
+  }
+
+  deleteDocumentById(docId: string): Observable<SingleDmsDocument> {
+    const params = new HttpParams()
+      .set('docId', `${docId}`);
+
+    return this.api.GET<SingleDmsDocument>(`v1/documents/delete?${params}`, API_CONFIG.GIS_COMMONS_SERVICE)
+  }
+  getDocumentById(docId: string): Observable<SingleDmsDocument> {
+
+    const params = new HttpParams()
+      .set('docId', `${docId}`);
+
+    // url = this.getDmsUrl(urlEndpoint);
+
+    return this.api.GET<SingleDmsDocument>(`v1/documents/docId?${params}`, API_CONFIG.GIS_COMMONS_SERVICE
+
+    )
+  }
+  fetchDocumentsByClientCode(clientCode: string): Observable<DmsDocument[]> {
+
+    const params = new HttpParams()
+      .set('clientCode', `${clientCode}`);
+
+    return this.api.GET<DmsDocument[]>(`v1/documents?${params}`, API_CONFIG.GIS_COMMONS_SERVICE);
+  }
+
+  saveClientDocs(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `v1/documents`,
+      JSON.stringify(data), API_CONFIG.GIS_COMMONS_SERVICE
+    );
+  }
+
+  uploadImportRiskData(payload: PolicyElectronicDataDTO[]): Observable<any> {
+    return this.api.POST<any>(
+      'v1/policy-electronic-data',
+      JSON.stringify(payload),
+      API_CONFIG.GIS_COMMONS_SERVICE
+    ).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+  fetchUploadedRisk(
+    referenceCode: number,
+    transferred?: string,
+    validated?: string
+  ) {
+    let params = new HttpParams()
+      .set('systemModule', 'Q')
+      .set('referenceCode', referenceCode);
+
+    // add optional params only if provided
+    if (transferred !== undefined) {
+      params = params.set('transferred', transferred);
+    }
+
+    if (validated !== undefined) {
+      params = params.set('validated', validated);
+    }
+
+    return this.api
+      .GET<any>(`v1/policy-electronic-data?${params}`, API_CONFIG.GIS_COMMONS_SERVICE)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      );
+  }
+  validateUploadedRisk(sourceCode: number) {
+    let params = new HttpParams()
+      .set('sourceCode', sourceCode)
+      .set('sysModule', 'Q');
+    return this.api
+      .POST<any>(`v1/load-details/validate?${params}`, null, API_CONFIG.GIS_COMMONS_SERVICE)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      );
+
+  }
+  updatedImportedRisk(id: number, payload: PolicyElectronicDataDTO) {
+    return this.api.PUT<any>(
+      `v1/policy-electronic-data/${id}`,
+      JSON.stringify(payload),
+      API_CONFIG.GIS_COMMONS_SERVICE
+    ).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
 
 
-
-
+  deleteRiskRecord(id: number): Observable<any> {
+  return this.api.DELETE<any>(
+    `v1/policy-electronic-data/${id}`,
+    API_CONFIG.GIS_COMMONS_SERVICE
+  ).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  );
+}
 
 }
 

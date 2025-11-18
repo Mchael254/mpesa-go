@@ -13,10 +13,10 @@
       },
       {
         label: this.translate.instant('base.base-fms.banking'),
-        url: '/home/fms/new-banking-process',
+        url: '/home/fms/',
       },
       {
-        label: this.translate.instant('fms.banking.processBatch'),
+        label: this.translate.instant('fms.banking.retrieveReceipts'),
         url: '',
       }
      
@@ -34,7 +34,7 @@
       <div class="mb-3">
         <form [formGroup]="rctsRetrievalForm">
           <div class="row">
-            <div class="col col-4">
+            <div class="col-12 col-lg-4 col-md-4">
               <label for="sdate">{{
                 "fms.banking.fromDate" | translate
               }}</label>
@@ -60,7 +60,7 @@
                 </div>
               </div>
             </div>
-            <div class="col col-4">
+            <div class="col-12 col-lg-4 col-md-4">
               <label for="edate">{{ "fms.banking.toDate" | translate }}</label>
               <span class="required"></span>
               <input
@@ -84,7 +84,7 @@
                 </div>
               </div>
             </div>
-            <div class="col col-4">
+            <div class="col-12 col-lg-4 col-md-4">
               <label for="paymentMode">{{
                 "mngt_wrkflw.claimDetails.paymentMode" | translate
               }}</label>
@@ -121,7 +121,7 @@
       </div>
       <div class="d-flex justify-content-end pb-1">
         <button
-          class="btn btn-primary"
+          class="btn btn-primary mb-1 mt-2"
           (click)="onClickRetrieveRcts()"
           [disabled]="!rctsRetrievalForm.valid"
         >
@@ -135,12 +135,14 @@
         header="Header"
         [(visible)]="visible"
         [modal]="true"
-        [style]="{ width: '25rem' }"
+        [style]="{ width: '35rem' }"
       >
         <ng-template pTemplate="header">
           <div
             class="inline-flex align-items-center justify-content-center gap-2"
-          ></div>
+          >
+            <span class="fs-5">{{ "crm.columns" | translate }}</span>
+          </div>
         </ng-template>
         <div *ngFor="let col of columns" class="field-checkbox">
           <p-checkbox
@@ -150,6 +152,35 @@
           />
         </div>
       </p-dialog>
+      <div class="mt-3" *ngIf="displayTable">
+        <div class="d-flex align-items-center justify-content-between bg-white">
+          <div class="div">
+            <h5 class="fw-bold">
+              {{ "fms.banking.retrievedReceipts" | translate }}
+            </h5>
+
+            <p class="fw-normal" *ngIf="filteredReceipts.length != 0">
+              {{ "fms.banking.found" | translate }} {{ totalRecord }}
+              {{ "fms.banking.selectRecord" | translate }}
+            </p>
+          </div>
+
+          <div class="justify-content-end d-flex align-items-center gap-2">
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="openAssignModal()"
+              *ngIf="selectedReceipts.length > 0"
+            >
+              {{ "fms.banking.assign" | translate }}
+            </button>
+            <span (click)="showColumnsDialogs()" class="cursor-pointer">
+              <i class="fa-regular fa-square-caret-down fa-2x"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+
       <!-- primeng table for displaying receipts to bank
         -->
       <p-table
@@ -158,6 +189,7 @@
         selectionMode="multiple"
         sortMode="single"
         [resizableColumns]="true"
+        responsiveLayout="stack"
         [scrollable]="true"
         [(selection)]="selectedReceipts"
         [paginator]="true"
@@ -167,36 +199,6 @@
         [currentPageReportTemplate]="currentReportTemplate"
         *ngIf="displayTable"
       >
-        <ng-template pTemplate="caption">
-          <div
-            class="d-flex align-items-center justify-content-between bg-white"
-          >
-            <div class="div">
-              <h5 class="fw-bold">
-                {{ "fms.banking.retrievedReceipts" | translate }}
-              </h5>
-
-              <p class="fw-normal" *ngIf="filteredReceipts.length != 0">
-                Found {{ totalRecord }} records.Please select record to assign
-                and create batches
-              </p>
-            </div>
-
-            <div class="justify-content-end">
-              <button
-                class="btn btn-primary"
-                (click)="openAssignModal()"
-                *ngIf="selectedReceipts.length > 0"
-              >
-                {{ "fms.banking.assign" | translate }}
-              </button>
-              <span class="pt-2" (click)="showColumnsDialogs()">
-                <i class="fa-regular fa-square-caret-down"></i>
-              </span>
-            </div>
-          </div>
-        </ng-template>
-
         <ng-template pTemplate="header">
           <tr>
             <th><p-tableHeaderCheckbox /></th>
@@ -246,7 +248,12 @@
                   <div class="d-flex gap-1">
                     <button
                       class="btn btn-link btn-sm"
-                      *ngIf="paymentMode === 'CHEQUE'"
+                      *ngIf="
+                        (paymentMode === 'CHEQUE' &&
+                          receipt.batchAssignmentUserName != null) ||
+                        ''
+                      "
+                      (click)="openDepositModal(receipt)"
                     >
                       {{ "fms.banking.deposit" | translate }}
                     </button>
@@ -308,7 +315,7 @@
     header="Assign Task"
     [modal]="true"
     [(visible)]="assignDialogVisible"
-    [style]="{ width: '25rem' }"
+    [style]="{ width: '420px' }"
   >
     <form [formGroup]="usersForm">
       <!-- user selection input field -->
@@ -357,13 +364,13 @@
         <div class="d-flex flex-row gap-3">
           <button
             type="button"
-            class="btn btn-secondary"
+            class="btn btn-outline-primary"
             (click)="closeAssignModal()"
           >
             {{ "fms.receipt-management.cancel" | translate }}
           </button>
           <button
-            type="submit"
+            type="button"
             class="btn btn-primary"
             (click)="onAssignSubmit()"
             [disabled]="!selectedUserForAssignment"
@@ -372,7 +379,7 @@
             {{ "fms.banking.assign" | translate }}
           </button>
           <button
-            type="submit"
+            type="button"
             class="btn btn-primary"
             (click)="reAssignUser()"
             [disabled]="!selectedUserForAssignment"
@@ -391,7 +398,7 @@
     header="Assign Task"
     [(visible)]="userSelectDialogVisible"
     [modal]="true"
-    [style]="{ width: '450px' }"
+    [style]="{ width: '700px' }"
     [baseZIndex]="10001"
   >
     <p-table
@@ -448,7 +455,7 @@
       <div class="d-flex flex-row gap-3">
         <button
           type="button"
-          class="btn btn-secondary"
+          class="btn btn-outline-primary"
           (click)="closeUserSelectDialog()"
         >
           {{ "crm.cancel" | translate }}
@@ -465,4 +472,176 @@
       </div>
     </div>
   </p-dialog>
+  <!-- start of deposit modal -->
+  <div
+    class="modal fade"
+    id="depositModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-primary" id="exampleModalLabel">
+            {{ "fms.banking.depositDetails" | translate }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-dismiss="modal"
+            aria-label="Close"
+            (click)="closeDepositModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="depositForm">
+            <div class="">
+              <div class="row g-3">
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="bank" class="form-label required">{{
+                      "fms.banking.bankAccount" | translate
+                    }}</label>
+                    <select
+                      id="bank"
+                      class="form-select"
+                      formControlName="bankAccount"
+                    >
+                      <option
+                        *ngFor="let accounts of glAccounts"
+                        [value]="accounts.accountNumber"
+                      >
+                        {{ accounts.accountName }} {{ accounts.accountNumber }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="bankingSlip" class="form-label required">{{
+                      "fms.banking.bankingSipNumber" | translate
+                    }}</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="bankingSlip"
+                      formControlName="slipNumber"
+                    />
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="amount" class="form-label">{{
+                      "fms.banking.amountBanked" | translate
+                    }}</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="amount"
+                      formControlName="amount"
+                      readonly
+                    />
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="form-group">
+                    <div class="form-group mb-3">
+                      <label for="remarks" class="form-label">{{
+                        "fms.banking.remarksComments" | translate
+                      }}</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="remarks"
+                        formControlName="remarks"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 mt-3">
+                  <h6 class="fw-normal mb-2">
+                    {{ "fms.banking.AttachDepositSlip" | translate }}
+                  </h6>
+                  <!-- custom file dropzone -->
+                  <div
+                    class="file-dropzone border-dashed text-center p-4 rounded"
+                    (click)="fileInput.click()"
+                    (dragover)="onDragOver($event)"
+                    (dragleave)="onDragLeave($event)"
+                    (drop)="onDrop($event)"
+                    [class.drag-over]="isDragging"
+                  >
+                    <i class="pi pi-upload mb-2" style="font-size: 2rem"></i>
+                    <p class="mb-1">
+                      <span class="text-primary fw-bold cursor-pointer">{{
+                        "fms.banking.clickToUpload" | translate
+                      }}</span>
+                      {{ "fms.banking.orDrag" | translate }}
+                    </p>
+                    <small class="text-muted">{{
+                      "fms.banking.pdf" | translate
+                    }}</small>
+                    <!-- Hidden file input that we trigger programmatically -->
+                    <input
+                      type="file"
+                      #fileInput
+                      class="d-none"
+                      (change)="onFileSelected($event)"
+                      [disabled]="maximumFiles"
+                    />
+                  </div>
+                  <!-- List of Uploaded Files -->
+                  <div class="uploaded-files-list mt-3" *ngIf="uploadedFile">
+                    <div
+                      class="d-flex align-items-center justify-content-between p-2 mb-2 bg-light rounded"
+                    >
+                      <div class="d-flex align-items-center">
+                        <i
+                          class="pi pi-file-pdf text-danger me-2"
+                          style="font-size: 1.5rem"
+                        ></i>
+                        <span class="file-name">{{ uploadedFile.name }}</span>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-link text-danger"
+                        (click)="removeFile()"
+                      >
+                        <i class="pi pi-trash"></i>
+                      </button>
+                      <div class="d-flex justify-content-end">
+                        <button
+                          type="button"
+                          class="btn btn-primary btn-sm"
+                          (click)="postFile()"
+                        >
+                          {{ "fms.receipting.postFile" | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- end of file UPLOAD  section -->
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer me-1 gap-3">
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            (click)="closeDepositModal()"
+          >
+            {{ "fms.receipt-management.cancel" | translate }}
+          </button>
+          <button type="button" class="btn btn-primary">
+            {{ "crm.saveChanges" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end of deposit modal -->
 </div>

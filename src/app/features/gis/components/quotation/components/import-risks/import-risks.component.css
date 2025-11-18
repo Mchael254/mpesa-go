@@ -1,3 +1,9 @@
+.card {
+  border: none;
+  border-radius: 5px;
+
+}
+
 .img_upload {
   display: inline-block;
   font-family: 'Roboto', serif;
@@ -20,7 +26,7 @@
 ::ng-deep .p-dropdown {
   height: 33px;
   width: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.20);
+  border: 1px solid rgba(rgba(0, 0, 0, 0.2));
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -141,20 +147,182 @@
   text-align: right;
 }
 
-.btn {
-  padding: 8px 16px;
-  margin-left: 10px;
+
+
+.quote-label {
+  font-family: Roboto;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #000;
+}
+
+.upload-area {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 10px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+  align-items: center;
+}
+
+.upload-area:hover,
+.upload-area.dragover {
+  border-color: #2196F3;
+  background-color: #e3f2fd;
+}
+
+.upload-content {
+  pointer-events: none;
+}
+
+.upload-icon {
+  font-size: 38px;
+  margin-bottom: 15px;
+  display: block;
+  color: #00529B
+}
+
+.upload-text {
+  font-family: Roboto;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0%;
+  color: #000000;
+}
+
+.upload-subtext {
+  font-family: Roboto;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 16px;
+  color: #00000080;
+  line-height: 150%;
+  letter-spacing: 0%;
+}
+
+.selected-file {
+  display: inline-flex;
+  /* shrink to fit content */
+  align-items: center;
+  /* vertical centering */
+  justify-content: center;
+  gap: 10px;
+
+}
+
+.file-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  color: #00529B;
+  text-overflow: ellipsis;
+  /* truncate long names with ... */
+}
+
+.remove-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #dc3545;
+  font-size: 1.2rem;
+}
+
+.remove-btn:hover {
+  color: #a71d2a;
+}
+
+.upload-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  background-color: #2196F3;
+  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
 }
 
-.btn-primary {
-  background-color: #007bff;
-  color: white;
+.upload-btn:hover:not(:disabled) {
+  background-color: #0b7dda;
 }
 
-.btn-secondary {
-  background-color: #6c757d;
-  color: white;
+.upload-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* .btn-greyed-out {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+} */
+
+/* Keep btn-primary color but visually indicate disabled */
+.btn-greyed-out.disabled,
+.btn-greyed-out:disabled {
+  background-color: #00529B;
+  /* keep Bootstrap primary blue */
+  border-color: #00529B;
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+  color: #fff;
+}
+
+.upload-area.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav-item>.active {
+  color: var(--primary-color);
+}
+
+
+.text-button {
+  background: none;
+  border: none;
+  color: #00529b;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.9rem;
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.text-button:disabled {
+  color: #a0a0a0;
+  /* gray when disabled */
+  cursor: not-allowed;
+}
+
+.tooltip-inner {
+  background-color: #ffffff !important;
+  color: #000 !important;
+  border: 4px solid #ccc !important;
+  font-size: 12px !important;
+  max-width: 144px;
+  white-space: pre-wrap;
+  box-shadow: 0px 4px 4px 0px #00000040;
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow::before,
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before,
+.tooltip.bs-tooltip-start .tooltip-arrow::before,
+.tooltip.bs-tooltip-end .tooltip-arrow::before {
+  border-top-color: #f0f0f0 !important;
+  border-bottom-color: #f0f0f0 !important;
+  border-left-color: #f0f0f0 !important;
+  border-right-color: #f0f0f0 !important;
 }

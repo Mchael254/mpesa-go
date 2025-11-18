@@ -30,6 +30,8 @@ import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { TerritoriesService } from '../../../setups/services/perils-territories/territories/territories.service';
 import { RiskCentreComponent } from '../risk-centre/risk-centre.component';
+import { DmsService } from 'src/app/shared/services/dms/dms.service';
+import { RiskDmsDocument } from 'src/app/shared/data/common/dmsDocument';
 
 
 const log = new Logger('RiskDetailsComponent');
@@ -81,6 +83,7 @@ export class RiskDetailsComponent {
   @ViewChild('addedCommissionTable') addedCommissionTable!: Table;
   @ViewChild('commissionTable') commissionTable!: Table;
   @ViewChild(RiskCentreComponent) RiskCentreComponent!: RiskCentreComponent;
+
 
 
 
@@ -445,10 +448,12 @@ export class RiskDetailsComponent {
     private renderer: Renderer2,
     private router: Router,
     private spinner: NgxSpinnerService,
-    public territoryService: TerritoriesService
+    public territoryService: TerritoriesService,
+    private dmsService: DmsService,
+
 
   ) {
-    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
+    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteFlag'))
 
     this.quotationCode = sessionStorage.getItem('quotationCode');
     this.quotationNumber = sessionStorage.getItem('quotationNum');
@@ -477,7 +482,10 @@ export class RiskDetailsComponent {
       this.fetchQuotationDetails(quoatationCode)
       this.scheduleList = []
       this.sectionPremium = []
-      // this.sectionDetails = []
+      this.sectionDetails = []
+      this.levelDataMap = {}
+      this.levelTableColumnsMap = {}
+      this.scheduleTabs = []
       this.showOtherSscheduleDetails = false;
 
     }
@@ -543,7 +551,7 @@ export class RiskDetailsComponent {
 
     this.clientCode = Number(sessionStorage.getItem('insuredCode'))
 
-    this.loadAllClients();
+    this.loadClientsThenInsured();
     if (!this.riskDetailsForm.contains('insureds')) {
       this.riskDetailsForm.addControl('insureds', new FormControl('',));
     }
@@ -678,8 +686,9 @@ export class RiskDetailsComponent {
           this.clientCode = this.quotationDetails.clientCode
           sessionStorage.setItem('insuredCode', this.insuredCode)
           if (this.insuredCode) {
-            this.loadClientDetails();
-            this.loadAllClients();
+            // this.loadClientDetails();
+            // this.loadAllClients();
+            this.loadClientsThenInsured()
           }
 
           this.passedCoverFromDate = this.quotationDetails.coverFrom
@@ -1010,10 +1019,65 @@ export class RiskDetailsComponent {
 
   //   log.debug("Patched form with selectedRisk:", this.riskDetailsForm.value);
   // }
+  // private patchEditValues(): void {
+  //   if (!this.selectedRisk) return;
+
+  //   // Explicit field mapping
+  //   const explicitFields: Record<string, string> = {
+  //     coverType: 'coverTypeCode',
+  //     premiumBand: 'binderCode',
+  //     registrationNumber: 'propertyId',
+  //     riskDescription: 'itemDesc',
+  //     riskId: 'propertyId'
+  //   };
+
+  //   // Patch explicit fields
+  //   Object.keys(explicitFields).forEach(formControl => {
+  //     const riskKey = explicitFields[formControl];
+  //     if (this.selectedRisk[riskKey] !== undefined && this.riskDetailsForm.contains(formControl)) {
+  //       this.riskDetailsForm.get(formControl)?.setValue(this.selectedRisk[riskKey]);
+  //     }
+  //   });
+
+  //   // Patch value-related controls
+  //   const valueControls = ['value', 'sumInsured'];
+  //   valueControls.forEach(controlName => {
+  //     if (this.riskDetailsForm.contains(controlName)) {
+  //       this.riskDetailsForm.get(controlName)?.setValue(this.selectedRisk?.value);
+  //     }
+  //   });
+
+  //   // Flatten recursively, skipping certain keys
+  //   const flatten = (obj: any) => {
+  //     Object.keys(obj).forEach(key => {
+  //       const value = obj[key];
+
+  //       // Skip keys that would overwrite explicitly mapped fields
+  //       const excludedKeys = ['coverType', 'binderCode', 'propertyId', 'itemDesc', 'value'];
+  //       if (excludedKeys.includes(key)) return;
+
+  //       if (value && typeof value === 'object') {
+  //         if (Array.isArray(value) && value.length > 0) {
+  //           flatten(value[0]);
+  //         } else {
+  //           flatten(value);
+  //         }
+  //       } else {
+  //         if (this.riskDetailsForm.contains(key)) {
+  //           this.riskDetailsForm.get(key)?.setValue(value);
+  //         }
+  //       }
+  //     });
+  //   };
+
+  //   flatten(this.selectedRisk);
+
+  //   log.debug('Patched form with selectedRisk:', this.riskDetailsForm.value);
+  // }
   private patchEditValues(): void {
     if (!this.selectedRisk) return;
 
-    // Explicit fields mapping (excluding value-related form controls)
+    // Explicit field mapping between backend keys and form controls
     const explicitFields: Record<string, string> = {
       coverType: 'coverTypeCode',
       premiumBand: 'binderCode',
@@ -1022,7 +1086,7 @@ export class RiskDetailsComponent {
       riskId: 'propertyId'
     };
 
-    // Patch explicit fields
+    // Patch explicitly mapped fields
     Object.keys(explicitFields).forEach(formControl => {
       const riskKey = explicitFields[formControl];
       if (this.selectedRisk[riskKey] !== undefined && this.riskDetailsForm.contains(formControl)) {
@@ -1030,36 +1094,54 @@ export class RiskDetailsComponent {
       }
     });
 
-    const valueControls = ['value', 'Value', 'SumInsured'];
+    // Patch value-related controls
+    const valueControls = ['value', 'sumInsured'];
     valueControls.forEach(controlName => {
       if (this.riskDetailsForm.contains(controlName)) {
         this.riskDetailsForm.get(controlName)?.setValue(this.selectedRisk?.value);
       }
     });
 
+    // Helper function to normalize date values
+    const normalizeDate = (value: any, key: string): any => {
+      const isDateField =
+        key.toLowerCase().includes('date') ||
+        key.toLowerCase().includes('coverfrom') ||
+        key.toLowerCase().includes('coverto');
+
+      return typeof value === 'string' && isDateField ? new Date(value) : value;
+    };
+
+    // Recursive flattening function
     const flatten = (obj: any) => {
       Object.keys(obj).forEach(key => {
         const value = obj[key];
 
+        // Skip keys that would overwrite explicitly mapped fields
+        const excludedKeys = ['coverType', 'binderCode', 'propertyId', 'itemDesc', 'value'];
+        if (excludedKeys.includes(key)) return;
+
         if (value && typeof value === 'object') {
-          if (Array.isArray(value)) {
-            if (value.length > 0) flatten(value[0]); // recurse into first item
+          if (Array.isArray(value) && value.length > 0) {
+            flatten(value[0]);
           } else {
-            flatten(value); // recurse into object
+            flatten(value);
           }
         } else {
-          // patch only if a control with this field name exists
           if (this.riskDetailsForm.contains(key)) {
-            this.riskDetailsForm.get(key)?.setValue(value);
+            const finalValue = normalizeDate(value, key);
+            this.riskDetailsForm.get(key)?.setValue(finalValue);
           }
         }
       });
     };
 
+    // Perform recursive patching
     flatten(this.selectedRisk);
 
     log.debug('Patched form with selectedRisk:', this.riskDetailsForm.value);
   }
+
 
   getDefaultValue(field: any): any {
     if (field.type === 'date') {
@@ -1126,65 +1208,111 @@ export class RiskDetailsComponent {
     });
   }
 
-
-  loadAllClients() {
-    const pageSize = 20
+  loadClientsThenInsured() {
+    const pageSize = 20;
     const pageIndex = 0;
-    this.clientService.getClients(pageIndex, pageSize).subscribe({
-      next: (data: any) => {
-        // Format clients
+
+    this.clientService.getClients(pageIndex, pageSize).pipe(
+      tap((data: any) => {
         data.content.forEach(client => {
           client.clientTypeName = client.clientType?.clientTypeName;
-          client.clientFullName = client.firstName || '' + ' ' + (client.lastName || '');
+          client.clientFullName = `${client.firstName || ''} ${client.lastName || ''}`.trim();
         });
-
         this.clientsData = data.content;
-        log.debug('client data', this.clientsData)
-        // // Add the control if it doesn't exist
-        // if (!this.riskDetailsForm.contains('insureds')) {
-        //   this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
-        // }
+      }),
+      switchMap(() => this.clientService.getClientById(this.insuredCode))
+    ).subscribe({
+      next: (insured: any) => {
+        insured.clientFullName = `${insured.firstName || ''} ${insured.lastName || ''}`.trim();
 
-        // // Pre-select if clientCode is provided
-        // log.debug('client codeload all:', this.clientCode)
-        // if (this.clientCode) {
-        //   const selectedClient = this.clientsData.find(c => c.id === this.clientCode);
-        //   log.debug('selected client codeload all:', selectedClient)
+        const exists = this.clientsData.some(c => c.id === insured.id);
+        if (!exists) {
+          this.clientsData = [insured, ...this.clientsData];
+        }
 
-        //   if (selectedClient) {
-        //     this.riskDetailsForm.patchValue({ insureds: selectedClient.id });
-        //   }
-        // }
+        if (!this.riskDetailsForm.contains('insureds')) {
+          this.riskDetailsForm.addControl('insureds', new FormControl(''));
+        }
+        this.riskDetailsForm.patchValue({ insureds: insured.id });
       },
-      error: (err) => {
-        log.error('Failed to fetch clients', err);
-      }
+      error: err => log.error('Error fetching clients or insured', err)
     });
   }
 
-  loadClientDetails() {
-    this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
-      log.debug("client searching to patch data")
-      const client = data;
-      client.clientFullName = client.firstName + ' ' + (client.lastName || '');
 
-      this.clientName = client.clientFullName;
+  // loadAllClients() {
+  //   const pageSize = 20
+  //   const pageIndex = 0;
+  //   this.clientService.getClients(pageIndex, pageSize).subscribe({
+  //     next: (data: any) => {
+  //       // Format clients
+  //       data.content.forEach(client => {
+  //         client.clientTypeName = client.clientType?.clientTypeName;
+  //         client.clientFullName = client.firstName || '' + ' ' + (client.lastName || '');
+  //       });
 
-      // Set dropdown options
-      this.clientsData = [client]; // wrap in array for dropdown options
-      log.debug("Clients data;", this.clientsData)
-      // Add the control if it doesn't exist
-      if (!this.riskDetailsForm.contains('insureds')) {
-        this.riskDetailsForm.addControl('insureds', new FormControl('',));
-      }
+  //       this.clientsData = data.content;
+  //       log.debug('client data', this.clientsData)
 
-      // Pre-select the dropdown
-      this.riskDetailsForm.patchValue({ insureds: client.id });
-      //Setting insured as the authorized driver
+  //     },
+  //     error: (err) => {
+  //       log.error('Failed to fetch clients', err);
+  //     }
+  //   });
+  // }
+
+  // loadClientDetails() {
+  //   this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
+  //     log.debug("client searching to patch data")
+  //     const client = data;
+  //     client.clientFullName = client.firstName + ' ' + (client.lastName || '');
+
+  //     this.clientName = client.clientFullName;
+
+  //     // Set dropdown options
+  //     this.clientsData = [client]; // wrap in array for dropdown options
+  //     log.debug("Clients data;", this.clientsData)
+  //     // Add the control if it doesn't exist
+  //     if (!this.riskDetailsForm.contains('insureds')) {
+  //       this.riskDetailsForm.addControl('insureds', new FormControl('',));
+  //     }
+
+  //     // Pre-select the dropdown
+  //     this.riskDetailsForm.patchValue({ insureds: client.id });
+  //     //Setting insured as the authorized driver
+  //     log.debug("Risk form values after patching client:", this.riskDetailsForm.value)
 
 
-    });
-  }
+  //   });
+  // }
+  // loadClientDetails() {
+  //   log.debug("Insured code -loadClientDetails", this.insuredCode)
+  //   this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
+  //     log.debug("client searching to patch data");
+
+  //     const client = data;
+  //     client.clientFullName = `${client.firstName || ''} ${client.lastName || ''}`.trim();
+
+  //     this.clientName = client.clientFullName;
+
+  //     // Merge client into existing dropdown list if missing
+  //     const exists = this.clientsData?.some(c => c.id === client.id);
+  //     if (!exists) {
+  //       this.clientsData = [client, ...(this.clientsData || [])];
+  //     }
+
+  //     // Add the control if it doesn't exist
+  //     if (!this.riskDetailsForm.contains('insureds')) {
+  //       this.riskDetailsForm.addControl('insureds', new FormControl(''));
+  //     }
+
+  //     // Patch dropdown value
+  //     this.riskDetailsForm.patchValue({ insureds: client.id });
+
+  //     log.debug("Risk form values after patching client:", this.riskDetailsForm.value);
+  //   });
+  // }
+
 
   checkMotorClass(productCode: number) {
     this.productService.getProductDetailsByCode(productCode).subscribe(res => {
@@ -1720,6 +1848,8 @@ export class RiskDetailsComponent {
     const modal = bootstrap.Modal.getInstance(this.addRiskModalRef.nativeElement);
     modal.hide();
     const currentFormValues = this.riskDetailsForm.value
+    const sumInsuredToPass = this.riskDetailsForm.value.value || this.riskDetailsForm.value.sumInsured
+    log.debug("Suminsured to pass value:", sumInsuredToPass)
     if (this.riskDetailsForm.value) {
       const riskPayload = this.getQuotationRiskPayload();
       const payload = {
@@ -1731,6 +1861,7 @@ export class RiskDetailsComponent {
             productName: this.selectedProduct.productName,
             productShortDescription: this.selectedProduct.productShortDescription,
             premium: this.selectedProduct.premium,
+            sumInsured: sumInsuredToPass,
             wef: this.selectedProduct.wef,
             wet: this.selectedProduct.wet,
             totalSumInsured: this.selectedProduct.totalSumInsured,
@@ -1760,6 +1891,8 @@ export class RiskDetailsComponent {
         multiUser: this.quotationDetails.multiUser,
         clientCode: this.quotationDetails.clientCode,
         prospectCode: this.quotationDetails.prospectCode,
+        sumInsured: sumInsuredToPass,
+
       };
 
       this.quotationService.processQuotation(payload).pipe(
@@ -1768,7 +1901,6 @@ export class RiskDetailsComponent {
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
           this.addProductClauses();
-          this.selectedFile = null;
 
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
@@ -1825,12 +1957,13 @@ export class RiskDetailsComponent {
           log.debug("Matched risk from quotation:", matchedRisk);
           this.selectedRisk = matchedRisk
           this.sectionDetails = this.selectedRisk.riskLimits;
+          this.selectedFile && this.addRiskDocuments(this.selectedFile)
 
           const currentQuotationRiskCode = matchedRisk.code
           this.quotationRiskCode = currentQuotationRiskCode
           const result = premiumRates;
           // this.sectionPremium = result
-          this.sumInsured = matchedRisk.value || this.riskDetailsForm.value.SumInsured
+          this.sumInsured = matchedRisk.value || this.riskDetailsForm.value.sumInsured
           log.debug("Sum insured:", this.sumInsured)
           const sectionPremiums = result
             .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
@@ -1888,6 +2021,8 @@ export class RiskDetailsComponent {
 
   UpdateRiskDetail() {
     log.debug('UPDATE RISK-FORM', this.riskDetailsForm.value)
+    log.debug('SELECTED RISK', this.selectedRisk)
+    const scheduleDetails: any[] = (this.selectedRisk?.scheduleDetails ?? []) as any[];
     this.riskDetailsForm.get('insureds').setValue(this.insuredCode);
     this.selectedBinderCode = this.riskDetailsForm.value.premiumBand
     // validate inputs
@@ -1910,6 +2045,8 @@ export class RiskDetailsComponent {
     const modal = bootstrap.Modal.getInstance(this.addRiskModalRef.nativeElement);
     modal.hide();
     const currentFormValues = this.riskDetailsForm.value
+    const sumInsuredToPass = this.riskDetailsForm.value.value || this.riskDetailsForm.value.sumInsured
+    log.debug("Suminsured to pass value:", sumInsuredToPass)
     if (this.riskDetailsForm.value) {
       const riskPayload = this.getQuotationRiskPayload();
       const payload = {
@@ -1943,6 +2080,7 @@ export class RiskDetailsComponent {
         wefDate: this.quotationDetails.coverFrom,
         wetDate: this.quotationDetails.coverTo,
         premium: this.quotationDetails.premium,
+        sumInsured: sumInsuredToPass,
         branchCode: this.quotationDetails.branchCode,
         comments: this.quotationDetails.comments,
         clientType: this.quotationDetails.clientType,
@@ -1960,7 +2098,7 @@ export class RiskDetailsComponent {
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
           sessionStorage.setItem('riskFormDetails', JSON.stringify(this.riskDetailsForm.value));
 
-          if (this.quickQuoteConverted) {
+          if (this.quickQuoteConverted && scheduleDetails.length === 0) {
             this.createScheduleL1(this.quotationRiskCode)
           } else {
             this.updateSchedule()
@@ -2054,7 +2192,7 @@ export class RiskDetailsComponent {
       coverTypeDescription: selectedCoverType?.description ?? '',
       productCode: this.selectedProductCode,
       premium: null,
-      value: this.riskDetailsForm.value.value || this.riskDetailsForm.value.SumInsured,
+      value: this.riskDetailsForm.value.value || this.riskDetailsForm.value.sumInsured,
       clientType: "I",
       itemDesc: this.riskDetailsForm.value.riskDescription,
       wef: FormCoverFrom,
@@ -2074,7 +2212,7 @@ export class RiskDetailsComponent {
         productCode: this.selectedProductCode,
       },
       coverDays: null,
-      fp: this.riskDetailsForm.value.butCharge || 0
+      butCharge: this.riskDetailsForm.value.butCharge || 0
     };
 
     // let risk = {
@@ -2974,7 +3112,7 @@ export class RiskDetailsComponent {
           productCode: this.selectedProductCode,
         },
         coverDays: this.selectedRisk.coverDays,
-        fp: 0
+        butCharge: 0
       };
       return [riskPayload]
     }
@@ -5112,7 +5250,7 @@ export class RiskDetailsComponent {
     const riskCode = this.quotationRiskCode;
     const subclassCode = this.selectedRisk?.subclassCode
 
-    if (!riskCode) {
+    if (!riskCode && !subclassCode) {
       log.debug('Risk code is missing');
       return;
     }
@@ -5150,7 +5288,10 @@ export class RiskDetailsComponent {
       this.selectedSubclassCode = savedSubclass;
     }
 
+    log.debug('subclass code', savedSubclass)
+
     const subclassCode = this.selectedSubclassCode;
+    log.debug('subclass code', this.selectedSubclassCode)
     if (!subclassCode) {
       this.addedPerils = [];
       this.perils = [];
@@ -5179,7 +5320,7 @@ export class RiskDetailsComponent {
       }
 
     } else {
-      this.quotationService.getSubclassSectionPeril(subclassCode, 1, 10)
+      this.quotationService.getSubclassSectionPeril(subclassCode, 0, 10)
         .subscribe({
           next: (data) => {
             this.perils = data?._embedded || [];
@@ -5212,7 +5353,7 @@ export class RiskDetailsComponent {
     new bootstrap.Modal(this.perilsModal.nativeElement).show();
 
     this.loadPerils();
-    this.loadQuotationPerils();
+    // this.loadQuotationPerils();
   }
 
   closePerilsModal() {
@@ -5522,6 +5663,13 @@ export class RiskDetailsComponent {
         sortable: true
       }));
 
+    // Ensure agentDto is always first
+    const agentDtoIndex = this.commissionsColumns.findIndex(col => col.field === 'agentDto');
+    if (agentDtoIndex > 0) {
+      const agentDtoColumn = this.commissionsColumns.splice(agentDtoIndex, 1)[0];
+      this.commissionsColumns.unshift(agentDtoColumn);
+    }
+
     this.commissionsColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false });
 
     // Restore from sessionStorage 
@@ -5537,8 +5685,8 @@ export class RiskDetailsComponent {
     log.debug("commissionsColumns", this.commissionsColumns);
   }
 
-  defaultVisibleCommissionsFields = ['group', 'agentDto', 'accountType', 'setupRate', 'usedRate', 'commissionAmount', 'withHoldingRate',
-    'withHoldingTax', 'discType', 'discRate'];
+  defaultVisibleCommissionsFields = ['agentDto', 'group', 'accountType', 'setupRate', 'usedRate', 'commissionAmount', 'withHoldingTaxRate',
+    'withHoldingTax', 'discountType', 'discountRate'];
 
   /**
   * Checks if a commission field should be read-only (non-editable)
@@ -6142,7 +6290,7 @@ export class RiskDetailsComponent {
       quotationStatus: "Draft",
 
       products: quotationData.quotationProducts?.map(product => ({
-        code: product.productCode,
+        code: product.code,
         expiryPeriod: "Y",
         description: product.productName,
         withEffectFrom: product.wef,
@@ -6151,6 +6299,7 @@ export class RiskDetailsComponent {
         risks: product.riskInformation?.map(risk => ({
           code: risk.code.toString(),
           propertyId: risk.propertyId,
+          butCharge: risk.butCharge,
 
           binderDto: {
             code: risk.binderCode || 0,
@@ -6197,6 +6346,7 @@ export class RiskDetailsComponent {
                   limitAmount,
                   isMandatory: null
                 },
+                minimumPremium: limit.minimumPremium,
                 multiplierRate: 1,
                 multiplierDivisionFactor: limit.multiplierDivisionFactor,
                 dualBasis: limit.dualBasis,
@@ -6250,7 +6400,7 @@ export class RiskDetailsComponent {
             minPremium: 0,
             sumInsured: 0,
             premium: 0,
-            quotationProductCode: 0
+            quotationProductCode: product.code
           })) || []
         })) || []
       })) || [],
@@ -6264,29 +6414,102 @@ export class RiskDetailsComponent {
     };
   }
 
-  prepareUpdatePremiumPayload(computeResponse: any): any {
-    const product = computeResponse.productLevelPremiums?.[0];
+  // prepareUpdatePremiumPayload(computeResponse: any): any {
+  //   const product = computeResponse.productLevelPremiums?.[0];
 
-    return {
-      premiumAmount: product?.riskLevelPremiums?.reduce(
-        (sum, risk) => sum + (risk.coverTypeDetails?.[0]?.computedPremium || 0),
+  //   return {
+  //     premiumAmount: product?.riskLevelPremiums?.reduce(
+  //       (sum, risk) => sum + (risk.coverTypeDetails?.[0]?.computedPremium || 0),
+  //       0
+  //     ) || 0,
+  //     productCode: product?.code,
+  //     quotProductCode: 0, // set this if you have it from quotation details
+  //     productPremium: product?.riskLevelPremiums?.[0]?.coverTypeDetails?.[0]?.computedPremium || 0,
+  //     riskLevelPremiums: product?.riskLevelPremiums?.map(risk => ({
+  //       code: risk.code,
+  //       premium: risk.coverTypeDetails?.[0]?.computedPremium || 0,
+  //       limitPremiumDtos: risk.coverTypeDetails?.[0]?.limitPremium?.map(limit => ({
+  //         sectCode: limit.sectCode,
+  //         premium: limit.premium
+  //       })) || []
+  //     })) || [],
+  //     taxes: [] // if compute response gives taxComputation, map it here
+  //   };
+
+  // }
+  prepareUpdatePremiumPayload(computeResponse: any): any[] {
+    const products = computeResponse?.productLevelPremiums || [];
+
+    return products.map((product: any) => {
+      const productPremium = product.riskLevelPremiums?.reduce(
+        (sum: number, risk: any) => sum + (risk.coverTypeDetails?.[0]?.computedPremium || 0),
         0
-      ) || 0,
-      productCode: product?.code,
-      quotProductCode: 0, // set this if you have it from quotation details
-      productPremium: product?.riskLevelPremiums?.[0]?.coverTypeDetails?.[0]?.computedPremium || 0,
-      riskLevelPremiums: product?.riskLevelPremiums?.map(risk => ({
-        code: risk.code,
-        premium: risk.coverTypeDetails?.[0]?.computedPremium || 0,
-        limitPremiumDtos: risk.coverTypeDetails?.[0]?.limitPremium?.map(limit => ({
-          sectCode: limit.sectCode,
-          premium: limit.premium
-        })) || []
-      })) || [],
-      taxes: [] // if compute response gives taxComputation, map it here
-    };
+      ) || 0;
 
+      return {
+        premiumAmount: productPremium,
+        // productCode: product.productCode ,
+        quotProductCode: product.code,
+        productPremium: productPremium,
+
+        riskLevelPremiums: product.riskLevelPremiums?.map((risk: any) => {
+          const coverType = risk.coverTypeDetails?.[0] || {};
+
+          return {
+            code: risk.code || 0,
+            propertyId: risk.propertyId || '',
+            propertyDescription: risk.propertyDescription || '',
+            premium: coverType.computedPremium || 0,
+            minimumPremiumUsed: risk.minimumPremiumUsed || 'N',
+
+            coverTypeDetails: {
+              code: coverType.code || 0,
+              subclassCode: coverType.subclassCode || 0,
+              description: coverType.description || '',
+              coverTypeCode: coverType.coverTypeCode || 0,
+              minimumAnnualPremium: coverType.minimumAnnualPremium || 0,
+              minimumPremium: coverType.minimumPremium || 0,
+              coverTypeShortDescription: coverType.coverTypeShortDescription || '',
+              coverTypeDescription: coverType.coverTypeDescription || '',
+              limits: coverType.limits || [],
+              limitPremium: coverType.limitPremium?.map((limit: any) => ({
+                sectCode: limit.sectCode || 0,
+                premium: limit.premium || 0
+              })) || [],
+              taxComputation: coverType.taxComputation?.map((tax: any) => ({
+                code: tax.code || 0,
+                premium: tax.premium || 0,
+                description: tax.description || ''
+              })) || []
+            },
+
+            limitPremiumDtos: coverType.limitPremium?.map((limit: any) => ({
+              sectCode: limit.sectCode || 0,
+              premium: limit.premium || 0
+            })) || [],
+
+            taxComputation: coverType.taxComputation?.map((tax: any) => ({
+              code: tax.code || 0,
+              premium: tax.premium || 0,
+              description: tax.description || ''
+            })) || []
+          };
+        }) || [],
+
+        taxes:
+          product.taxes?.map((tax: any) => ({
+            code: tax.code || 0,
+            premium: tax.premium || 0,
+            description: tax.description || ''
+          })) ||
+          [] // from top-level taxComputation if available
+      };
+    });
   }
+
+
+
+
   private buildUpdatePremiumPayload(computeResponse: any): any {
     const product = computeResponse.productLevelPremiums?.[0];
 
@@ -7594,72 +7817,7 @@ export class RiskDetailsComponent {
     }
   }
 
-  // patchUploadedData(data: any) {
-  //   this.logBookUploaded = true
-  //   let uploadedVehicleModel
-  //   log.debug("VehicleMake List:", this.vehicleMakeList)
-  //   log.debug("Vehicle Model List:", this.vehicleModelDetails)
-  //   log.debug("color", this.motorColorsList)
-  //   log.debug("bodytype", this.bodytypesList)
-  //   const uploadedVehicleMake = this.vehicleMakeList?.find(
-  //     make => make.name.toLowerCase().includes(data.vehicle_make.toLowerCase())
-  //   );
-  //   log.debug("Vehicle make:", uploadedVehicleMake)
-  //   if (uploadedVehicleMake) {
-  //     this.getVehicleModel(uploadedVehicleMake.code, () => {
-  //       uploadedVehicleModel = this.vehicleModelDetails?.find(
-  //         model => data.vehicle_model.toLowerCase().includes(model.name.toLowerCase())
-  //       );
-  //       this.riskDetailsForm.patchValue({ vehicleModel: uploadedVehicleModel.code });
 
-  //       log.debug("Vehicle Model:", uploadedVehicleModel);
-  //       this.selectedVehicleModelName = uploadedVehicleModel.name
-  //       this.selectedVehicleMakeName = uploadedVehicleMake?.name
-  //       this.vehiclemakeModel = this.selectedVehicleMakeName + ' ' + this.selectedVehicleModelName;
-  //       log.debug('Selected Vehicle make model', this.vehiclemakeModel);
-  //       if (this.vehiclemakeModel) {
-  //         this.riskDetailsForm.patchValue({ riskDescription: this.vehiclemakeModel });
-  //       }
-  //     });
-  //   }
-
-
-  //   const uploadedVehicleColor = this.motorColorsList.find(
-  //     color => data.color.toLowerCase().includes(color.description.toLowerCase())
-  //   );
-  //   let uploadedBodyType = this.bodytypesList.find(
-  //     bodyType => data.body_type.toLowerCase().includes(bodyType.description.toLowerCase())
-  //   );
-
-  //   if (!uploadedBodyType) {
-  //     // fallback: normalize and compare
-  //     const normalize = (str: string) =>
-  //       str.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-  //     uploadedBodyType = this.bodytypesList.find(
-  //       bodyType => normalize(data.body_type).includes(normalize(bodyType.description))
-  //     );
-  //   }
-
-  //   log.debug("body type:", uploadedBodyType);
-
-  //   this.riskDetailsForm.patchValue({
-  //     registrationNumber: data?.reg_number,
-  //     // riskDescription: this.selectedRisk.itemDesc,
-  //     // coverType: this.selectedRisk.coverTypeCode,
-  //     // premiumBand: this.selectedRisk.binderCode,
-  //     value: data?.vehicle_value,
-  //     vehicleMake: uploadedVehicleMake?.code,
-  //     // vehicleModel: uploadedVehicleModel?.code,
-  //     yearOfManufacture: data?.year_of_manufacture,
-  //     cubicCapacity: data?.cubic_capacity,
-  //     seatingCapacity: data?.seating_capacity,
-  //     bodyType: uploadedBodyType?.description,
-  //     color: uploadedVehicleColor?.code,
-  //     chasisNumber: data?.chassis_number,
-  //     engineNumber: data?.engine_number
-  //   });
-  // }
   patchUploadedData(data: any): Promise<void> {
     return new Promise((resolve) => {
       this.logBookUploaded = true;
@@ -7724,7 +7882,39 @@ export class RiskDetailsComponent {
       engineNumber: data?.engine_number
     });
   }
+  addRiskDocuments(selectedFile: any) {
+    log.debug("Selected risk", this.quotationDetails)
+    log.debug("Selected file", this.selectedFile)
+    const selectedRiskCode = this.selectedRisk.code
+    const file = selectedFile
+    const reader = new FileReader();
 
+    reader.onload = () => {
+      // Convert to base64 string (remove prefix like "data:application/pdf;base64,")
+      const base64String = (reader.result as string).split(',')[1];
+      // const clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '')
+      let riskDocPayload: RiskDmsDocument = {
+
+        docType: file.type,
+        docData: base64String,
+        originalFileName: file.name,
+        riskID: selectedRiskCode.toString()
+
+      }
+
+      this.quotationService.uploadRiskDocs(riskDocPayload).subscribe({
+        next: (res: any) => {
+          log.info(`document uploaded successfully!`, res);
+          // this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
+
+        },
+        error: (err) => {
+          log.info(`upload failed!`, err)
+        }
+      });
+    }
+    reader.readAsDataURL(file);
+  }
   onNcdStatusChange(event: any): void {
     const value = event.target.value;
     this.ncdStatusSelected = value === 'Y';
@@ -7886,8 +8076,9 @@ export class RiskDetailsComponent {
         if (hasExceptions == 'Authorize Exception') {
           this.quotationService.fetchExceptions('Q', quotationCode).subscribe({
             next: (res: any) => {
-              this.exceptionsData = res._embedded;
+              this.exceptionsData = res
               log.debug('exceptionData', this.exceptionsData);
+              sessionStorage.setItem('exceptionsData', JSON.stringify(this.exceptionsData))
               this.router.navigate(['/home/gis/quotation/quotation-summary']);
               this.globalMessagingService.displaySuccessMessage(
                 'Success:',
@@ -7915,6 +8106,8 @@ export class RiskDetailsComponent {
         log.debug("error", error)
         const apiError = error.error;
         const message =
+          apiError?.debugMessage ??
+          apiError?.message ??
           apiError?.errors?.[0] ??
           apiError?.developerMessage ??
           'Failed to send message';
@@ -7953,4 +8146,5 @@ export class RiskDetailsComponent {
     });
 
   }
+
 }
