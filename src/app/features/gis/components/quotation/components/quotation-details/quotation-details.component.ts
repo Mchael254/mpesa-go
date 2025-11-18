@@ -781,7 +781,7 @@ fetchQuotationDetails(quotationCode: number) {
                     this.spinner.hide();
 
                     
-                }, 300);
+                }, 3000);
             },
             error: (error: HttpErrorResponse) => {
           
