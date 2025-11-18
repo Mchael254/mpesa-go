@@ -26,6 +26,7 @@ import { QuotationsService } from 'src/app/features/gis/components/quotation/ser
 import * as bootstrap from 'bootstrap';
 import { GroupedUser } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
 import { ClaimsService } from 'src/app/features/gis/components/claim/services/claims.service';
+import { UtilService } from 'src/app/shared/services';
 
 
 const log = new Logger('ViewTicketsComponent');
@@ -51,7 +52,7 @@ export class ViewTicketsComponent implements OnInit {
   private allSpringTickets: TicketsDTO[] = [];
   private modals: { [key: string]: bootstrap.Modal } = {};
 
-  pageSize: 10;
+  pageSize: 100;
   ticketModules: TicketModuleDTO[] = [];
 
   showReassignTicketsModal: boolean;
@@ -113,6 +114,18 @@ export class ViewTicketsComponent implements OnInit {
   });
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   private filterKey: string = '';
+  quoteNumber: string;
+  selectedDateFrom: string;
+  clientName: any;
+  clientCode: any;
+  isClientSearchModalVisible = false;
+  ticketName: string;
+  referenceNo: string;
+  ticketAssignee: string;
+  agentName: string;
+  agentId: number;
+  dateFormat: string = 'dd-mm-yy';
+  minDate: Date | undefined;
 
 
   constructor(
@@ -129,6 +142,8 @@ export class ViewTicketsComponent implements OnInit {
     private policiesService: PoliciesService,
     private quotationService: QuotationsService,
     public claimsService: ClaimsService,
+    private utilService: UtilService,
+
   ) {
 
   }
@@ -136,7 +151,7 @@ export class ViewTicketsComponent implements OnInit {
     // this.getAllTicketsFromCubeJs();
     this.createSortForm();
     this.getAllTicketTypes();
-    this.getAllTicketModules();
+    // this.getAllTicketModules();
 
     log.info("ticket obj", this.ticketsService.ticketFilterObject());
 
@@ -273,14 +288,21 @@ export class ViewTicketsComponent implements OnInit {
     pageIndex: number,
     pageSize: number,
     sort: string = 'createdDate',
-    sortOrder: string = 'asc'
+    sortOrder: string = 'desc',
+    dateFrom: string,
+    ticketName: string,
+    referenceNo: string,
+    client: string,
+    intermediary: string,
+    ticketAssignee: string,
+
   ) {
     this.spinner.show();
 
     if (this.filterObject[this.filterKey]) {
       return this.searchTicketsDup(this.filterKey, pageIndex, pageSize);
     } else {
-      return this.quotationService.getAllTickets().pipe(
+      return this.quotationService.getAllTickets(pageIndex, pageSize, sort, sortOrder, dateFrom, ticketName, referenceNo, client, intermediary, ticketAssignee).pipe(
         takeUntil(this.destroyed$),
         tap((data) => {
           log.info('Fetched Tickets data >>', data);
@@ -295,52 +317,78 @@ export class ViewTicketsComponent implements OnInit {
   lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
     const ticketFilter: any = this.ticketsService.ticketFilterObject();
 
-    if (!ticketFilter?.fromDashboardScreen) {
-      const pageIndex = event.first / event.rows;
-      const queryColumn = event.sortField;
-      const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
-      const pageSize = event.rows;
-      log.info('Sort field:', queryColumn);
+    const pageIndex = event.first / event.rows;
+    const queryColumn = event.sortField;
+    const sort = 'desc';
+    const pageSize = 100;
+    const sortField = 'createdDate'
+    log.info('Sort field:', queryColumn);
 
-      this.getAllTickets(pageIndex, pageSize, sort?.toString())
-        .pipe(untilDestroyed(this))
-        .subscribe(
-          (data: any[]) => {
-            // Wrap data into a Pagination<TicketsDTO> object
-            this.springTickets = {
-              content: data,
-              totalElements: data.length,
-              totalPages: 1,
-              size: data.length,
-              number: pageIndex,
-              first: true,
-              last: true,
-              numberOfElements: data.length,
-            };
+    // Extract ticket filters
+    const dateFrom = this.selectedDateFrom || null;
+    const ticketName = this.ticketName && this.ticketName.trim() !== "" ? this.ticketName.trim() : null;
+    const referenceNo = this.referenceNo && this.referenceNo.trim() !== "" ? this.referenceNo.trim() : null;
+    const client = this.clientName || null;
+    const ticketAssignee = this.ticketAssignee || null;
+    const intermediary = this.agentName || null;
 
-            // Notify Angular of data changes
-            this.cdr.detectChanges();
+    this.getAllTickets(pageIndex, pageSize, sortField, sort?.toString(),
+      dateFrom,
+      ticketName,
+      referenceNo,
+      client,
+      intermediary,
+      ticketAssignee
+    )
+      .pipe(untilDestroyed(this))
+      .subscribe(
+        (data: any[]) => {
 
-            // Update shared ticket state
-            this.ticketsService.setCurrentTickets(this.springTickets.content);
+          // Wrap data into a Pagination<TicketsDTO> object
+          // this.springTickets = {
+          //   content: data,
+          //   totalElements: data.length,
+          //   totalPages: 1,
+          //   size: data.length,
+          //   number: pageIndex,
+          //   first: true,
+          //   last: true,
+          //   numberOfElements: data.length,
+          // };
+          this.springTickets = {
+            content: data.slice(event.first, event.first + event.rows), // only show current page
+            totalElements: data.length, // total count of all tickets (if you fetched them all once)
+            totalPages: Math.ceil(data.length / 10),
+            size: event.rows,
+            number: event.first / event.rows,
+            first: event.first === 0,
+            last: event.first + event.rows >= data.length,
+            numberOfElements: data.length,
+          };
+          log.debug('spring tickets:', this.springTickets)
 
-            // Hide spinner
-            this.spinner.hide();
+          // Notify Angular of data changes
+          this.cdr.detectChanges();
 
-            // ✅ Extract sysModule values from nested ticket object
-            const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
+          // Update shared ticket state
+          this.ticketsService.setCurrentTickets(this.springTickets.content);
 
-            // ✅ Process the codes as needed
-            const result = codeValues.map((code) => this.getTicketCode(code));
+          // Hide spinner
+          this.spinner.hide();
 
-            log.info('Ticket Codes Extracted:', result);
-          },
-          (error) => {
-            log.error('Error fetching tickets:', error);
-            this.spinner.hide();
-          }
-        );
-    }
+          // ✅ Extract sysModule values from nested ticket object
+          const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
+
+          // ✅ Process the codes as needed
+          const result = codeValues.map((code) => this.getTicketCode(code));
+
+          log.info('Ticket Codes Extracted:', result);
+        },
+        (error) => {
+          log.error('Error fetching tickets:', error);
+          this.spinner.hide();
+        }
+      );
   }
 
 
@@ -616,7 +664,7 @@ export class ViewTicketsComponent implements OnInit {
   }
 
   handleAction(event: void) {
-    this.toggleReassignModal(false); 
+    this.toggleReassignModal(false);
   }
 
   reassignSubmitted(event) {
@@ -720,57 +768,57 @@ export class ViewTicketsComponent implements OnInit {
       )
   }
 
-  getAllTicketModules() {
-    this.ticketsService.getTicketModules()
-      .pipe(untilDestroyed(this),
-      )
-      .subscribe(
-        (data) => {
-          this.ticketModules = data;
-        }
-      );
-  }
+  // getAllTicketModules() {
+  //   this.ticketsService.getTicketModules()
+  //     .pipe(untilDestroyed(this),
+  //     )
+  //     .subscribe(
+  //       (data) => {
+  //         this.ticketModules = data;
+  //       }
+  //     );
+  // }
 
-  filter(event, pageIndex: number = 0, pageSize: number = event.rows, keyData: string) {
+  // filter(event, pageIndex: number = 0, pageSize: number = event.rows, keyData: string) {
 
-    this.springTickets = null; // Initialize with an empty array or appropriate structure
+  //   this.springTickets = null; // Initialize with an empty array or appropriate structure
 
-    let data = this.filterObject[keyData];
-    console.log('datalog>>', data, keyData)
+  //   let data = this.filterObject[keyData];
+  //   console.log('datalog>>', data, keyData)
 
-    this.isSearching = true;
-    this.spinner.show();
+  //   this.isSearching = true;
+  //   this.spinner.show();
 
-    if (data.trim().length > 0 || data === undefined || data === null) {
-      this.ticketsService
-        .searchAllTickets(
-          pageIndex, pageSize,
-          this.dateFrom, this.dateToday,
-          keyData, data)
-        .subscribe((data) => {
-          this.springTickets = data;
-          this.spinner.hide();
-        },
-          error => {
-            this.spinner.hide();
-          });
-    }
-    else {
-      this.getAllTickets(pageIndex, pageSize)
-        .subscribe(
-          (data: Pagination<TicketsDTO>) => {
+  //   if (data.trim().length > 0 || data === undefined || data === null) {
+  //     this.ticketsService
+  //       .searchAllTickets(
+  //         pageIndex, pageSize,
+  //         this.dateFrom, this.dateToday,
+  //         keyData, data)
+  //       .subscribe((data) => {
+  //         this.springTickets = data;
+  //         this.spinner.hide();
+  //       },
+  //         error => {
+  //           this.spinner.hide();
+  //         });
+  //   }
+  //   else {
+  //     this.getAllTickets(pageIndex, pageSize)
+  //       .subscribe(
+  //         (data: Pagination<TicketsDTO>) => {
 
-            this.springTickets = data;
-            this.tableDetails.rows = this.springTickets?.content;
-            this.tableDetails.totalElements = this.springTickets?.totalElements;
-            this.cdr.detectChanges();
-            this.spinner.hide();
-          },
-          error => { this.spinner.hide(); }
-        );
-    }
+  //           this.springTickets = data;
+  //           this.tableDetails.rows = this.springTickets?.content;
+  //           this.tableDetails.totalElements = this.springTickets?.totalElements;
+  //           this.cdr.detectChanges();
+  //           this.spinner.hide();
+  //         },
+  //         error => { this.spinner.hide(); }
+  //       );
+  //   }
 
-  }
+  // }
 
   ngOnDestroy(): void {
   }
@@ -945,32 +993,46 @@ export class ViewTicketsComponent implements OnInit {
 
 
   processTicket(ticket: any): void {
-  const ticketName = ticket.ticketName?.trim();
-  log.debug("Ticket chosen", ticket);
+    const ticketName = ticket.ticketName?.trim();
+    log.debug("Ticket chosen", ticket);
+    this.utilService.clearSessionStorageData()
+    this.utilService.clearNormalQuoteSessionStorage()
+    // Save the whole ticket in session storage
+    sessionStorage.setItem('activeTicket', JSON.stringify(ticket));
+    const quotationCode = ticket.quotationCode
+    sessionStorage.setItem('quotationCode', quotationCode.toString());
 
-  // Save the whole ticket in session storage
-  sessionStorage.setItem('activeTicket', JSON.stringify(ticket));
 
-  switch (ticketName) {
-    case 'Quotation Data Entry':
-      this.router.navigate(['/home/gis/quotation/quotation-details']);
-      break;
+    switch (ticketName) {
+      case 'Quotation Data Entry':
+        sessionStorage.setItem('ticketStatus', ticketName);
+        this.router.navigate(['/home/gis/quotation/quotation-details']);
+        break;
 
-    case 'Authorize Quotation':
-    case 'Confirm Quotation':
-      this.router.navigate(['/home/gis/quotation/quotation-summary']);
-      break;
+      case 'Authorize Quotation':
+        sessionStorage.setItem('ticketStatus', ticketName);
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        break;
 
-    case 'Authorize Exceptions':
-      sessionStorage.setItem('showExceptions', 'true');
-      this.router.navigate(['/home/gis/quotation/quotation-summary']);
-      break;
+      case 'Confirm Quotation':
+        sessionStorage.setItem('ticketStatus', ticketName);
+        sessionStorage.setItem('confirmMode', 'true');
 
-    default:
-      console.warn('Unknown ticket type:', ticketName);
-      break;
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        break;
+
+      case 'Authorize Exception':
+        sessionStorage.setItem('ticketStatus', ticketName);
+
+        sessionStorage.setItem('showExceptions', 'true');
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        break;
+
+      default:
+        console.warn('Unknown ticket type:', ticketName);
+        break;
+    }
   }
-}
 
 
   openReassignTicketModal() {
@@ -1131,7 +1193,7 @@ export class ViewTicketsComponent implements OnInit {
 
           // Clean up and refresh tickets
           this.cleanupAfterReassignment();
-          
+
           // Reload tickets to reflect the reassignment
           this.dt?.reset();
           this.spinner.hide();
@@ -1143,8 +1205,138 @@ export class ViewTicketsComponent implements OnInit {
       });
   }
 
+  inputReferenceNo(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.referenceNo = value;
+  }
+  inputTicketName(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.ticketName = value;
+  }
+  inputCreatedDate(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.selectedDateFrom = value;
+  }
 
+  inputTicketTo(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.ticketAssignee = value;
+  }
+  onAgentSelected(event: { agentName: string; agentId: number }) {
+    this.agentName = event.agentName;
+    this.agentId = event.agentId;
 
+    // Trigger p-table filtering when agent is selected
+    if (this.dt && this.agentName) {
+      this.dt.filterGlobal(this.agentName, 'contains');
+    }
+
+    // Optional: Log for debugging
+    log.debug('Selected Agent:', event);
+    log.debug("AgentId", this.agentId);
+    this.applyFilter();
+
+  }
+  onClientSelected(event: any) {
+    let cleanClientName = event.clientFullName;
+    if (cleanClientName) {
+      cleanClientName = cleanClientName.replace(/\bnull\b/gi, '').trim();
+      cleanClientName = cleanClientName === '' ? null : cleanClientName;
+    }
+
+    this.clientName = cleanClientName;
+    this.clientCode = event.id;
+
+    // Close the modal after selection
+    this.isClientSearchModalVisible = false;
+    this.cdr.detectChanges();
+
+    // Optional: Log for debugging
+    log.debug('Selected Client-quote management:', event);
+    log.debug('Cleaned client name:', cleanClientName);
+    this.applyFilter();
+
+  }
+  formatDate(date: Date): string {
+    log.debug("Date (formatDate method):", date)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onCreatedDateInputChange(date: any) {
+    log.debug('selected Date from raaw', date);
+    const selectedDateFrom = date;
+    if (selectedDateFrom) {
+      const SelectedFormatedDate = this.formatDate(selectedDateFrom)
+      this.selectedDateFrom = SelectedFormatedDate
+      log.debug(" SELECTED FORMATTED DATE from:", this.selectedDateFrom)
+    } else {
+
+    }
+  }
+  applyGlobalFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    if (this.dt) {
+      this.dt.filterGlobal(filterValue, 'contains');
+    }
+  }
+  applyFilter() {
+    const lazyEvent: TableLazyLoadEvent = {
+      first: 0,           // start of the page
+      rows: 50,           // page size
+      sortField: 'createdDate',
+      sortOrder: 1        // ascending
+    };
+
+    this.lazyLoadTickets(lazyEvent);
+  }
+  get displayAgentName(): string {
+    if (!this.agentName) return '';
+    return this.agentName.length > 10 ? this.agentName.substring(0, 15) + '...' : this.agentName;
+  }
+
+  get displayClientName(): string {
+    // this.fetchGISQuotations()
+
+    if (!this.clientName) return '';
+    return this.clientName.length > 10 ? this.clientName.substring(0, 15) + '...' : this.clientName;
+  }
+  openClientSearchModal() {
+    // Reset modal state to ensure it works consistently
+    this.isClientSearchModalVisible = false;
+    this.cdr.detectChanges();
+    // Set to true after change detection to ensure proper modal state
+    setTimeout(() => {
+      this.isClientSearchModalVisible = true;
+      this.cdr.detectChanges();
+    }, 0);
+  }
+
+  openAgentSearchModal() {
+    log.debug('Agent input clicked - modal will open and trigger agent loading...');
+  }
+
+  clearClientName(): void {
+    this.clientName = '';
+    this.clientCode = null;
+    this.applyFilter();
+    this.cdr.detectChanges();
+  }
+
+  clearAgentName(): void {
+    this.agentName = '';
+    this.agentId = null;
+
+    // Clear p-table filtering when agent is cleared
+    if (this.dt) {
+      this.dt.filterGlobal('', 'contains');
+    }
+
+    this.applyFilter();
+    this.cdr.detectChanges();
+  }
 }
 
 enum filterSortEnums {

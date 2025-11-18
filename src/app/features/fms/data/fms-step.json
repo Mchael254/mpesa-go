@@ -25,7 +25,7 @@
 "bankingSteps":[
   {
     "number": 1,
-    "title": "Banking Process",
+    "title": "Retrieve Receipts",
     "link": "/home/fms/new-banking-process"
   },
   {

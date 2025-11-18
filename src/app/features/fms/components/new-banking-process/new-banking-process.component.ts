@@ -1,3 +1,4 @@
+import { ReceiptManagementService } from './../../services/receipt-management.service';
 import { receipt } from './../banking-dashboard/banking-dashboard.component';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -10,8 +11,8 @@ import { BankingProcessService } from '../../services/banking-process.service';
 import { PaymentModesDTO } from '../../data/auth-requisition-dto';
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
-import {StaffDto } from '../../../../features/entities/data/StaffDto';
-import {StaffService} from '../../../../features/entities/services/staff/staff.service';
+import { StaffDto } from '../../../../features/entities/data/StaffDto';
+import { StaffService } from '../../../../features/entities/services/staff/staff.service';
 import {
   DeAssignDTO,
   ReceiptDTO,
@@ -19,6 +20,9 @@ import {
 } from '../../data/banking-process-dto';
 import * as bootstrap from 'bootstrap';
 import { AuthService } from '../../../../shared/services/auth.service';
+import { GLAccountDTO } from '../../data/receipt-management-dto';
+import { ReceiptService } from '../../services/receipt.service';
+import { ReceiptUploadRequest } from '../../data/receipting-dto';
 const log = new Logger('NewBankingProcessComponent');
 /**
  * @Component NewBankingProcessComponent
@@ -37,6 +41,7 @@ export class NewBankingProcessComponent implements OnInit {
   rctsRetrievalForm!: FormGroup;
   /** Manages the form controls for assigning receipts to a user (user selection, comment). */
   usersForm!: FormGroup;
+  depositForm!: FormGroup;
   // --- UI State and Data ---
   /** Static data for the stepper component, indicating the current stage of the process. */
   steps = fmsStepsData.bankingSteps;
@@ -54,7 +59,7 @@ export class NewBankingProcessComponent implements OnInit {
   paymentModes: PaymentModesDTO[] = [];
   /** A list of users available for task assignment, populating the user selection modal. */
   users: StaffDto[] = [];
-  filteredUsers:StaffDto[] = [];
+  filteredUsers: StaffDto[] = [];
   /** Flag to control whether the receipts table is rendered in the DOM. */
   displayTable: boolean = false;
   /** Controls visibility of the main assignment dialog. */
@@ -64,14 +69,14 @@ export class NewBankingProcessComponent implements OnInit {
   /**controls visibility of create batches btn,it should be hidden if payment mode selected is cheque */
   isCashSelected: boolean = false;
   /**controls the visibility of assign buttons */
-  reAssign:boolean=false;
+  reAssign: boolean = false;
   /**it controls the visibility of deposit button which should only be visible if the payment mode is cheque */
-  paymentMode:string;
+  paymentMode: string;
   /** Holds the user object selected from the second dialog to display in the first dialog's input. */
-  selectedUserForAssignment:  StaffDto | null = null;
+  selectedUserForAssignment: StaffDto | null = null;
 
   /** Temporarily holds the user selected in the user table before confirmation. */
-  tempSelectedUser:  StaffDto | null = null;
+  tempSelectedUser: StaffDto | null = null;
 
   // --- Table Column Configuration ---
   /** Stores the configuration for all available columns in the receipts table. */
@@ -85,8 +90,21 @@ export class NewBankingProcessComponent implements OnInit {
   selectedOrg: OrganizationDTO;
   /** Information about the currently logged-in user. */
   loggedInUser: any;
-   staffPageSize = 5;
-   selectedRctObj:ReceiptDTO;
+  staffPageSize = 5;
+  selectedRctObj: ReceiptDTO;
+  page: number = 0;
+  size: number = 50;
+  sortBy: string = 'accNumber';
+  direction: string = 'asc';
+  glAccounts: GLAccountDTO[] = [];
+  /** Stores the list of files selected by the user. */
+  uploadedFile: File | null = null;
+  /** A flag to disable the file input after one file is selected. */
+  maximumFiles: boolean = false;
+  /** A flag to indicate when a file is being dragged over the dropzone for styling. */
+  isDragging: boolean = false;
+  //  max file size in bytes (5MB = 5 * 1024 * 1024 bytes)
+  private readonly max_file_size = 5 * 1024 * 1024;
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -105,7 +123,9 @@ export class NewBankingProcessComponent implements OnInit {
     private bankingService: BankingProcessService,
     private sessionStorage: SessionStorageService,
     private authService: AuthService,
-    private staffService:StaffService
+    private staffService: StaffService,
+    private receiptManagementService: ReceiptManagementService,
+    private receiptService: ReceiptService
   ) {}
   /**
    * @description Angular lifecycle hook that runs on component initialization.
@@ -115,9 +135,10 @@ export class NewBankingProcessComponent implements OnInit {
   ngOnInit() {
     this.initiateRctsForm();
     this.initializeUsersForm();
+    this.initializeDepositForm();
     this.initiateColumns();
     this.allColumns = this.initiateColumns();
-this.fetchActiveUsers(0, this.staffPageSize);
+    this.fetchActiveUsers(0, this.staffPageSize);
     this.fetchPaymentsModes();
     let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
     let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
@@ -129,6 +150,7 @@ this.fetchActiveUsers(0, this.staffPageSize);
       this.selectedOrg = null;
     }
     this.loggedInUser = this.authService.getCurrentUser();
+    this.fetchGlAccounts();
   }
   /**
    * @description Initializes the `rctsRetrievalForm` with required controls and validators.
@@ -147,6 +169,14 @@ this.fetchActiveUsers(0, this.staffPageSize);
     this.usersForm = this.fb.group({
       user: ['', Validators.required],
       comment: [''],
+    });
+  }
+  initializeDepositForm(): void {
+    this.depositForm = this.fb.group({
+      bankAccount: ['', Validators.required],
+      slipNumber: ['', Validators.required],
+      amount: ['', Validators.required],
+      remarks: [''],
     });
   }
   /**
@@ -195,7 +225,7 @@ this.fetchActiveUsers(0, this.staffPageSize);
   showColumnsDialogs(): void {
     this.visible = true;
   }
-  
+
   /**
    * @description Filters the `filteredReceipts` array based on user input in the table's filter row.
    * Handles filtering for string, number, and date fields.
@@ -291,22 +321,22 @@ this.fetchActiveUsers(0, this.staffPageSize);
         this.filteredReceipts = this.receiptData;
         this.displayTable = true;
         this.totalRecord = this.filteredReceipts.length;
-        this.paymentMode= this.rctsRetrievalForm.get('paymentMethod')?.value;
+        this.paymentMode = this.rctsRetrievalForm.get('paymentMethod')?.value;
       },
       error: (err) => {
         this.handleApiError(err);
       },
     });
   }
-/**
+  /**
    * @description Opens the main assignment dialog.
    * Checks if receipts have been selected first.
    */
   openAssignModal(): void {
     this.assignDialogVisible = true;
-    this.reAssign=false;
+    this.reAssign = false;
   }
- /**
+  /**
    * @description Closes the main assignment dialog and resets the form and selections.
    */
   closeAssignModal(): void {
@@ -358,12 +388,12 @@ this.fetchActiveUsers(0, this.staffPageSize);
   }
   /**
    * @description this method prepares the request body for assignUser method and calls it
-   * the assignUser method sends the request to assign a batch of receipts or a single receipt for 
+   * the assignUser method sends the request to assign a batch of receipts or a single receipt for
    * assignment and creation of batch
    * a successfull response results to updating the receipts to bank table by re-calling the fetchReceipts()
    * otherwise we display the error
    * @returns if the usersForm is invalid we stop the execution others continue
-   */ 
+   */
   onAssignSubmit(): void {
     this.usersForm.markAllAsTouched();
     if (this.usersForm.invalid) {
@@ -380,105 +410,277 @@ this.fetchActiveUsers(0, this.staffPageSize);
     this.bankingService.assignUser(requestBody).subscribe({
       next: (response) => {
         this.selectedReceipts = [];
-         this.fetchReceipts();
+        this.fetchReceipts();
         this.globalMessagingService.displaySuccessMessage('', response.msg);
       },
       error: (err) => {
         this.handleApiError(err);
       },
     });
-   this.closeAssignModal();
+    this.closeAssignModal();
   }
 
   /**
    * @description Fetches a list of users that the current user can assign tasks to.
    *
    */
-  fetchActiveUsers(pageIndex: number,
-               pageSize: number,
-               sortList: any = 'dateCreated',
-               order: string = 'desc'):void{
-    this.staffService.getStaff(pageIndex,
-                pageSize, 
-                
-                 'U',
-                 sortList,
-                order, null,'A').subscribe({
-      next:(response)=>{
-         this.users = response.content;
-        this.filteredUsers = this.users;
-      },
-      error:(err)=>{
-        this.handleApiError(err);
-      }
-    })
+  fetchActiveUsers(
+    pageIndex: number,
+    pageSize: number,
+    sortList: any = 'dateCreated',
+    order: string = 'desc'
+  ): void {
+    this.staffService
+      .getStaff(
+        pageIndex,
+        pageSize,
+
+        'U',
+        sortList,
+        order,
+        null,
+        'A'
+      )
+      .subscribe({
+        next: (response) => {
+          this.users = response.content;
+          this.filteredUsers = this.users;
+        },
+        error: (err) => {
+          this.handleApiError(err);
+        },
+      });
   }
   /**
-   * @description this method takes one argument once the de-assign button is clicked per row and 
+   * @description this method takes one argument once the de-assign button is clicked per row and
    * prepares the request body containing an array of receipts or a single receipt and calls deAssignRct endpoint
-   * @param receipt  it stores the receipt object that contains the required receipt Number for deassigning 
+   * @param receipt  it stores the receipt object that contains the required receipt Number for deassigning
    */
-deAssign(receipt:any):void{
- const body={
-receiptNumbers:[receipt.receiptNo]
-}
-this.deAssignRct(body);
-}
-/**
- * 
- * @param body the request body expects a an array of receipt number or single receipt number
- * it calls the deAssign method and if there is a response we refresh the receipts to bank to
- *ensure the assigned to field is upated to unassigned
- */
-deAssignRct(body:DeAssignDTO):void{
- 
-  this.bankingService.deAssign(body).subscribe({
-    next:(response)=>{
-     this.globalMessagingService.displaySuccessMessage('',response.msg);
-     this.fetchReceipts();
-    },
-    error:(err)=>{
-       this.handleApiError(err);
-    }
-  })
-}
-/**
+  deAssign(receipt: any): void {
+    const body = {
+      receiptNumbers: [receipt.receiptNo],
+    };
+    this.deAssignRct(body);
+  }
+  /**
+   *
+   * @param body the request body expects a an array of receipt number or single receipt number
+   * it calls the deAssign method and if there is a response we refresh the receipts to bank to
+   *ensure the assigned to field is upated to unassigned
+   */
+  deAssignRct(body: DeAssignDTO): void {
+    this.bankingService.deAssign(body).subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage('', response.msg);
+        this.fetchReceipts();
+      },
+      error: (err) => {
+        this.handleApiError(err);
+      },
+    });
+  }
+  /**
    * @description Opens the main assignment dialog.
    * it sers reAssign flag to true so as to call reAssignUser() once the Assign button is clicked
    * rather than calling  onAssignSubmit() to does assigning
    */
-openReAssignModal(receipt:any){
-  this.selectedRctObj = receipt;
- this.assignDialogVisible = true; 
- this.reAssign=true;
-
-}
-/**
- * 
- * @description it calls the reAssign() to post the request body,if successfull we recall fetchReceipts() 
- * to show the newly re-assigned receipts
- */
-reAssignUser():void{
- this.usersForm.markAllAsTouched();
+  openReAssignModal(receipt: any) {
+    this.selectedRctObj = receipt;
+    this.assignDialogVisible = true;
+    this.reAssign = true;
+  }
+  /**
+   *
+   * @description it calls the reAssign() to post the request body,if successfull we recall fetchReceipts()
+   * to show the newly re-assigned receipts
+   */
+  reAssignUser(): void {
+    this.usersForm.markAllAsTouched();
     if (this.usersForm.invalid) {
       return;
     }
     const formData = this.usersForm.value;
     const requestBody = {
-      fromUserId:this.selectedRctObj.batchAssignmentUserId,
+      fromUserId: this.selectedRctObj.batchAssignmentUserId,
       toUserId: formData.user,
-      receiptNumbers: [this.selectedRctObj.receiptNo]
+      receiptNumbers: [this.selectedRctObj.receiptNo],
     };
     this.bankingService.reAssignUser(requestBody).subscribe({
-      next:(response)=>{
-this.globalMessagingService.displaySuccessMessage('',response.msg);
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage('', response.msg);
+        this.fetchReceipts();
       },
-      error:(err)=>{
+      error: (err) => {
         this.handleApiError(err);
-      }
+      },
     });
-     this.closeAssignModal();
-}
+    this.closeAssignModal();
+  }
+  openDepositModal(receipt: any): void {
+    const modalEl = new bootstrap.Modal(
+      document.getElementById('depositModal')
+    );
+    if (modalEl) {
+      modalEl.show();
+    }
+    this.selectedRctObj = receipt;
+    this.depositForm.patchValue({ amount: this.selectedRctObj.receiptAmount });
+    this.uploadedFile = null; // Clear previous files when opening
+  }
+
+  closeDepositModal() {
+    const modal = document.getElementById('depositModal');
+    if (modal) {
+      const modalEl = bootstrap.Modal.getInstance(modal);
+      if (modalEl) {
+        modalEl.hide();
+      }
+    }
+  }
+  /**
+   * Central method to process and validate a selected file.
+   * @param file The File object to process.
+   */
+  private processFile(file: File): void {
+    if (file.size > this.max_file_size) {
+      this.globalMessagingService.displayErrorMessage(
+        'File Too Large',
+        `The selected file exceeds the 5MB size limit.`
+      );
+      return;
+    }
+
+    // If validation passes, update the component state
+    this.uploadedFile = file;
+    this.maximumFiles = true;
+  }
+  /**
+   * Triggered when files are selected via the hidden input.
+   * @param event The file input change event.
+   */
+  onFileSelected(event: any): void {
+    if (event.target.files && event.target.files.length > 0) {
+      this.processFile(event.target.files[0]);
+    }
+  }
+
+  /**
+   * Handles the dragover event.
+   * Prevents the browser's default behavior to allow a drop.
+   * @param event The DragEvent.
+   */
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  /**
+   * Handles the dragleave event.
+   * Resets the dragging state.
+   * @param event The DragEvent.
+   */
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  /**
+   * Handles the drop event.
+   * Prevents default browser action and processes the dropped file.
+   * @param event The DragEvent.
+   */
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+
+    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
+      // Only proceed if a file is not already selected
+      if (!this.maximumFiles) {
+        this.processFile(event.dataTransfer.files[0]);
+      }
+
+      // Clear the dataTransfer
+      event.dataTransfer.clearData();
+    }
+  }
+  /**
+   * Removes the currently selected file.
+   */
+
+  removeFile(): void {
+    this.uploadedFile = null;
+    this.maximumFiles = false; // Re-enable the input
+  }
+  /**
+   * Reads the selected file as a Base64 string and then calls the service to post it.
+   */
+  postFile(): void {
+    if (!this.uploadedFile) {
+      return;
+    }
+    const formValue = this.depositForm.value;
+    if (!formValue.slipNumber) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'please enter the slip Number first!'
+      );
+      return;
+    }
+    const fileReader = new FileReader();
+    // this event happens AFTER the file is read
+    fileReader.onloadend = () => {
+      // The result includes the "data:[mime/type];base64," prefix
+      const base64String = fileReader.result as string;
+      //  pure Base64 data by removing the prefix
+      const pureBase64 = base64String.split(',')[1];
+      //preparing the payload
+      const payload: ReceiptUploadRequest[] = [
+        {
+          docData: pureBase64,
+          docType: 'BANKINGSLIP',
+          originalFileName: this.uploadedFile.name,
+          module: 'RECEIPTING',
+          filename: this.uploadedFile.name,
+          referenceNo: formValue.slipNumber,
+          docDescription: '',
+          amount: formValue.amount,
+          paymentMethod: null,
+          policyNumber: null,
+        },
+      ];
+      //The service call is called inside the onloadend callback
+      this.receiptService.uploadFiles(payload).subscribe({
+        next: (response) => {
+          this.globalMessagingService.displaySuccessMessage(
+            '',
+            response.uploadStatus
+          );
+          this.uploadedFile = null;
+          this.maximumFiles = false;
+        },
+        error: (err) => {
+          this.handleApiError(err);
+        },
+      });
+    };
+    // Start the asynchronous file reading process
+    fileReader.readAsDataURL(this.uploadedFile);
+  }
+  fetchGlAccounts(): void {
+    this.receiptManagementService
+      .getGlAccounts(this.page, this.size, this.sortBy, this.direction)
+      .subscribe({
+        next: (response) => {
+          this.glAccounts = response.data.content;
+        },
+        error: (err) => {
+          this.handleApiError(err);
+        },
+      });
+  }
   /**
    * @description Navigates the user to the next step in the banking process (Create Batches).
    */
@@ -486,8 +688,8 @@ this.globalMessagingService.displaySuccessMessage('',response.msg);
     this.displayTable = true;
     this.router.navigate(['/home/fms/process-batch']);
   }
-  navigateToDashboard():void{
-     this.router.navigate(['/home/fms/banking-dashboard']);
+  navigateToDashboard(): void {
+    this.router.navigate(['/home/fms/banking-dashboard']);
   }
   /**
    * @description A centralized helper method to handle and display API errors.

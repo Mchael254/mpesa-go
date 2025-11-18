@@ -57,8 +57,7 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
-                    <button type="button" class="btn btn-outline-secondary btn-sm me-3 btn-greyed-out"
-                        pTooltip="Feature in development" tooltipPosition="top" style="pointer-events: auto;" disabled>
+                    <button type="button" class="btn btn-outline-primary btn-sm me-3 " (click)="openDrawer()">
                         Import risk
                     </button>
 
@@ -79,5 +78,23 @@
                 <app-risk-details [selectedProduct]="selectedProduct"
                     (premiumsChange)="handlePremiumChange($event)"></app-risk-details>
             </div>
+            <div *ngIf="showImportRiskDrawer" class="card flex justify-center">
+                <div #importRiskDrawer class="offcanvas offcanvas-end" tabindex="-1" id="importRiskDrawer"
+                    aria-labelledby="importRiskDrawerLabel"
+                    style="width: 1000px; margin-top: 100px;margin-right: 100px;margin-left: 100px;margin-bottom: 30px;">
+
+                    <div class="offcanvas-header">
+                        <h5 id="importRiskDrawerLabel" class="mb-0">Import Risks</h5>
+                        <button type="button" class="btn-close" (click)="closeDrawer()" aria-label="Close">
+                        </button>
+                    </div>
+
+                    <div class="offcanvas-body p-0">
+                        <app-import-risks [selectedProduct]="selectedProduct"></app-import-risks>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
     </div>

@@ -4,7 +4,6 @@ import { QuotationDetails, ReportParams, ReportResponse } from '../../data/quota
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Logger, UtilService } from "../../../../../../shared/services";
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { DmsService } from 'src/app/shared/services/dms/dms.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { DmsDocument, SingleDmsDocument } from 'src/app/shared/data/common/dmsDocument';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
@@ -37,7 +36,7 @@ const log = new Logger('QuotationReportComponent');
 })
 export class QuotationReportComponent {
   @ViewChild('addClientDocumentModal') addClientDocModalRef!: ElementRef;
-
+  @ViewChild('previewDocModal') previewDocModal!: ElementRef<HTMLDivElement>
   private modals: { [key: string]: bootstrap.Modal } = {};
 
 
@@ -73,15 +72,25 @@ export class QuotationReportComponent {
   clientDocuments: DmsDocument[];
   selectedClientDoc: DmsDocument;
   previewClientDoc: { name: string; mimeType: string; dataUrl: string } | null = null;
+  private documentBlobs: { [id: string]: Blob } = {};
 
   constructor(
     public quotationService: QuotationsService,
     private spinner: NgxSpinnerService,
     private globalMessagingService: GlobalMessagingService,
-    private dmsService: DmsService,
 
 
-  ) { }
+  ) {
+
+    const quotationDetails = JSON.parse(sessionStorage.getItem('quotationDetails'));
+    log.debug("Quotation details:", quotationDetails)
+    this.quotationDetails = quotationDetails
+    const clientCodeSessionStorage = sessionStorage.getItem('clientCode')
+    log.debug('clietCodeSesssion storage:', clientCodeSessionStorage)
+    log.debug('From quotation details:', this.quotationDetails.clientCode)
+    const clientCode = clientCodeSessionStorage || this.quotationDetails.clientCode
+    this.clientCode = clientCode.toString()
+  }
   ngOnInit(): void {
 
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
@@ -89,14 +98,10 @@ export class QuotationReportComponent {
     log.debug("two codes", this.quotationCode, this.quotationCodeString)
     log.debug('quotationCode', this.quotationCodeString)
     this.fetchReports()
-    const quotationDetails = JSON.parse(sessionStorage.getItem("quotationDetails"));
-    log.debug("Quotation details:", quotationDetails)
-    this.quotationDetails = quotationDetails
-    const clientCode = this.quotationDetails.clientCode
-    this.clientCode = clientCode.toString()
+
     const clientDetails = JSON.parse(sessionStorage.getItem('clientDetails'))
     this.clientDetails = clientDetails
-    this.fetchClientDoc(clientCode)
+    this.clientCode && this.fetchClientDoc(this.clientCode)
     this.loggedInUser = this.quotationDetails.preparedBy
   }
 
@@ -383,11 +388,11 @@ export class QuotationReportComponent {
   }
   fetchClientDoc(clientCode: any) {
     log.debug("Selected Client code:", clientCode)
-    this.dmsService.fetchDocumentsByClientCode(clientCode)
+    this.quotationService.fetchDocumentsByClientCode(clientCode)
       .subscribe({
-        next: (res: DmsDocument[]) => {
+        next: (res: any) => {
           log.debug('Response after fetching clients DOCS:', res)
-          this.clientDocuments = res
+          this.clientDocuments = res._embedded
           if (this.clientDocuments && this.clientDocuments.length > 0) {
             this.setClientDocColumns(this.clientDocuments[0]);
           }
@@ -494,39 +499,192 @@ export class QuotationReportComponent {
 
     ;
   }
+  // addClientDocuments(selectedFile: any) {
+  //   const file = selectedFile
+  //   const reader = new FileReader();
+  //   log.debug("Client code:", this.clientCode)
+  //   log.debug("Client name:", this.clientDetails)
+  //   reader.onload = () => {
+  //     // Convert to base64 string (remove prefix like "data:application/pdf;base64,")
+  //     const base64String = (reader.result as string).split(',')[1];
+  //     const clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '')
+  //     let clientDocPayload: DmsDocument = {
+  //       // actualName: selectedFile.name,
+  //       userName: this.loggedInUser,
+  //       docType: file.type,
+  //       docData: base64String,
+  //       originalFileName: file.name,
+  //       clientName: clientName,
+  //       clientCode: this.clientCode,
+  //     }
+
+  //     this.dmsService.saveClientDocs(clientDocPayload).subscribe({
+  //       next: (res: any) => {
+  //         log.info(`document uploaded successfully!`, res);
+  //         this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
+  //         this.fetchClientDoc(this.clientCode)
+  //         const modal = bootstrap.Modal.getInstance(this.addClientDocModalRef.nativeElement);
+  //         modal.hide();
+  //       },
+  //       error: (err) => {
+  //         log.info(`upload failed!`, err)
+  //       }
+  //     });
+  //   }
+  //   reader.readAsDataURL(file);
+  // }
+  // addClientDocuments(selectedFile: any) {
+  //   const file = selectedFile;
+  //   const reader = new FileReader();
+  //   log.debug("Client code:", this.clientCode)
+  //   // Check if client code exists
+  //   if (!this.clientCode) {
+  //     this.globalMessagingService.displayErrorMessage(
+  //       'Missing Client',
+  //       'Cannot upload document because client code is missing.'
+  //     );
+  //     log.warn('Client code is missing — skipping document upload.');
+  //     return;
+  //   }
+
+  //   reader.onload = () => {
+  //     // Convert to base64 (remove prefix like "data:application/pdf;base64,")
+  //     const base64String = (reader.result as string).split(',')[1];
+
+  //     const clientName = `${this.clientDetails?.firstName ?? ''} ${this.clientDetails?.lastName ?? ''}`.trim();
+
+  //     const clientDocPayload: DmsDocument = {
+  //       userName: this.loggedInUser,
+  //       docType: file.type,
+  //       docData: base64String,
+  //       originalFileName: file.name,
+  //       clientName,
+  //       clientCode: this.clientCode,
+  //     };
+
+  //     this.dmsService.saveClientDocs(clientDocPayload).subscribe({
+  //       next: (res: any) => {
+  //         log.info('Document uploaded successfully!', res);
+  //         this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
+  //         this.fetchClientDoc(this.clientCode);
+  //         const modal = bootstrap.Modal.getInstance(this.addClientDocModalRef.nativeElement);
+  //         (document.activeElement as HTMLElement)?.blur();
+  //         modal?.hide();
+
+  //       },
+  //       error: (err) => {
+  //         log.error('Document upload failed!', err);
+  //         this.globalMessagingService.displayErrorMessage('Error', 'Document upload failed. Please try again.');
+  //       },
+  //     });
+  //   };
+
+  //   reader.readAsDataURL(file);
+  // }
   addClientDocuments(selectedFile: any) {
-    const file = selectedFile
+    const file = selectedFile;
     const reader = new FileReader();
 
+    console.log('STEP 1: Method called for file', file);
+
+    if (!this.clientCode) {
+      this.globalMessagingService.displayErrorMessage('Missing Client', 'Cannot upload document because client code is missing.');
+      return;
+    }
+
     reader.onload = () => {
-      // Convert to base64 string (remove prefix like "data:application/pdf;base64,")
-      const base64String = (reader.result as string).split(',')[1];
-      const clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '')
-      let clientDocPayload: DmsDocument = {
-        actualName: selectedFile.name,
+
+      const result = reader.result as string;
+
+      const base64String = result.includes(',')
+        ? result.split(',')[1]
+        : btoa(result);
+
+
+      const clientName = `${this.clientDetails?.firstName ?? ''} ${this.clientDetails?.lastName ?? ''}`.trim();
+
+      const clientDocPayload = {
         userName: this.loggedInUser,
         docType: file.type,
         docData: base64String,
         originalFileName: file.name,
-        clientName: clientName,
+        clientName,
         clientCode: this.clientCode,
-      }
+      };
 
-      this.dmsService.saveClientDocs(clientDocPayload).subscribe({
-        next: (res: any) => {
-          log.info(`document uploaded successfully!`, res);
+
+      this.quotationService.saveClientDocs(clientDocPayload).subscribe({
+        next: (res) => {
+          console.log('STEP 9: Upload success', res);
           this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
-          this.fetchClientDoc(this.clientCode)
-          const modal = bootstrap.Modal.getInstance(this.addClientDocModalRef.nativeElement);
-          modal.hide();
+          this.fetchClientDoc(this.clientCode);
+          this.selectedFile = null
+          // setTimeout(() => {
+          //   try {
+          //     const modalElement = this.addClientDocModalRef.nativeElement;
+
+          //     let modalInstance = bootstrap.Modal.getInstance(modalElement);
+          //     if (!modalInstance) {
+          //       modalInstance = new bootstrap.Modal(modalElement);
+          //     }
+
+          //     (document.activeElement as HTMLElement)?.blur();
+          //     modalInstance.hide();
+
+          //     const backdrop = document.querySelector('.modal-backdrop.show');
+          //     if (backdrop) backdrop.remove();
+          //     document.body.classList.remove('modal-open');
+          //     document.body.style.removeProperty('padding-right');
+          //   } catch (err) {
+          //     log.error('Modal close error:', err);
+          //   }
+          // }, 500);
+          setTimeout(() => {
+            try {
+              const modalElement = this.addClientDocModalRef?.nativeElement;
+              if (!modalElement) return;
+
+              let modalInstance = bootstrap.Modal.getInstance(modalElement);
+              if (!modalInstance) {
+                modalInstance = new bootstrap.Modal(modalElement);
+              }
+
+              (document.activeElement as HTMLElement)?.blur();
+              modalInstance.hide();
+
+              // 🧼 Conditional cleanup (only if no modals remain open)
+              setTimeout(() => {
+                const openModals = document.querySelectorAll('.modal.show');
+                if (openModals.length === 0) {
+                  const backdrop = document.querySelector('.modal-backdrop.show');
+                  if (backdrop) backdrop.remove();
+
+                  document.body.classList.remove('modal-open');
+                  document.body.style.removeProperty('padding-right');
+                }
+              }, 300);
+            } catch (err) {
+              log.error('Modal close error:', err);
+            }
+          }, 500);
+
         },
         error: (err) => {
-          log.info(`upload failed!`, err)
-        }
+          log.error('STEP 10: Upload error', err);
+          this.globalMessagingService.displayErrorMessage('Error', 'Document upload failed. Please try again.');
+        },
       });
-    }
+    };
+
     reader.readAsDataURL(file);
   }
+  openAddClientDocModal() {
+    const modalElement = this.addClientDocModalRef.nativeElement;
+    const modalInstance = new bootstrap.Modal(modalElement, { backdrop: 'static' });
+    modalInstance.show();
+  }
+
+
   saveClientDoc() {
     this.selectedFile && this.addClientDocuments(this.selectedFile);
 
@@ -537,28 +695,48 @@ export class QuotationReportComponent {
     log.info("Selected client doc", this.selectedClientDoc)
     this.fetchDocById(this.selectedClientDoc)
   }
-  fetchDocById(selectedClientDoc: DmsDocument) {
-    const docId = selectedClientDoc.id
+  // fetchDocById(selectedClientDoc: DmsDocument) {
+  //   const docId = selectedClientDoc.id
 
-    this.dmsService.getDocumentById(docId).subscribe({
+  //   this.quotationService.getDocumentById(docId).subscribe({
+  //     next: (res: any) => {
+  //       log.info(`Selected Document details`, res);
+  //       const selectedDoc = res._embedded
+
+  //       // Construct the preview-friendly object
+  //       this.previewClientDoc = {
+  //         name: selectedDoc.docName,
+  //         mimeType: selectedDoc.docMimetype,
+  //         dataUrl: `data:${selectedDoc.docMimetype};base64,${selectedDoc.byteData}`
+  //       };
+  //       console.log('preview doc modal', document.getElementById('previewDocModal'));
+
+  //       const modal = new bootstrap.Modal(document.getElementById('previewDocModal'));
+  //       modal.show();
+  //     },
+  //     error: (err) => {
+  //       log.info(`upload failed!`, err)
+  //     }
+  //   });
+  // }
+  fetchDocById(selectedClientDoc: DmsDocument) {
+    this.quotationService.getDocumentById(selectedClientDoc.id).subscribe({
       next: (res: any) => {
-        log.info(`Selected Document details`, res);
-        // Construct the preview-friendly object
+        const selectedDoc = res._embedded;
         this.previewClientDoc = {
-          name: res.docName,
-          mimeType: res.docMimetype,
-          dataUrl: `data:${res.docMimetype};base64,${res.byteData}`
+          name: selectedDoc.docName,
+          mimeType: selectedDoc.docMimetype,
+          dataUrl: `data:${selectedDoc.docMimetype};base64,${selectedDoc.byteData}`
         };
 
-        const modal = new bootstrap.Modal(document.getElementById('previewDocModal'));
-        modal.show();
+        setTimeout(() => {
+          const modal = new bootstrap.Modal(this.previewDocModal.nativeElement);
+          modal.show();
+        }, 0);
       },
-      error: (err) => {
-        log.info(`upload failed!`, err)
-      }
+      error: (err) => log.info(`upload failed!`, err)
     });
   }
-  private documentBlobs: { [id: string]: Blob } = {};
 
   onDownloadClientDoc(event: any) {
     this.selectedClientDoc = event;
@@ -573,26 +751,27 @@ export class QuotationReportComponent {
     }
 
     // Otherwise, fetch from backend
-    this.dmsService.getDocumentById(docId).subscribe({
+    this.quotationService.getDocumentById(docId).subscribe({
       next: (res: any) => {
         log.info(`Selected Document details`, res);
+        const selectedDoc = res._embedded
 
-        if (!res || res.empty || !res.byteData) {
+        if (!selectedDoc || selectedDoc.empty || !selectedDoc.byteData) {
           log.warn("Document data is empty or invalid");
           return;
         }
 
-        const byteCharacters = atob(res.byteData);
+        const byteCharacters = atob(selectedDoc.byteData);
         const byteNumbers = new Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
         const byteArray = new Uint8Array(byteNumbers);
 
-        const blob = new Blob([byteArray], { type: res.docMimetype });
+        const blob = new Blob([byteArray], { type: selectedDoc.docMimetype });
         this.documentBlobs[docId] = blob; // cache it
 
-        this.downloadClientDocument(docId, res.docName);
+        this.downloadClientDocument(docId, selectedDoc.docName);
       },
       error: (err) => {
         log.error(`Download failed!`, err);
@@ -628,7 +807,7 @@ export class QuotationReportComponent {
   deleteClientDoc() {
     const docId = this.selectedClientDoc.id;
 
-    this.dmsService.deleteDocumentById(docId).subscribe({
+    this.quotationService.deleteDocumentById(docId).subscribe({
       next: (res: any) => {
         log.info(`Response after deleting  Document details`, res);
         this.globalMessagingService.displaySuccessMessage('Success', 'Document deleted successfully');

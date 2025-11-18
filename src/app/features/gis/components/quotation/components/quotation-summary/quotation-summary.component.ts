@@ -21,6 +21,8 @@ import { Logger, UtilService } from "../../../../../../shared/services";
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import {
+  ExceptionListDto,
+  ExceptionPayload,
   GroupedUser,
   IntroducerDto,
   LimitsOfLiability,
@@ -52,7 +54,6 @@ import { NgxCurrencyConfig } from 'ngx-currency';
 import { Modal } from 'bootstrap';
 import { left } from '@popperjs/core';
 import { DmsDocument, RiskDmsDocument } from 'src/app/shared/data/common/dmsDocument';
-import { DmsService } from 'src/app/shared/services/dms/dms.service';
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
@@ -99,7 +100,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   steps = quoteStepsData;
   quotationCode: any
   quotationNumber: any;
-  quotationDetails: any
+  quotationDetails: QuotationDetails
   quotationView: QuotationDetails
   moreDetails: any
   clientDetails: any
@@ -207,7 +208,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   schedulesData: { [key: string]: any[] } = {};
   availableScheduleLevels: string[] = [];
   exceptionsCollapsed: boolean = false;
-  exceptionsData: any;
+  exceptionsData: ExceptionListDto[] = [];
   error: string | null = null;
   exceptionErrorMessage: string | null = null;
   limitsRiskofLiability: any;
@@ -294,7 +295,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   commissionColumns: { field: string; header: string; visible: boolean }[] = [];
   ticketStatus: string;
   // confirmQuote: boolean = false;
-  ticketData:any;
+  ticketData: any;
   zoomRiskDocLevel = 1;
   showRiskDocColumnModal = false;
   showRiskDoc: boolean = true;
@@ -312,7 +313,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   previewRiskDoc: { name: string; mimeType: string; dataUrl: string } | null = null;
   ticketPayload: any;
   authorizedQuoteFlag: boolean = false;
-
+  activeQuoteTab: string = 'summary';
+  private documentBlobs: { [id: string]: Blob } = {};
+  exceptionsColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+  selectedExceptions: ExceptionListDto[] = [];
 
   constructor(
     public quotationService: QuotationsService,
@@ -333,8 +337,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     public utilService: UtilService,
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef,
-    
-    private dmsService: DmsService,
+
 
 
   ) {
@@ -357,7 +360,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.otpGenerated = JSON.parse(sessionStorage.getItem('otpGenerated'));
     this.changeToPolicyButtons = JSON.parse(sessionStorage.getItem('changeToPolicyButtons'));
     this.showAuthorizeButton = JSON.parse(sessionStorage.getItem('showAuthorizeButton'));
-
+    const exceptionslist = JSON.parse(sessionStorage.getItem('exceptionsData'))
+    this.exceptionsData = exceptionslist
+    if (this.exceptionsData?.length > 0) {
+      this.setExceptionColumns(this.exceptionsData[0]);
+    }
   }
 
   public isCollapsibleOpen = false;
@@ -370,12 +377,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   public showInternalClaims = false;
   public showExternalClaims = false;
   private ngUnsubscribe = new Subject();
-  
+
 
 
 
   shareQuoteData: ShareQuoteDTO = {
-    selectedMethod: 'sms',
+    selectedMethod: 'email',
     email: '',
     smsNumber: '',
     whatsappNumber: '',
@@ -410,16 +417,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.moreDetails = sessionStorage.getItem('quotationFormDetails');
 
 
-
-
-
-
-
-  
-
-
-   
-
     if (this.quotationCodeString) {
       this.quotationCode = Number(this.quotationCodeString);
       log.debug("second code", this.quotationCode)
@@ -429,15 +426,17 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         log.debug("Quotation details>>>", response)
         this.quotationDetails = response
         sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationDetails))
-        const ticketStatus = response.processFlowResponseDto.taskName
+        const ticketStatus = response?.processFlowResponseDto?.taskName
         log.debug("Ticket status:", ticketStatus)
         this.ticketStatus = ticketStatus
-        sessionStorage.setItem('ticketStatus', ticketStatus);
+        ticketStatus && sessionStorage.setItem('ticketStatus', ticketStatus);
 
         if ('Rejected' === response.status) {
           this.afterRejectQuote = true
         }
       });
+    this.getQuotationDetails(this.quotationCode);
+
 
     // Retrieve authorization flag specific to this quotation
     const authorizedFlag = sessionStorage.getItem(`quotationAuthorized_${this.quotationCode}`);
@@ -472,12 +471,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
 
     // Load quotation details first
-    this.getquotationDetails();
+    // this.getquotationDetails();
 
     // Then load introducers and set the name
     this.setIntroducerNameFromService();
 
-    this.quotationCode && this.getQuotationDetails(this.quotationCode);
+    // this.quotationCode && this.getQuotationDetails(this.quotationCode);
     this.getuser();
     this.getRiskDetails();
 
@@ -497,13 +496,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.hasUnderwriterRights();
 
-    // Add this to your existing ngOnInit
-    const modal = document.getElementById('addExternalClaimExperienceModal');
-    if (modal) {
-      modal.addEventListener('hidden.bs.modal', () => {
-        this.clearForm();
-      });
-    }
+
 
 
     log.debug('QuotationView', this.quotationView)
@@ -522,7 +515,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       cc: ['', Validators.email],
       bcc: ['', Validators.email],
       subject: [''],
-      wording: ['']
+      wording: [''],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      smsMessage: ['', [Validators.required, Validators.minLength(1)]]
     });
     const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
     const currencySymbol = sessionStorage.getItem('currencySymbol')
@@ -551,22 +546,48 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.getQuotationDetails(quotationCode);
     }
 
-    const ticketJson = sessionStorage.getItem('activeTicket');
+    // const ticketJson = sessionStorage.getItem('activeTicket');
 
-    if (ticketJson) {
-      this.ticketData = JSON.parse(ticketJson);
-      const quotationCode = this.ticketData.quotationCode;
-      if (quotationCode) {
-        this.quotationCode = quotationCode
-      }
-      this.getQuotationDetails(quotationCode);
+    // if (ticketJson) {
+    //   this.ticketData = JSON.parse(ticketJson);
+    //   const quotationCode = this.ticketData.quotationCode;
+    //   if (quotationCode) {
+    //     this.quotationCode = quotationCode
+    //   }
+    //   this.getQuotationDetails(quotationCode);
 
+
+    // }
+
+
+    // const quotationCode = sessionStorage.getItem('activeQuotationCode');
+    // log.debug("Retrieved quotation code from session:", quotationCode);
+
+    // if (quotationCode) {
+    //   this.quotationCode = quotationCode;
+    //   this.getQuotationDetails(quotationCode);
+    // }
+
+    const confirmMode = sessionStorage.getItem('confirmMode') === 'true';
+    const viewOnly = sessionStorage.getItem('viewOnlyMode') === 'true';
+
+    if (confirmMode) {
+      this.showAuthorizeButton = false;
+      this.showViewDocumentsButton = true;
+      this.showVerifyButton = true;
+      this.showConfirmButton = false;
+      this.viewQuoteFlag = true
+    } else if (viewOnly) {
+      this.showAuthorizeButton = false;
+      this.showViewDocumentsButton = false;
+      this.showVerifyButton = false;
+      this.showConfirmButton = false;
 
     }
 
-     this.patchQuotationData();
+    //  this.patchQuotationData();
 
-     console.log('Share Methods:', this.shareMethods);
+    console.log('Share Methods:', this.shareMethods);
   }
 
   ngAfterViewInit() {
@@ -673,10 +694,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         if (this.quotationView?.source?.description === 'Agent' && this.quotationView?.clientType === 'I') {
           this.getCommissions();
         }
-        const ticketStatus = res.processFlowResponseDto.taskName
+        const ticketStatus = res?.processFlowResponseDto?.taskName
         log.debug("Ticket status:", ticketStatus)
         this.ticketStatus = ticketStatus
-        sessionStorage.setItem('ticketStatus', ticketStatus);
+        ticketStatus && sessionStorage.setItem('ticketStatus', ticketStatus);
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
         this.user = this.quotationView.preparedBy;
@@ -687,7 +708,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           // this.showViewDocumentsButton = true;
           // this.showVerifyButton = true;
         }
-        // this.getExceptions(this.quotationView.code);
+        this.getExceptions(this.quotationView.code);
         if (!this.moreDetails) {
           this.quotationDetails = this.quotationView;
           log.debug("MORE DETAILS TEST quotationView", this.quotationDetails)
@@ -756,6 +777,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         // extract client-code and productCode
         this.prodCode = this.quotationView.quotationProducts[0].code;
         this.clientCode = this.quotationView?.clientCode;
+        sessionStorage.setItem('clientCode', this.clientCode)
 
         this.clientCode && this.loadClientDetails(this.clientCode);
         // this.getExternalClaimsExperience(this.clientCode);
@@ -1037,7 +1059,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         },
         error: (e) => {
           log.debug(e)
-          this.globalMessagingService.displayErrorMessage('error', 'Failed to make ready')
+          const apiError = e.error;
+          const errorMessage =
+            apiError?.debugMessage ??
+            apiError?.message ??
+            apiError?.developerMessage ??
+            'Failed to make ready';
+          this.globalMessagingService.displayErrorMessage('error', errorMessage)
         }
       }
     )
@@ -1154,22 +1182,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     )
   }
 
-  authorise() {
-    this.quotationService.authoriseQuotation(this.quotationCode, this.user).subscribe(
-      {
-        next: (res) => {
-          this.authoriseQuotation = !this.authoriseQuotation;
-          this.confirmQuotation = !this.confirmQuotation;
-          this.getQuotationDetails(this.quotationCode);
-          this.messageService.displaySuccessMessage('Success', 'Quotation Authorised, Confirm to proceed')
-        },
-        error: (e) => {
-          log.debug(e.message)
-          this.messageService.displayErrorMessage('error', e.error.message)
-        }
-      }
-    )
-  }
+
 
   confirmQuote() {
     this.quotationService.confirmQuotation(this.quotationCode, this.user).subscribe(
@@ -1178,6 +1191,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           this.authoriseQuotation = !this.authoriseQuotation;
           this.confirmQuotation = !this.confirmQuotation;
           this.getQuotationDetails(this.quotationCode);
+          if (res) {
+            this.viewQuoteFlag = true
+            sessionStorage.setItem(`viewQuoteFlag`, JSON.stringify(this.viewQuoteFlag));
+
+          }
           this.globalMessagingService.displaySuccessMessage('Success', 'Quotation  Confirmed')
           this.changeToPolicyButtons = true
           sessionStorage.setItem('changeToPolicyButtons', JSON.stringify(this.changeToPolicyButtons))
@@ -1225,35 +1243,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Computes the premium for the current quotation and updates the quotation details.
-   * @method computePremium
-   * @return {void}
-   */
-  computePremium() {
-    this.quotationService.computePremium(this.computationDetails).subscribe({
-      next: (res) => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed');
-        this.premium = res;
-        log.debug("res.riskLevelPremiums >>>", res.riskLevelPremiums)
-        const totalTax = (res.riskLevelPremiums || [])
-          .map(risk =>
-            (risk.taxComputation || []).reduce(
-              (taxAcc, tax) => taxAcc + (tax.premium || 0),
-              0
-            )
-          )
-          .reduce((sum, taxSum) => sum + taxSum, 0);
-        this.premiumAmount = res.premiumAmount + totalTax
-        log.debug("premium", res);
-        this.updateQuotationPremmium();
-      },
-      error: (error: HttpErrorResponse) => {
-        log.info(error);
-        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-      }
-    })
-  }
+
 
   cancelQuotation() {
     sessionStorage.removeItem('clientFormData');
@@ -1914,47 +1904,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     return this.convertedDate
   }
 
-  updateQuotationPremmium() {
-    log.debug("Premium computation Response:", this.premium)
-    const selectedProduct = this.quotationView.quotationProducts[0];
-    log.debug("Selected product", selectedProduct)
 
-    // Transforming data into the expected payload format
-    const transformedPayload = {
-      premiumAmount: this.premiumAmount,
-      productCode: selectedProduct.productCode,
-      quotProductCode: selectedProduct.code.toString(),
-      productPremium: this.premiumAmount,
-      riskLevelPremiums: this.premium.riskLevelPremiums.map(risk => ({
-        code: risk.code,
-        premium: risk.premium,
-        limitPremiumDtos: risk.limitPremiumDtos.map(limit => ({
-          sectCode: limit.sectCode,
-          premium: limit.premium
-        }))
-      })),
-      taxes: [] // Assuming taxes are not available in the given input data
-    };
-    log.debug("Payload to be sent to updatePremium", transformedPayload)
-    this.quotationService
-      .updatePremium(this.quotationCode, transformedPayload)
-      .subscribe({
-        next: (response: any) => {
-          const result = response;
-          log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
-          result && this.getQuotationDetails(this.quotationCode);
-
-        },
-        error: (error) => {
-          log.error("Failed to update details:", error);
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
-        }
-      });
-
-  }
 
   openRiskDeleteModal() {
     log.debug("Selected Risk", this.selectedRisk)
@@ -2287,8 +2237,27 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   navigateToRiskCenter() {
-    this.router.navigate(['/home/gis/quotation/risk-center']).then(r => {
-    });
+    const action = "E";
+    sessionStorage.setItem("quotationAction", action);
+    log.debug('qUOTATIONcODE', this.quotationCode)
+    this.quotationService.undoMakeReady(this.quotationCode).subscribe(
+      {
+        next: (res) => {
+          log.debug("RESPONSE AFTER UNDO MAKE READY:", res)
+          const ticketStatus = res._embedded.taskName
+          log.debug("Ticket status:", ticketStatus)
+          this.ticketStatus = ticketStatus
+          sessionStorage.setItem('ticketStatus', ticketStatus);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully undone make ready.')
+          this.router.navigate(['/home/gis/quotation/risk-center']).then(r => {
+          });
+        },
+        error: (e) => {
+          log.debug(e)
+          this.globalMessagingService.displayErrorMessage('error', 'Failed to make ready')
+        }
+      })
+
 
   }
 
@@ -2301,11 +2270,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   getExceptions(quotationCode: number) {
-    this.quotationService.generateExceptions(quotationCode).subscribe({
+    this.quotationService.fetchExceptions('Q', quotationCode).subscribe({
       next: (res: any) => {
         log.debug('exceptions', res);
-        this.exceptionsData = res._embedded;
+        this.exceptionsData = res;
         log.debug('exceptionData', this.exceptionsData);
+        if (this.exceptionsData?.length > 0) {
+          this.setExceptionColumns(this.exceptionsData[0]);
+        }
       },
       error: (error) => {
         log.error('Error fetching exceptions:', error);
@@ -2362,116 +2334,213 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   //       }
   //     });
   // }
+
+  // worked
+  // authorizeSelectedExceptions(): void {
+  //   const selected = this.exceptionsData?.filter(ex => ex.selected);
+
+  //   if (!selected || selected.length === 0) {
+
+  //     this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
+  //     return;
+  //   }
+
+
+
+  //   if (this.hasUnderwriterRights()) {
+
+  //     log.debug('Quotation status:', this.quotationView.status);
+
+  //     if (this.quotationView.status === 'AUTHORISED') {
+  //       this.globalMessagingService.displayInfoMessage(
+  //         'Info',
+  //         'This quotation is already authorised'
+  //       );
+  //       return;
+  //     }
+
+  //     log.debug('Authorizing as underwriter:', selected);
+
+  //     this.quotationService
+  //       .authoriseExceptions(selected)
+  //       .subscribe({
+  //         next: (res: any) => {
+  //           if (res.status === 'SUCCESS') {
+  //             this.globalMessagingService.displaySuccessMessage(
+  //               'Success',
+  //               res.message || 'Exceptions authorised successfully'
+  //             );
+  //           } else {
+  //             this.globalMessagingService.displayErrorMessage(
+  //               'Authorization Error',
+  //               res.message || 'Could not authorise exceptions'
+  //             );
+  //           }
+  //         },
+  //         error: (err) => {
+  //           this.globalMessagingService.displayErrorMessage(
+  //             'Authorization Error',
+  //             'Could not authorise exceptions'
+  //           );
+  //           log.error(err);
+  //         }
+  //       })
+
+  //   }
+  //   // authorizeSelectedExceptions(): void {
+  //   //   const selected = this.exceptionsData?.filter(ex => ex.selected);
+
+  //   //   if (!selected || selected.length === 0) {
+
+  //   //     this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
+  //   //     return;
+  //   //   }
+
+
+
+  //   //   if (this.hasUnderwriterRights()) {
+
+  //   //     log.debug('Quotation status:', this.quotationView.status);
+
+  //   //     if (this.quotationView.status === 'AUTHORISED') {
+  //   //       this.globalMessagingService.displayInfoMessage(
+  //   //         'Info',
+  //   //         'This quotation is already authorised'
+  //   //       );
+  //   //       return;
+  //   //     }
+
+  //   //     log.debug('Authorizing as underwriter:', selected);
+
+  //   //     this.quotationService
+  //   //       .AuthoriseExceptions(this.quotationView.code, this.quotationView.preparedBy)
+  //   //       .subscribe({
+  //   //         next: (res) => {
+  //   //           if (res.status === 'SUCCESS') {
+  //   //             this.globalMessagingService.displaySuccessMessage(
+  //   //               'Success',
+  //   //               res.message || 'Exceptions authorised successfully'
+  //   //             );
+  //   //           } else {
+  //   //             this.globalMessagingService.displayErrorMessage(
+  //   //               'Authorization Error',
+  //   //               res.message || 'Could not authorise exceptions'
+  //   //             );
+  //   //           }
+  //   //         },
+  //   //         error: (err) => {
+  //   //           this.globalMessagingService.displayErrorMessage(
+  //   //             'Authorization Error',
+  //   //             'Could not authorise exceptions'
+  //   //           );
+  //   //           log.error(err);
+  //   //         }
+  //   //       });
+  //   //   }
+  //   //   else {
+  //   //     this.globalMessagingService.displayErrorMessage(
+  //   //       'Authorization Error',
+  //   //       'You do not have rights to authorize; please reassign.'
+  //   //     )
+  //   //   }
+  //   //   this.openChooseClientReassignModal();
+  //   // }
+  // }
   authorizeSelectedExceptions(): void {
-    const selected = this.exceptionsData?.filter(ex => ex.selected);
-
-    if (!selected || selected.length === 0) {
-
+    if (!this.selectedExceptions || this.selectedExceptions.length === 0) {
       this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
       return;
     }
 
-
-
-    if (this.hasUnderwriterRights()) {
-
-      log.debug('Quotation status:', this.quotationView.status);
-
-      if (this.quotationView.status === 'AUTHORISED') {
-        this.globalMessagingService.displayInfoMessage(
-          'Info',
-          'This quotation is already authorised'
-        );
-        return;
-      }
-
-      log.debug('Authorizing as underwriter:', selected);
-
-      this.quotationService
-        .authoriseExceptions(selected)
-        .subscribe({
-          next: (res: any) => {
-            if (res.status === 'SUCCESS') {
-              this.globalMessagingService.displaySuccessMessage(
-                'Success',
-                res.message || 'Exceptions authorised successfully'
-              );
-            } else {
-              this.globalMessagingService.displayErrorMessage(
-                'Authorization Error',
-                res.message || 'Could not authorise exceptions'
-              );
-            }
-          },
-          error: (err) => {
-            this.globalMessagingService.displayErrorMessage(
-              'Authorization Error',
-              'Could not authorise exceptions'
-            );
-            log.error(err);
-          }
-        })
-
+    if (!this.hasUnderwriterRights()) {
+      this.globalMessagingService.displayErrorMessage(
+        'Authorization Error',
+        'You do not have rights to authorize; please reassign.'
+      );
+      return;
     }
-    // authorizeSelectedExceptions(): void {
-    //   const selected = this.exceptionsData?.filter(ex => ex.selected);
 
-    //   if (!selected || selected.length === 0) {
+    if (this.quotationView.status === 'AUTHORISED') {
+      this.globalMessagingService.displayInfoMessage(
+        'Info',
+        'This quotation is already authorised'
+      );
+      return;
+    }
 
-    //     this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
-    //     return;
-    //   }
+    // Map to payload
+    const payload: ExceptionPayload[] = this.selectedExceptions.map(ex => ({
+      code: ex.code,
+      gisExceptionCode: ex.gisExceptionCode,
+      policyBatchNumber: ex.policyBatchNumber ? Number(ex.policyBatchNumber) : null,
+      policyNumber: ex.policyNumber || null,
+      exceptionBy: ex.exceptionBy,
+      isAuthorized: ex.isAuthorized || null,
+      authorizedBy: ex.authorizedBy || null,
+      authorizedDate: ex.authorizedDate || null,
+      riskCode: ex.riskCode ?? null,
+      transactionDate: ex.transactionDate,
+      transactionNumber: ex.transactionNumber,
+      transactionType: ex.transactionType || null,
+      agentCode: ex.agentCode,
+      agentShortDescription: ex.agentShortDescription,
+      setStandard: ex.setStandard ?? null,
+      usedStandard: ex.usedStandard ?? null,
+      description: ex.description,
+      systemModule: ex.systemModule,
+      decision: ex.decision || null,
+      quotationCode: ex.quotationCode,
+      quotationNumber: ex.quotationNumber || null,
+      sectionCode: ex.sectionCode ?? null,
+      reiCode: ex.reiCode ?? null,
+      claimNumber: ex.claimNumber || null,
+      mtranNumber: ex.mtranNumber ?? null,
+      accountBalance: ex.accountBalance ?? null
+    }));
 
 
+    this.quotationService.authoriseExceptions(payload).subscribe({
+      next: (res: any) => {
+        if (res.status === 'SUCCESS') {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            res.message || 'Exceptions authorised successfully'
+          );
 
-    //   if (this.hasUnderwriterRights()) {
+          const newStatus = 'Authorize Quotation';
+          this.quotationView.status = newStatus;
 
-    //     log.debug('Quotation status:', this.quotationView.status);
+          sessionStorage.setItem(
+            `quotationStatus_${this.quotationCode}`,
+            newStatus
+          );
 
-    //     if (this.quotationView.status === 'AUTHORISED') {
-    //       this.globalMessagingService.displayInfoMessage(
-    //         'Info',
-    //         'This quotation is already authorised'
-    //       );
-    //       return;
-    //     }
+          this.showAuthorizeButton = true;
+          sessionStorage.setItem('showAuthorizeButton', 'true');
+          sessionStorage.setItem('authorizeButtonDisabled', 'false');
 
-    //     log.debug('Authorizing as underwriter:', selected);
+          log.debug("[AUTH] Refreshing quotation details...");
 
-    //     this.quotationService
-    //       .AuthoriseExceptions(this.quotationView.code, this.quotationView.preparedBy)
-    //       .subscribe({
-    //         next: (res) => {
-    //           if (res.status === 'SUCCESS') {
-    //             this.globalMessagingService.displaySuccessMessage(
-    //               'Success',
-    //               res.message || 'Exceptions authorised successfully'
-    //             );
-    //           } else {
-    //             this.globalMessagingService.displayErrorMessage(
-    //               'Authorization Error',
-    //               res.message || 'Could not authorise exceptions'
-    //             );
-    //           }
-    //         },
-    //         error: (err) => {
-    //           this.globalMessagingService.displayErrorMessage(
-    //             'Authorization Error',
-    //             'Could not authorise exceptions'
-    //           );
-    //           log.error(err);
-    //         }
-    //       });
-    //   }
-    //   else {
-    //     this.globalMessagingService.displayErrorMessage(
-    //       'Authorization Error',
-    //       'You do not have rights to authorize; please reassign.'
-    //     )
-    //   }
-    //   this.openChooseClientReassignModal();
-    // }
+          this.getQuotationDetails(this.quotationCode);
+          this.getExceptions(this.quotationView.code);
+
+        } else {
+          this.globalMessagingService.displayErrorMessage(
+            'Authorization Error',
+            res.message || 'Could not authorise exceptions'
+          );
+        }
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Authorization Error',
+          'Could not authorise exceptions'
+        );
+        log.error(err);
+      }
+    })
   }
+
 
 
   hasUnderwriterRights(): boolean {
@@ -3081,8 +3150,16 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     return !currentSchedule || currentSchedule.length === 0;
   }
 
+  // hasExceptionsData(): boolean {
+  //   return this.exceptionsData?.length > 0;
+  // }
   hasExceptionsData(): boolean {
-    return this.exceptionsData?.length > 0;
+    if (!this.exceptionsData || this.exceptionsData.length === 0) {
+      return false; // No data at all
+    }
+
+    // Return true if there's at least one record NOT authorized
+    return this.exceptionsData.some(e => (e.isAuthorized || '').toString().trim().toUpperCase() !== 'Y');
   }
 
   get authorizeButtonTooltip(): string {
@@ -3096,21 +3173,31 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   get authorizeButtonDisabled(): boolean {
-    return this.hasExceptionsData() || this.hasEmptySchedules();
+    const hasPendingExceptions = this.exceptionsData?.some(ex => !ex.isAuthorized);
+    const schedulesEmpty = this.hasEmptySchedules();
+
+    // Enable button if status is "Authorize Quotation" or there are no pending exceptions
+    if (this.quotationView?.status === 'Authorize Quotation') {
+      return false; // always enabled
+    }
+
+    // Otherwise, disabled if there are pending exceptions or empty schedules
+    return hasPendingExceptions || schedulesEmpty;
   }
+
 
   authorizeQuote() {
     const quotationCode = this.quotationCode;
     const user = this.user;
 
-    if (!this.hasUnderwriterRights()) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'This user does not have the rights to authorize a quote.'
-      );
-      this.router.navigate(['/quotation-management']);
-      return;
-    }
+    // if (!this.hasUnderwriterRights()) {
+    //   this.globalMessagingService.displayErrorMessage(
+    //     'Error',
+    //     'This user does not have the rights to authorize a quote.'
+    //   );
+    //   this.router.navigate(['/quotation-management']);
+    //   return;
+    // }
 
     // Step 1: Authorize
     this.quotationService.authorizeQuote(quotationCode, user).subscribe({
@@ -3191,7 +3278,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         } else {
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            err?.error?.message || 'Something went wrong.'
+            err?.error?.debugMessage || err?.error?.message || 'Something went wrong.'
           );
         }
       }
@@ -3201,107 +3288,94 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
 
-generateOTP() {
-  this.shareForm.markAllAsTouched();
-  this.shareForm.updateValueAndValidity();
+  generateOTP() {
+    this.shareForm.markAllAsTouched();
+    this.shareForm.updateValueAndValidity();
 
-  log.debug("Client name:", this.clientName);
+    log.debug("Client name:", this.clientName);
 
-  // Handle EMAIL OTP
-  if (this.shareQuoteData.selectedMethod === 'email') {
-    const emailCtrl = this.shareForm.get('email');
-    if (!emailCtrl || emailCtrl.invalid) {
+    const methodValue = this.shareQuoteData.selectedMethod?.toUpperCase();
+
+    if (methodValue !== 'EMAIL' && methodValue !== 'SMS' && methodValue !== 'WHATSAPP') {
+      this.globalMessagingService.displayErrorMessage("Error", "Please select a valid sending method");
       return;
     }
 
-    const emailPayload = {
-      email: emailCtrl.value,
+    const selectedMethod: 'EMAIL' | 'SMS' | 'WHATSAPP' = methodValue;
+
+
+    let identifierValue = '';
+
+    if (selectedMethod === 'EMAIL') {
+      const emailCtrl = this.shareForm.get('email');
+      if (!emailCtrl || emailCtrl.invalid) return;
+      identifierValue = emailCtrl.value;
+    } else if (selectedMethod === 'SMS' || selectedMethod === 'WHATSAPP') {
+      const smsCtrl = this.shareForm.get('smsNumber');
+      if (!smsCtrl || smsCtrl.invalid) return;
+      identifierValue = smsCtrl.value;
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate OTP code
+
+    const payload = {
+      identifier: identifierValue,
       subject: "Action Required: Verify Your Consent with OTP",
-      body: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent:`,
+      body: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent: ${otp}`
     };
 
-    this.quotationService.generateOTP(emailPayload).subscribe({
+    this.quotationService.generateOTP(payload, selectedMethod).subscribe({
       next: (res: any) => {
-        this.globalMessagingService.displaySuccessMessage("Success", "OTP sent to your email successfully");
-        this.otpResponse = res._embedded;
-        this.otpGenerated = true;
-        this.cdr.detectChanges();
-        sessionStorage.setItem('otpGenerated', JSON.stringify(this.otpGenerated))
-
-        log.debug("otp generated:", this.otpGenerated)
-
-      },
-      error: (error) => {
-        console.error("Error generating OTP:", error.error?.message || error);
-        this.globalMessagingService.displayErrorMessage("Error", "Failed to send OTP via email");
-      }
-    });
-  } 
-  // Handle SMS OTP
-  else if (this.shareQuoteData.selectedMethod === 'sms') {
-    const smsCtrl = this.shareForm.get('smsNumber');
-    if (!smsCtrl || smsCtrl.invalid) {
-      return;
-    }
-
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    const smsPayload = {
-      scheduledDate: null,
-      smsMessages: [
-        {
-          message: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent: ${otp}`,
-          sendDate: new Date().toISOString(),
-          systemCode: 0,
-          telephoneNumber: smsCtrl.value
-        }
-      ]
-    };
-
-    
-    this.notificationService.sendSms(smsPayload).subscribe({
-      next: (res: any) => {
-        this.globalMessagingService.displaySuccessMessage("Success", "OTP sent to your phone successfully");
+        this.globalMessagingService.displaySuccessMessage(
+          "Success",
+          `OTP sent successfully via ${selectedMethod}`
+        );
         this.otpResponse = { otp: otp, ...res };
         this.otpGenerated = true;
         this.cdr.detectChanges();
+        sessionStorage.setItem('otpGenerated', JSON.stringify(this.otpGenerated));
+
+        log.debug("otp generated:", this.otpGenerated);
+        log.debug("Otp response", this.otpResponse)
       },
       error: (error) => {
-        console.error("Error sending SMS OTP:", error.error?.message || error);
-        this.globalMessagingService.displayErrorMessage("Error", "Failed to send OTP via SMS");
+        console.error("Error generating OTP:", error.error?.message || error);
+        this.globalMessagingService.displayErrorMessage(
+          "Error",
+          `Failed to send OTP via ${selectedMethod}`
+        );
       }
     });
   }
-}
 
-onShareMethodChange(method: ShareMethod) {
 
-  this.shareQuoteData.selectedMethod = method;
-   console.log('Clicked method:', method);
-  this.otpGenerated = false;
-   this.cdr.detectChanges();
-  
-  
-  this.shareForm.get('email')?.clearValidators();
-  this.shareForm.get('smsNumber')?.clearValidators();
-  this.shareForm.get('email')?.setValue('');
-  this.shareForm.get('smsNumber')?.setValue('');
-  this.shareForm.get('otp')?.setValue('');
-  
-  // Add validators based on method
-  if (method === 'email') {
-    this.shareForm.get('email')?.setValidators([ Validators.email]);
-  } else if (method === 'sms') {
-    this.shareForm.get('smsNumber')?.setValidators([
-      Validators.pattern(/^(\+254|0)[17]\d{8}$/) 
-    ]);
+  onShareMethodChange(method: ShareMethod) {
+
+    this.shareQuoteData.selectedMethod = method;
+    console.log('Clicked method:', method);
+    this.otpGenerated = false;
+    this.cdr.detectChanges();
+
+
+    this.shareForm.get('email')?.clearValidators();
+    this.shareForm.get('smsNumber')?.clearValidators();
+    this.shareForm.get('email')?.setValue('');
+    this.shareForm.get('smsNumber')?.setValue('');
+    this.shareForm.get('otp')?.setValue('');
+
+    // Add validators based on method
+    if (method === 'email') {
+      this.shareForm.get('email')?.setValidators([Validators.email]);
+    } else if (method === 'sms') {
+      this.shareForm.get('smsNumber')?.setValidators([
+        Validators.pattern(/^(\+254|0)[17]\d{8}$/)
+      ]);
+    }
+
+
+    this.shareForm.get('email')?.updateValueAndValidity();
+    this.shareForm.get('smsNumber')?.updateValueAndValidity();
   }
-  
-  
-  this.shareForm.get('email')?.updateValueAndValidity();
-  this.shareForm.get('smsNumber')?.updateValueAndValidity();
-}
 
 
 
@@ -3339,7 +3413,7 @@ onShareMethodChange(method: ShareMethod) {
   }
   verifyOTP() {
 
-    const userIdentifier = this.otpResponse.userIdentifier
+    const userIdentifier = this.otpResponse?._embedded?.userIdentifier || this.otpResponse?.userIdentifier;
     const otp = this.shareForm.value.otp
     this.quotationService.verifyOTP(userIdentifier, otp)
       .subscribe({
@@ -3609,11 +3683,94 @@ onShareMethodChange(method: ShareMethod) {
 
 
   async sendReportViaEmail() {
+    log.debug("Quotation details when sending reports via email:", this.quotationDetails)
+    const clientCode = this.quotationDetails?.clientCode
+    const agentCode = this.quotationDetails.agentCode
     this.viewDocForm.markAllAsTouched();
-    this.viewDocForm.updateValueAndValidity()
-    if (!this.selectedReports || this.selectedReports.length === 0) return;
+    this.viewDocForm.updateValueAndValidity();
 
+    if (!this.selectedReports || this.selectedReports.length === 0) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one report to send');
+      return;
+    }
+
+    // Check if SMS tab is active (index 0)
+    if (this.activeIndex === 0) {
+      // Send via SMS
+      this.sendReportViaSMS();
+    } else {
+      // Send via Email (index 1)
+      this.sendReportViaEmailMethod();
+    }
+  }
+
+  /**
+   * Send reports via SMS
+   */
+  async sendReportViaSMS() {
+    const phoneNumberControl = this.viewDocForm.get('phoneNumber');
+
+    if (!phoneNumberControl) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Form controls not initialized');
+      return;
+    }
+
+    // Validate phone number (exactly 10 digits)
+    if (phoneNumberControl.invalid) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please enter a valid 10-digit phone number');
+      return;
+    }
+
+    const rawPhoneNumber = phoneNumberControl.value;
+
+    // Generate SMS message template automatically
+    const message = this.getSMSMessageTemplate();
+
+    // Format phone number to 254 format
+    let formattedPhoneNumber: string;
+    try {
+      formattedPhoneNumber = this.formatPhoneNumber(rawPhoneNumber);
+    } catch (error) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Invalid phone number format');
+      return;
+    }
+
+    log.debug('Raw phone number:', rawPhoneNumber);
+    log.debug('Formatted phone number:', formattedPhoneNumber);
+    log.debug('Message:', message);
+
+    this.spinner.show();
+
+    this.quotationService.sendNormalQuotationSms(message, formattedPhoneNumber).subscribe({
+      next: (response: any) => {
+        this.spinner.hide();
+        log.debug('SMS sent successfully:', response);
+        this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
+
+        // Close the modal
+        const modalEl = this.viewDocumentsModal.nativeElement;
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) {
+          modal.hide();
+        }
+      },
+      error: (error: any) => {
+        this.spinner.hide();
+        log.error('Error sending SMS:', error);
+        const errorMessage = error?.error?.message || error?.message || 'Failed to send SMS';
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    });
+  }
+
+  /**
+   * Send reports via Email
+   */
+  async sendReportViaEmailMethod() {
     const viewDocForm = this.viewDocForm.value;
+    log.debug("Quotation details when sending reports via email:", this.quotationDetails)
+    const clientCode = this.quotationDetails?.clientCode
+    const agentCode = this.quotationDetails.agentCode
     log.debug("Selected reports:", this.selectedReports)
     log.debug("Report blobs", this.reportBlobs)
     const attachments = await Promise.all(
@@ -3641,6 +3798,8 @@ onShareMethodChange(method: ShareMethod) {
     const payload: EmailDto = {
       code: null,
       address: [viewDocForm.to],
+      ccAddress: [viewDocForm.cc],
+      bccAddress: [viewDocForm.bcc],
       subject: viewDocForm.subject,
       message: viewDocForm.wording,
       status: 'D',
@@ -3650,8 +3809,8 @@ onShareMethodChange(method: ShareMethod) {
       systemCode: 0,
       attachments: filteredAttachments,
       sendOn: new Date().toISOString(),
-      clientCode: 0,
-      agentCode: 0
+      clientCode: clientCode || null,
+      agentCode: agentCode || null
     };
 
     this.notificationService.sendEmail(payload).subscribe({
@@ -4110,13 +4269,18 @@ onShareMethodChange(method: ShareMethod) {
       .replace(/([A-Z])/g, ' $1')
       .replace(/^./, (str) => str.toUpperCase());
   }
+  onDocumetTabSelect(selectedRisk: RiskInformation) {
+    log.debug("Selected risk-", selectedRisk)
+    const selectedRiskCode = selectedRisk.code
+    selectedRisk && this.fetchRiskDoc(selectedRiskCode)
+  }
   fetchRiskDoc(riskId: any) {
     log.debug("Selected Risk code:", riskId)
-    this.dmsService.fetchRiskDocs(riskId)
+    this.quotationService.fetchRiskDocs(riskId)
       .subscribe({
-        next: (res: DmsDocument[]) => {
+        next: (res: any) => {
           log.debug('Response after fetching clients DOCS:', res)
-          this.riskDocuments = res
+          this.riskDocuments = res._embedded
           if (this.riskDocuments && this.riskDocuments.length > 0) {
             this.setRiskDocColumns(this.riskDocuments[0]);
           }
@@ -4238,11 +4402,11 @@ onShareMethodChange(method: ShareMethod) {
         docType: file.type,
         docData: base64String,
         originalFileName: file.name,
-        riskID: selectedRiskCode.toLocaleString(),
+        riskID: selectedRiskCode.toString()
 
       }
 
-      this.dmsService.uploadRiskDocs(riskDocPayload).subscribe({
+      this.quotationService.uploadRiskDocs(riskDocPayload).subscribe({
         next: (res: any) => {
           log.info(`document uploaded successfully!`, res);
           this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
@@ -4269,15 +4433,17 @@ onShareMethodChange(method: ShareMethod) {
   }
   fetchDocById(selectedRiskDoc: DmsDocument) {
     const docId = selectedRiskDoc.id
+    log.debug('DocumentId:', docId)
 
-    this.dmsService.getDocumentById(docId).subscribe({
+    this.quotationService.getDocumentById(docId).subscribe({
       next: (res: any) => {
         log.info(`Selected Document details`, res);
+        const selectedDoc = res._embedded
         // Construct the preview-friendly object
         this.previewRiskDoc = {
-          name: res.docName,
-          mimeType: res.docMimetype,
-          dataUrl: `data:${res.docMimetype};base64,${res.byteData}`
+          name: selectedDoc.docName,
+          mimeType: selectedDoc.docMimetype,
+          dataUrl: `data:${selectedDoc.docMimetype};base64,${selectedDoc.byteData}`
         };
 
         const modal = new bootstrap.Modal(document.getElementById('previewDocModal'));
@@ -4288,7 +4454,6 @@ onShareMethodChange(method: ShareMethod) {
       }
     });
   }
-  private documentBlobs: { [id: string]: Blob } = {};
 
   onDownloadRiskDoc(event: any) {
     this.selectedRiskDoc = event;
@@ -4303,26 +4468,27 @@ onShareMethodChange(method: ShareMethod) {
     }
 
     // Otherwise, fetch from backend
-    this.dmsService.getDocumentById(docId).subscribe({
+    this.quotationService.getDocumentById(docId).subscribe({
       next: (res: any) => {
         log.info(`Selected Document details`, res);
+        const selectedDoc = res._embedded
 
-        if (!res || res.empty || !res.byteData) {
+        if (!selectedDoc || selectedDoc.empty || !selectedDoc.byteData) {
           log.warn("Document data is empty or invalid");
           return;
         }
 
-        const byteCharacters = atob(res.byteData);
+        const byteCharacters = atob(selectedDoc.byteData);
         const byteNumbers = new Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
         const byteArray = new Uint8Array(byteNumbers);
 
-        const blob = new Blob([byteArray], { type: res.docMimetype });
+        const blob = new Blob([byteArray], { type: selectedDoc.docMimetype });
         this.documentBlobs[docId] = blob; // cache it
 
-        this.downloadRiskDocument(docId, res.docName);
+        this.downloadRiskDocument(docId, selectedDoc.docName);
       },
       error: (err) => {
         log.error(`Download failed!`, err);
@@ -4358,7 +4524,7 @@ onShareMethodChange(method: ShareMethod) {
   deleteRiskDoc() {
     const docId = this.selectedRiskDoc.id;
 
-    this.dmsService.deleteDocumentById(docId).subscribe({
+    this.quotationService.deleteDocumentById(docId).subscribe({
       next: (res: any) => {
         log.info(`Response after deleting  Document details`, res);
         this.globalMessagingService.displaySuccessMessage('Success', 'Document deleted successfully');
@@ -4374,6 +4540,235 @@ onShareMethodChange(method: ShareMethod) {
         log.error(`Download failed!`, err);
       },
     });
+  }
+
+  /**
+   * Get product type from quotation details
+   */
+  getProductType(): string {
+    if (!this.quotationView?.quotationProducts || this.quotationView.quotationProducts.length === 0) {
+      return 'Insurance';
+    }
+    return this.quotationView.quotationProducts
+      .map(p => p.productName || p.productCode)
+      .join(', ');
+  }
+
+  /**
+   * Get total sum insured from all risks
+   */
+  getTotalSumInsured(): number {
+    if (!this.quotationView?.quotationProducts) {
+      return 0;
+    }
+
+    return this.quotationView.quotationProducts.reduce((total: number, product: any) => {
+      if (!product.riskInformation) return total;
+      return total + product.riskInformation.reduce((sum: number, risk: any) => {
+        return sum + (risk.value || 0);
+      }, 0);
+    }, 0);
+  }
+
+  /**
+   * Get total premium from quotation
+   */
+  getTotalPremium(): number {
+    if (!this.quotationView?.quotationProducts) {
+      return 0;
+    }
+
+    return this.quotationView.quotationProducts.reduce((total: number, product: any) => {
+      if (!product.riskInformation) return total;
+      return total + product.riskInformation.reduce((sum: number, risk: any) => {
+        return sum + (risk.premium || 0);
+      }, 0);
+    }, 0);
+  }
+
+  /**
+   * Get insurer name from session storage store_ details
+   */
+  getInsurerName(): string {
+    try {
+      const storeDetailsRaw = sessionStorage.getItem('store_');
+      if (storeDetailsRaw) {
+        const storeDetails = JSON.parse(storeDetailsRaw);
+        // Use API_TENANT_ID as the insurer name
+        if (storeDetails.API_TENANT_ID) {
+          return storeDetails.API_TENANT_ID;
+        }
+      }
+    } catch (error) {
+      log.error('Error parsing store details from session storage', error);
+    }
+    // Fallback to stored insurerName or default
+    return sessionStorage.getItem('insurerName') || 'Turnkey Insurance';
+  }
+
+  /**
+   * Get customer name from session storage client details
+   */
+  getCustomerName(): string {
+    try {
+      const clientDetailsRaw = sessionStorage.getItem('SelectedClientDetails');
+      if (clientDetailsRaw) {
+        const clientDetails = JSON.parse(clientDetailsRaw);
+        // Use firstName and lastName if available, otherwise use clientFullName
+        if (clientDetails.firstName && clientDetails.lastName) {
+          return `${clientDetails.firstName} ${clientDetails.lastName}`.trim();
+        } else if (clientDetails.clientFullName && clientDetails.clientFullName !== 'null null') {
+          return clientDetails.clientFullName;
+        } else if (clientDetails.lastName) {
+          return clientDetails.lastName;
+        }
+      }
+    } catch (error) {
+      log.error('Error parsing client details from session storage', error);
+    }
+    return 'Customer';
+  }
+
+  /**
+   * Handle tab change event
+   */
+  onTabChange(event: any): void {
+    // Update active index to track current tab
+    this.activeIndex = event.index;
+  }
+
+  /**
+   * Get SMS message template with dynamic content
+   */
+  getSMSMessageTemplate(): string {
+    const customerName = this.getCustomerName();
+    const message = `Dear ${customerName},
+    Your insurance quotation #${this.fetchedQuoteNum} for ${this.getProductType()} is ready. Valid until ${this.expiryDate}.
+    Sum insured: KES ${this.getTotalSumInsured().toFixed(2)} Premium: KES ${this.getTotalPremium().toFixed(2)}
+    For the full quote, please contact us. ${this.getInsurerName()}`;
+
+    return message;
+  }
+
+  /**
+   * Format phone number to international format (254XXXXXXXXX)
+   * @param phoneNumber - The phone number to format
+   * @returns Formatted phone number with 254 prefix
+   */
+  formatPhoneNumber(phoneNumber: string): string {
+    const cleaned = phoneNumber.replace(/\D/g, '');
+
+    // If already starts with 254, return as is
+    if (cleaned.startsWith('254')) {
+      return cleaned;
+    }
+
+    if (!cleaned.match(/^(01|07)/)) {
+      throw new Error("Invalid phone number format");
+    }
+
+    // Convert to 254 format by removing leading 0 and adding 254
+    return '254' + cleaned.substring(1);
+  }
+
+  sendQuotationSms() {
+    // Mark form as touched to show validation errors
+    this.viewDocForm.markAllAsTouched();
+
+    // Check if the SMS form fields are valid
+    const phoneNumberControl = this.viewDocForm.get('phoneNumber');
+    const smsMessageControl = this.viewDocForm.get('smsMessage');
+
+    if (!phoneNumberControl || !smsMessageControl) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Form controls not initialized');
+      return;
+    }
+
+    // Validate phone number (exactly 10 digits)
+    if (phoneNumberControl.invalid) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please enter a valid 10-digit phone number');
+      return;
+    }
+
+    // Validate message content
+    if (smsMessageControl.invalid || !smsMessageControl.value?.trim()) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please enter a message to send');
+      return;
+    }
+
+    const rawPhoneNumber = phoneNumberControl.value;
+    const message = smsMessageControl.value;
+
+    // Format phone number to 254 format
+    let formattedPhoneNumber: string;
+    try {
+      formattedPhoneNumber = this.formatPhoneNumber(rawPhoneNumber);
+    } catch (error) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Invalid phone number format');
+      return;
+    }
+
+    log.debug('Raw phone number:', rawPhoneNumber);
+    log.debug('Formatted phone number:', formattedPhoneNumber);
+    log.debug('Message:', message);
+
+    this.spinner.show();
+
+    this.quotationService.sendNormalQuotationSms(message, formattedPhoneNumber).subscribe({
+      next: (response: any) => {
+        this.spinner.hide();
+        log.debug('SMS sent successfully:', response);
+        this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
+
+        // Optionally close the modal
+        const modalEl = this.viewDocumentsModal.nativeElement;
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) {
+          modal.hide();
+        }
+      },
+      error: (error: any) => {
+        this.spinner.hide();
+        log.error('Error sending SMS:', error);
+        const errorMessage = error?.error?.message || error?.message || 'Failed to send SMS';
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    });
+  }
+  setExceptionColumns(doc: any) {
+    const excludedFields = [
+    ];
+    const defaultVisibleExceptionFields = ['description', 'isAuthorized', 'setStandard', 'usedStandard', 'authorizedBy', 'authorizedDate'];
+
+    const keys = Object.keys(doc).filter(key => !excludedFields.includes(key));
+
+    // Separate default fields and the rest
+    const defaultFields = defaultVisibleExceptionFields.filter(f => keys.includes(f));
+    const otherFields = keys.filter(k => !defaultVisibleExceptionFields.includes(k));
+
+    // Strictly order = defaults first, then others
+    const orderedKeys = [...defaultFields, ...otherFields];
+
+    this.exceptionsColumns = orderedKeys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleExceptionFields.includes(key),
+      truncate: defaultVisibleExceptionFields.includes(key),
+      filterable: true,
+      sortable: true
+    }));
+
+    // this.exceptionsDocColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false });
+    log.debug("Client doc Columns", this.exceptionsColumns)
+    // Restore from sessionStorage if exists
+    const saved = sessionStorage.getItem('exceptionsDocColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.exceptionsColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
   }
 
 }

@@ -72,10 +72,13 @@
                             </ng-container> -->
                             <ng-container *ngSwitchDefault>
 
+                                <!-- Currency fields -->
                                 <ng-container
-                                    *ngIf="col.field === 'value'|| col.field === 'SumInsured' || col.field === 'Value'; else defaultCell">
-                                    <div class="text-end"> {{ risk[col.field] | currency: currencyObj?.prefix :
-                                        'symbol' : '1.2-2' }}
+                                    *ngIf="col.field === 'value' || col.field === 'SumInsured' || col.field === 'Value' || 
+                                           col.field === 'premium' || col.field === 'butCharge' || 
+                                           col.field === 'annualPremium' || col.field === 'commissionAmount'; else defaultCell">
+                                    <div class="text-end"> 
+                                        {{ (risk[col.field] || 0) | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
                                     </div>
                                 </ng-container>
                             </ng-container>
@@ -172,6 +175,7 @@
 
 
                             </div>
+
                             <!-- Messages -->
 
                             <app-ai-import-progress-modal [visible]="showAiImportModal" [progress]="uploadProgress"
@@ -214,8 +218,7 @@
                                             <!-- INSURED -->
                                             <ng-container *ngIf="field.name === 'insureds' && clientsData?.length">
                                                 <p-dropdown formControlName="insureds" [options]="clientsData"
-                                                    optionLabel="clientFullName" optionValue="id"
-                                                    placeholder="Select Insured" [filter]="true"
+                                                    optionLabel="clientFullName" optionValue="id" [filter]="true"
                                                     filterBy="clientFullName">
 
                                                 </p-dropdown>
@@ -1273,10 +1276,11 @@
                                 </ng-container>
                                 <ng-container *ngSwitchDefault>
                                     <ng-container *ngSwitchDefault>
-                                        <ng-container *ngIf="col.field === 'limitAmount'; else defaultField">
+                                        <!-- Currency fields -->
+                                        <ng-container *ngIf="col.field === 'limitAmount' || col.field === 'premiumAmount' || 
+                                                             col.field === 'minimumPremium' || col.field === 'freeLimit'; else defaultField">
                                             <div class="text-end">
-                                                {{ section[col.field] | currency: currencyObj?.prefix: 'symbol' :
-                                                '1.2-2'}}
+                                                {{ (section[col.field] || 0) | currency: currencyObj?.prefix: 'symbol' : '1.2-2'}}
                                             </div>
                                         </ng-container>
                                         <ng-template #defaultField>
@@ -3527,6 +3531,8 @@
 
     </div>
 </div>
+
+<!-- action buttons -->
 <div class="mt-2 d-flex justify-content-between mx-3">
     <button style="border: none; background: transparent; text-decoration: underline; cursor: pointer; color:#00529B"
         (click)="navigateToRiskDetails()">Back</button>
