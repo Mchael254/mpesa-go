@@ -82,7 +82,7 @@
                       <!-- BRANCH -->
                       <ng-container *ngIf="field.name === 'branch'">
                         <p-dropdown formControlName="branch" [options]="branch" optionLabel="name" placeholder=" "
-                          value="id" [filter]="true" [filterBy]="'name'" styleClass="w-100"></p-dropdown>
+                          optionValue="id" [filter]="true" [filterBy]="'name'" styleClass="w-100"></p-dropdown>
                         <div
                           *ngIf="quotationForm.get('branch')?.hasError('required') && quotationForm.get('branch')?.touched"
                           class="form-text text-danger"> {{ 'gis.quotation.branch_is_required' | translate }}</div>
