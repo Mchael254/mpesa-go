@@ -1087,13 +1087,19 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       return;
     }
 
+    sessionStorage.removeItem('reusedQuotation');
+    sessionStorage.removeItem('revisedQuotation'); 
+    sessionStorage.removeItem('activeTicket');
+
     this.quotationService
       .reviseQuote(quotationCode, createNew)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
           log.debug("Response for revise", response)
+
           const quotationCode = response._embedded.newQuotationCode
+          sessionStorage.removeItem('reusedQuotation');
           sessionStorage.setItem('revisedQuotation', JSON.stringify(response));
           // sessionStorage.setItem('isRevision', 'true');
           sessionStorage.setItem('quotationCode', quotationCode)
@@ -1119,11 +1125,16 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       return;
     }
 
+    sessionStorage.removeItem('reusedQuotation');
+    sessionStorage.removeItem('revisedQuotation');
+    sessionStorage.removeItem('activeTicket');
+
     this.quotationService
       .reviseQuote(quotationCode, 'Y')
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
+          sessionStorage.removeItem('revisedQuotation');
           sessionStorage.setItem('reusedQuotation', JSON.stringify(response));
           const quotationCode = response._embedded.newQuotationCode
           sessionStorage.setItem('quotationCode', quotationCode);
