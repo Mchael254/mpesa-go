@@ -317,33 +317,32 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.selectedClient = JSON.parse(sessionStorage.getItem('client'))
     log.debug("product Form details", this.productDetails)
 
-
-    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
-    log.debug("Reused quotation in details screen", reusedQuotation)
-    if (reusedQuotation) {
-      const data = JSON.parse(reusedQuotation);
-      const quotationCode = data._embedded.newQuotationCode;
-      if (quotationCode) {
+const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+log.debug("🔍 Constructor - reusedQuotation exists?", !!reusedQuotation)
+if (reusedQuotation) {
+    const data = JSON.parse(reusedQuotation);
+    const quotationCode = data._embedded.newQuotationCode;
+    if (quotationCode) {
         this.quotationCode = quotationCode
-        // this.fetchQuotationDetails(quotationCode);
         this.quotationSourceFlag = 'reused';
-      }
+        log.debug("🔵 Set quotationSourceFlag = 'reused'");
     }
+}
 
-
-
-
-
-    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
-    if (revisedQuotation) {
-      const data = JSON.parse(revisedQuotation);
-      const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
-      if (quotationCode) {
+const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+log.debug("🔍 Constructor - revisedQuotation exists?", !!revisedQuotation)
+log.debug("Revised", revisedQuotation)
+if (revisedQuotation) {
+    const data = JSON.parse(revisedQuotation);
+    const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
+    if (quotationCode) {
         this.quotationCode = quotationCode;
-        // this.fetchQuotationDetails(quotationCode);
         this.quotationSourceFlag = 'revised';
-      }
+        log.debug("🟢 Set quotationSourceFlag = 'revised'");
     }
+}
+
+log.debug("🎯 Final quotationSourceFlag in constructor:", this.quotationSourceFlag);
 
     const ticketJson = sessionStorage.getItem('activeTicket');
     log.debug("ticket data", ticketJson)
@@ -740,41 +739,62 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     this.addProductClausesTable.filter(input.value, 'heading', 'contains');
   }
-
-
-  fetchQuotationDetails(quotationCode: number) {
-    log.debug("Quotation Number to use:", quotationCode)
+fetchQuotationDetails(quotationCode: number) {
+    log.debug("Quotation Number to use:", quotationCode);
+    
+    
+    this.spinner.show();
+    
     this.quotationService.getQuotationDetails(quotationCode)
-      .subscribe({
-        next: (res: any) => {
-          this.quotationDetails = res;
-          log.debug("Quotation details-risk details", this.quotationDetails);
+        .subscribe({
+            next: (res: any) => {
+                this.quotationDetails = res;
+                log.debug("Quotation details-risk details", this.quotationDetails);
 
+                const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+                const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+                const activeTicket = sessionStorage.getItem('activeTicket');
 
-          if (this.quotationSourceFlag === 'revised') {
-            log.debug('Patching revised quotation data...');
-            this.patchRevisedQuotationData();
-          } else if (this.quotationSourceFlag === 'reused' || this.quotationSourceFlag === 'ticket') {
-            log.debug('Patching reused/ticket quotation data...');
-            this.patchReusedQuotationData();
-          }
+                log.debug("🔍 fetchQuotationDetails - revisedQuotation exists?", !!revisedQuotation);
+                log.debug("🔍 fetchQuotationDetails - reusedQuotation exists?", !!reusedQuotation);
+                log.debug("🔍 fetchQuotationDetails - activeTicket exists?", !!activeTicket);
 
-          // Clear flag after patching
-          if (this.quotationSourceFlag) {
-            log.debug(`Clearing quotation source flag (${this.quotationSourceFlag}) after patching.`);
-            this.quotationSourceFlag = null;
-          }
-        },
-        error: (error: HttpErrorResponse) => {
-          log.debug("Error log", error.error.message);
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
-        },
-      })
-  }
+                
+                setTimeout(() => {
+                    if (revisedQuotation) {
+                        log.debug('Patching revised quotation data...');
+                        this.patchRevisedQuotationData();
+                      
+                    } else if (reusedQuotation) {
+                        log.debug('Patching reused quotation data...');
+                        this.patchReusedQuotationData();
+                      
+                    } else if (activeTicket) {
+                        log.debug('Patching ticket quotation data...');
+                        this.patchReusedQuotationData();
+                    }
 
+              
+                    this.cd.detectChanges();
+                    
+                    
+                    this.spinner.hide();
+
+                    
+                }, 3000);
+            },
+            error: (error: HttpErrorResponse) => {
+          
+                this.spinner.hide();
+                
+                log.debug("Error log", error.error.message);
+                this.globalMessagingService.displayErrorMessage(
+                    'Error',
+                    error.error.message
+                );
+            },
+        })
+}
   //product clauses
   toggleProductClausesopen() {
     this.isProductClauseOpen = !this.isProductClauseOpen;
@@ -3183,6 +3203,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   patchReusedQuotationData() {
 
+    this.isRevisionMode = false;
+
 
 
     if (this.quotationDetails) {
@@ -3264,11 +3286,32 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
 
 
+  
+  const branchCode = data.branchCode;
+  if (branchCode) {
+    this.branchService.getBranchById(branchCode).subscribe({
+      next: (branchObj) => {
+        log.debug("Default branch object:", branchObj);
+
+  
+        const exists = this.branch?.some(b => b.id === branchObj.id);
+        if (!exists) {
+          this.branch = [...(this.branch || []), branchObj];
+        }
+
+      
+        this.quotationForm.get('branch')?.setValue(branchObj.id);
+      },
+      error: (err) => console.error("Error fetching branch:", err)
+    });
+  }
+
+
       if (this.quotationForm) {
         this.quotationForm.patchValue({
           source: sourceObject || '',
           quotationType: quotationTypeValue || '',
-          branch: data.branchCode || '',
+          // branch: data.branchCode || '',
           currency: currencyOption || '',
           introducer: data.introducerCode || '',
           paymentFrequency: data.frequencyOfPayment || '',
@@ -3318,6 +3361,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
               // ✅ Also update session storage
               sessionStorage.setItem('SelectedClientName', clientName);
               sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
+              this.cd.detectChanges();
 
               log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
             } else {
@@ -3493,12 +3537,33 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
 
 
+   
+  const branchCode = data.branchCode;
+  if (branchCode) {
+    this.branchService.getBranchById(branchCode).subscribe({
+      next: (branchObj) => {
+        log.debug("Default branch object:", branchObj);
+
+        
+        const exists = this.branch?.some(b => b.id === branchObj.id);
+        if (!exists) {
+          this.branch = [...(this.branch || []), branchObj];
+        }
+
+        
+        this.quotationForm.get('branch')?.setValue(branchObj.id);
+      },
+      error: (err) => console.error("Error fetching branch:", err)
+    });
+  }
+
+
 
 
       this.quotationForm.patchValue({
         source: sourceObject || '',
         quotationType: quotationTypeValue || '',
-        branch: data.branchCode || '',
+        // branch: this.branch || '',
         currency: currencyOption || '',
         introducer: data.introducerCode || '',
         paymentFrequency: data.frequencyOfPayment || '',
@@ -3508,6 +3573,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         internalComments: data.internalComments || '',
         externalComments: data.comments || ''
       });
+
+      
 
       if (agentObject) {
         this.quotationForm.get('agent')?.setValue(agentObject, { emitEvent: false });
@@ -3543,6 +3610,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
               // ✅ Also update session storage
               sessionStorage.setItem('SelectedClientName', clientName);
               sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
+              this.cd.detectChanges();
 
               log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
             } else {
