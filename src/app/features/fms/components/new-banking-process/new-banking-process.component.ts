@@ -667,9 +667,9 @@ export class NewBankingProcessComponent implements OnInit {
       const payload: ReceiptUploadRequest[] = [
         {
           docData: pureBase64,
-          docType: 'BANKINGSLIP',
+          docType: this.uploadedFile.type,
           originalFileName: this.uploadedFile.name,
-          module: 'RECEIPTING',
+          module: 'CB-RECEIPTS',
           filename: this.uploadedFile.name,
           referenceNo: formValue.slipNumber,
           docDescription: '',
