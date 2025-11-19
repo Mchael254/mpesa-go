@@ -163,14 +163,13 @@
               <ng-template pTemplate="body" let-row>
                 <tr>
                   <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
-                  <td>{{ row.ClientCode }}</td>
-                  <td>{{ row.ClientName }}</td>
-                  <td>{{ row.WEF }}</td>
-                  <td>{{ row.WET }}</td>
-                  <td>{{ row.PremiumBind }}</td>
-                  <td>{{ row.PropertyId }}</td>
-                  <td>{{ row.ItemDesc }}</td>
-                  <td>{{ row.CoverTypeShortDesc }}</td>
+                  <td>{{ row.insuredName | sentenceCase }}</td>
+                  <td>{{ row.propertyId | sentenceCase }}</td>
+                  <td>{{ row.riskDescription | sentenceCase }}</td>
+                  <td>{{ row.coverType | sentenceCase}}</td>
+                  <td>{{ row.binderCode }}</td>
+                  <td>{{ row.withEffectFrom }}</td>
+                  <td>{{ row.withEffectTo }}</td>
 
                   <!-- Action buttons -->
                   <td style="text-align:center;">
@@ -301,5 +300,7 @@
 
     </div>
   </div>
-  <button *ngIf="activeTab === 'VALID'" class="btn btn-primary float-end mt-4">Save</button>
+
+  <button *ngIf="activeTab === 'VALID'" class="btn btn-primary float-end mt-4" (click)="saveRiskDetail()">Save</button>
+
 </div>

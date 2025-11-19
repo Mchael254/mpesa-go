@@ -1544,6 +1544,14 @@ export class QuotationsService {
   //     );
   // }
 
+  saveRiskDetails(quotationCode: string | number) {
+    return this.api.POST<any>(
+      `/v1/load-details?quotationCode=${quotationCode}`,
+      null, API_CONFIG.GIS_COMMONS_SERVICE
+    );
+  }
+
+
 }
 
 
