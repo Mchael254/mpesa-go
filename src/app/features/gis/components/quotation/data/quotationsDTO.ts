@@ -176,6 +176,7 @@ export interface QuotationDetails {
   dateCreated?: any;
   agentCode: number;
   currency: string;
+  quoteType: string;
   quotationProducts: QuotationProduct[];
   branchCode: number;
   source: {
