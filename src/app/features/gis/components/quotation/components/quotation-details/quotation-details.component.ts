@@ -1410,13 +1410,15 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     // log.debug("Quotation form details >>>>", this.quotationForm)
     // log.debug("Selected agent >>>>", this.agentDetails)
     // log.debug("ProductDetails:", this.productDetails)
+    log.debug("Quotation form details >>>>", this.quotationForm.getRawValue())
+
     if (this.quotationForm.valid) {
       const quotationFormValues = this.quotationForm.getRawValue();
       const quotationPayload = {
         quotationNumber: this.quotationDetails?.quotationNo,
         quotationCode: this.quotationCode || null,
         user: this.user,
-        branchCode: quotationFormValues.branch.id,
+        branchCode: quotationFormValues.branch,
         RFQDate: this.formatDate(quotationFormValues.RFQDate),
         expiryDate: this.formatDate(quotationFormValues.expiryDate),
         currencyCode: quotationFormValues.currency.id || this.defaultCurrency.id,
@@ -1491,12 +1493,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("QuoteDetails:", this.quotationDetails)
     if (this.quotationForm.valid) {
       const quotationFormValues = this.quotationForm.getRawValue();
+      log.debug("Quotation form details >>>>", quotationFormValues)
 
       const quotationPayload = {
         quotationNumber: this.quotationDetails?.quotationNo,
         quotationCode: this.quotationCode || null,
         user: this.user,
-        branchCode: quotationFormValues.branch.id,
+        branchCode: quotationFormValues.branch,
         RFQDate: this.formatDate(quotationFormValues.RFQDate),
         expiryDate: this.formatDate(quotationFormValues.expiryDate),
         currencyCode: quotationFormValues.currency.id || this.defaultCurrency.id,
@@ -2055,7 +2058,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.quotationService.getUserBranches(userCode).subscribe({
           next: (userBranches) => {
             if (!userBranches?.length) return;
-
+            log.debug('user branches', userBranches)
             //Get the first user branchId
             const firstUserBranchId = userBranches[0].branchId;
 
@@ -2064,9 +2067,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
             if (matchedBranch) {
               this.quotationForm.patchValue({
-                branch: matchedBranch
+                branch: matchedBranch.id
               });
-
+              log.debug("LOGGED IN USER BRANCH POPULATED", this.quotationForm.value)
               // log.debug('User\'s matched branch preselected:', matchedBranch);
             } else {
               log.warn('No matching branch found for user branchId:', firstUserBranchId);
