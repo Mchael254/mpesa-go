@@ -112,7 +112,7 @@
                     </ng-container>
 
                     <!-- DATE -->
-                    <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="dateFormat"
+                    <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="primeNgDateFormat"
                       inputStyleClass="form-control form-control-sm" [showButtonBar]="true" [dataType]="'string'"
                       [showIcon]="true" styleClass="w-100"></p-calendar>
 
@@ -367,13 +367,13 @@
                     <ng-container *ngSwitchCase="'coverFrom'">
                       <p-cellEditor>
                         <ng-template pTemplate="input">
-                          <p-calendar [(ngModel)]="product[col.field]" [dateFormat]="dateFormat" [showIcon]="true"
+                          <p-calendar [(ngModel)]="product[col.field]" [dateFormat]="primeNgDateFormat" [showIcon]="true"
                             appendTo="body">
                           </p-calendar>
 
                         </ng-template>
                         <ng-template pTemplate="output">
-                          {{ product[col.field] | date:'dd/MM/yyyy' }}
+                          {{ formatDateDisplay(product[col.field]) }}
                         </ng-template>
                       </p-cellEditor>
                     </ng-container>
@@ -381,12 +381,12 @@
                     <ng-container *ngSwitchCase="'coverTo'">
                       <p-cellEditor>
                         <ng-template pTemplate="input">
-                          <p-calendar [(ngModel)]="product[col.field]" [dateFormat]="dateFormat" [showIcon]="true"
+                          <p-calendar [(ngModel)]="product[col.field]" [dateFormat]="primeNgDateFormat" [showIcon]="true"
                             appendTo="body">
                           </p-calendar>
                         </ng-template>
                         <ng-template pTemplate="output">
-                          {{ product[col.field] | date:'dd/MM/yyyy' }}
+                          {{ formatDateDisplay(product[col.field]) }}
                         </ng-template>
                       </p-cellEditor>
                     </ng-container>
@@ -398,7 +398,12 @@
                           <input type="text" pInputText [(ngModel)]="product[col.field]" />
                         </ng-template>
                         <ng-template pTemplate="output">
-                          {{ getCellValue(product, col.field) }}
+                          <ng-container *ngIf="isDateField(col.field); else notDateField">
+                            {{ formatDateDisplay(getCellValue(product, col.field)) }}
+                          </ng-container>
+                          <ng-template #notDateField>
+                            {{ getCellValue(product, col.field) }}
+                          </ng-template>
                         </ng-template>
                       </p-cellEditor>
                     </ng-container>
@@ -476,7 +481,7 @@
                     <label for="coverFromDate" class="quote-label">{{ 'gis.quotation.cover_from'|
                       translate }}</label><br>
                     <p-calendar formControlName="wef" name="wefDate" id="coverFromDate" inputId="coverFromDate"
-                      [dateFormat]="dateFormat" inputStyleClass='form-control' (onSelect)="updateCoverToDate($event)"
+                      [dateFormat]="primeNgDateFormat" inputStyleClass='form-control' (onSelect)="updateCoverToDate($event)"
                       [minDate]="minDate" [showIcon]="true">
                     </p-calendar>
                     <div
@@ -494,7 +499,7 @@
                     <label for="coverToDate" class="quote-label"> {{ 'gis.quotation.cover_to'| translate
                       }}</label><br>
                     <p-calendar formControlName="wet" name="wetDate" id="coverToDate" inputId="coverToDate"
-                      [dateFormat]="dateFormat" inputStyleClass='form-control' [minDate]="minDate" [showIcon]="true">
+                      [dateFormat]="primeNgDateFormat" inputStyleClass='form-control' [minDate]="minDate" [showIcon]="true">
                     </p-calendar>
                     <div
                       *ngIf="quotationProductForm.get('wet').hasError('required') && quotationProductForm.get('wet').touched"
@@ -576,7 +581,7 @@
                     <label for="coverFromDate" class="quote-label">{{ 'gis.quotation.cover_from'|
                       translate }}</label><br>
                     <p-calendar formControlName="wef" name="wefDate" id="coverFromDate" inputId="coverFromDate"
-                      [dateFormat]="dateFormat" inputStyleClass='form-control' (onSelect)="updateCoverToDate($event)"
+                      [dateFormat]="primeNgDateFormat" inputStyleClass='form-control' (onSelect)="updateCoverToDate($event)"
                       [minDate]="minDate" [showIcon]="true">
                     </p-calendar>
                     <div
@@ -594,7 +599,7 @@
                     <label for="coverToDate" class="quote-label"> {{ 'gis.quotation.cover_to'| translate
                       }}</label><br>
                     <p-calendar formControlName="wet" name="wetDate" id="coverToDate" inputId="coverToDate"
-                      [dateFormat]="dateFormat" inputStyleClass='form-control' [minDate]="minDate" [showIcon]="true">
+                      [dateFormat]="primeNgDateFormat" inputStyleClass='form-control' [minDate]="minDate" [showIcon]="true">
                     </p-calendar>
                     <div
                       *ngIf="quotationProductForm.get('wet').hasError('required') && quotationProductForm.get('wet').touched"
@@ -894,7 +899,12 @@
                     <ng-container [ngSwitch]="col.field">
                       <!-- Default (for future columns added dynamically) -->
                       <ng-container *ngSwitchDefault>
-                        {{ productClause[col.field] }}
+                        <ng-container *ngIf="isDateField(col.field); else notDateField">
+                          {{ formatDateDisplay(productClause[col.field]) }}
+                        </ng-container>
+                        <ng-template #notDateField>
+                          {{ productClause[col.field] }}
+                        </ng-template>
                       </ng-container>
                       <!-- Wording (with hover card) -->
                       <ng-container *ngSwitchCase="'wording'">

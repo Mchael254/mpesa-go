@@ -76,12 +76,22 @@
                                 <ng-container
                                     *ngIf="col.field === 'value' || col.field === 'SumInsured' || col.field === 'Value' || 
                                            col.field === 'premium' || col.field === 'butCharge' || 
-                                           col.field === 'annualPremium' || col.field === 'commissionAmount'; else defaultCell">
-                                    <div class="text-end"> 
-                                        {{ (risk[col.field] || 0) | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                                           col.field === 'annualPremium' || col.field === 'commissionAmount'; else nonCurrencyCell">
+                                    <div class="text-end">
+                                        {{ (risk[col.field] || 0) | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
+                                        }}
                                     </div>
                                 </ng-container>
                             </ng-container>
+
+                            <!-- Non-currency fields -->
+                            <ng-template #nonCurrencyCell>
+                                <ng-container *ngIf="isDateField(col.field); else defaultCell">
+                                    {{ formatDateDisplay(risk[col.field]) }}
+                                </ng-container>
+                            </ng-template>
+
+                            <!-- Default cell -->
                             <ng-template #defaultCell>
                                 {{ risk[col.field] }}
                             </ng-template>
@@ -128,17 +138,7 @@
                             <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </h5>
-                        <!-- <ng-container>
-                            <div class="mb-4 d-block w-100 p-4 text-center border border-dashed rounded">
-                                <p-fileUpload name="logbook" mode="basic"
-                                    chooseLabel="Click this area to upload Log book" [auto]="true"
-                                    [maxFileSize]="10485760" (onSelect)="onLogBookSelected($event)"
-                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
-                                </p-fileUpload>
 
-
-                            </div>
-                        </ng-container> -->
                         <div *ngIf="motorClassAllowed == 'Y'">
                             <p class="upload-text text-danger" *ngIf="!selectedSubclassCode">
                                 Select a subclass to proceed
@@ -187,6 +187,7 @@
 
                         </div>
 
+                        <!-- add risk details form -->
                         <form [formGroup]="riskDetailsForm">
                             <div class="row ">
                                 <ng-container *ngFor="let field of formData; let i = index">
@@ -225,19 +226,11 @@
                                             </ng-container>
 
 
-                                            <!-- <ng-container *ngIf="field.name === 'insureds' && clientsData?.length">
-                                                <p-dropdown formControlName="insureds" [options]="clientsData"
-                                                    optionLabel="clientFullName" optionValue="id"
-                                                    placeholder="Select Insured" [filter]="true"
-                                                    filterBy="clientFullName">
-                                                </p-dropdown>
-                                            </ng-container> -->
-
                                             <!-- date -->
                                             <ng-container
                                                 *ngIf="field.name !== 'coverFrom' && field.name !== 'coverTo' && riskDetailsForm && riskDetailsForm.contains(field.name)">
                                                 <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                                                    [dateFormat]="dateFormat" [showIcon]="true"
+                                                    [dateFormat]="primeNgDateFormat" [showIcon]="true"
                                                     [attr.placeholder]="field.label | translate">
                                                 </p-calendar>
                                             </ng-container>
@@ -393,20 +386,20 @@
                                             <ng-container
                                                 *ngIf="field.name !== 'coverFrom' && field.name !== 'coverTo' && riskDetailsForm && riskDetailsForm.contains(field.name)">
                                                 <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                                                    [dateFormat]="dateFormat" [showIcon]="true"
+                                                    [dateFormat]="primeNgDateFormat" [showIcon]="true"
                                                     [attr.placeholder]="field.label | translate">
                                                 </p-calendar>
                                             </ng-container>
                                             <!-- Cover From -->
                                             <p-calendar *ngIf="field.name === 'coverFrom'"
-                                                [formControlName]="field.name" [dateFormat]="dateFormat"
+                                                [formControlName]="field.name" [dateFormat]="primeNgDateFormat"
                                                 [showIcon]="true" [attr.placeholder]="field.label | translate"
                                                 (onSelect)="onDateChange()">
                                             </p-calendar>
 
                                             <!-- Cover To -->
                                             <p-calendar *ngIf="field.name === 'coverTo'" [formControlName]="field.name"
-                                                [dateFormat]="dateFormat" [showIcon]="true"
+                                                [dateFormat]="primeNgDateFormat" [showIcon]="true"
                                                 [attr.placeholder]="field.label | translate"
                                                 (onSelect)="onDateChange()">
                                             </p-calendar>
@@ -650,7 +643,7 @@
 
                                             <!-- Date -->
                                             <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                                                [dateFormat]="dateFormat" [showIcon]="true">
+                                                [dateFormat]="primeNgDateFormat" [showIcon]="true">
                                             </p-calendar>
 
                                             <!-- Number -->
@@ -1277,10 +1270,12 @@
                                 <ng-container *ngSwitchDefault>
                                     <ng-container *ngSwitchDefault>
                                         <!-- Currency fields -->
-                                        <ng-container *ngIf="col.field === 'limitAmount' || col.field === 'premiumAmount' || 
+                                        <ng-container
+                                            *ngIf="col.field === 'limitAmount' || col.field === 'premiumAmount' || 
                                                              col.field === 'minimumPremium' || col.field === 'freeLimit'; else defaultField">
                                             <div class="text-end">
-                                                {{ (section[col.field] || 0) | currency: currencyObj?.prefix: 'symbol' : '1.2-2'}}
+                                                {{ (section[col.field] || 0) | currency: currencyObj?.prefix: 'symbol' :
+                                                '1.2-2'}}
                                             </div>
                                         </ng-container>
                                         <ng-template #defaultField>
