@@ -254,12 +254,8 @@ export class DmsService {
       API_CONFIG.DMS_SERVICE
     );
   }
-  //fms uploadFile endpoints
+  //fms uploadFile endpoint
   uploadFiles(requests: ReceiptUploadRequest[]): Observable<any> {
-    // const formattedRequests = requests.map((request) =>
-    //   JSON.stringify(requests=[])
-    // );
-    //const payload = formattedRequests.join(',');
     const payload = requests.map((r)=>JSON.stringify(r)).join(',');
     return this.api.POST<any>(
       `uploadAllFinanceDocument`,
