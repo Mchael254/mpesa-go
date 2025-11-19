@@ -399,7 +399,7 @@ export class ContactComponent implements OnInit {
       name: formValues.overview_contact_person_full_name,
       idNumber: formValues.overview_contact_person_doc_id_no,
       email: formValues.overview_contact_person_email,
-      mobileNumber: (formValues.overview_contact_person_mobile_no?.internationalNumber).replace(/\s+/g, ''), // remove spaces before saving
+      mobileNumber: (formValues.overview_contact_person_mobile_no?.internationalNumber)?.replace(/\s+/g, ''), // remove spaces before saving
       wef: formValues.overview_wef,
       wet: formValues.overview_wet,
     };
@@ -417,7 +417,7 @@ export class ContactComponent implements OnInit {
         this.clientDetails = data;
         this.contactPersons = data.contactPersons;
         this.prepareDataDisplay();
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted contact person');
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully created/updated contact person');
         this.closeButton.nativeElement.click();
       },
       error: err => {
