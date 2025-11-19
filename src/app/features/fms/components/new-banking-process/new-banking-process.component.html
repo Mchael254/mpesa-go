@@ -201,7 +201,7 @@
       >
         <ng-template pTemplate="header">
           <tr>
-            <th><p-tableHeaderCheckbox /></th>
+            <th class="colHeaderWidth"><p-tableHeaderCheckbox /></th>
             <th *ngFor="let col of allColumns" [pSortableColumn]="col.field">
               {{ col.header | translate }}
               <p-sortIcon [field]="col.field"></p-sortIcon>
@@ -210,8 +210,8 @@
           <!-- filter row -->
 
           <tr>
-            <th></th>
-            <th *ngFor="let col of allColumns">
+            <th class="colHeaderWidth"></th>
+            <th *ngFor="let col of allColumns" class="colHeaderWidth">
               <ng-container [ngSwitch]="col.field">
                 <ng-container *ngSwitchCase="'actions'">
                   <button
@@ -511,9 +511,9 @@
                     >
                       <option
                         *ngFor="let accounts of glAccounts"
-                        [value]="accounts.accountNumber"
+                        [value]="accounts.number"
                       >
-                        {{ accounts.accountName }} {{ accounts.accountNumber }}
+                        {{ accounts.name }}, {{ accounts.number }}
                       </option>
                     </select>
                   </div>

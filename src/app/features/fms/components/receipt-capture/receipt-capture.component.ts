@@ -52,6 +52,7 @@ import { SessionStorageService } from '../../../../shared/services/session-stora
 import { TranslateService } from '@ngx-translate/core';
 import fmsStepsData from '../../data/fms-step.json';
 import { forkJoin } from 'rxjs';
+import { CommonMethodsService } from '../../services/common-methods.service';
 /**
  * @Component({
  *   selector: 'app-receipt-details',
@@ -71,7 +72,7 @@ export class ReceiptCaptureComponent {
   /**
    * @description Step data for the FMS workflow.
    */
-  steps =fmsStepsData.receiptingSteps;
+  steps = fmsStepsData.receiptingSteps;
   /**
    *
    * @property isFormValid is set to false by default since form is invalid and set to true if form is invalid
@@ -403,7 +404,8 @@ export class ReceiptCaptureComponent {
     private router: Router,
     private localStorage: LocalStorageService,
     private sessionStorage: SessionStorageService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private commonMethodsService: CommonMethodsService
   ) {}
   /**
    * Lifecycle hook called once the component is initialized.
@@ -414,38 +416,38 @@ export class ReceiptCaptureComponent {
   ngOnInit(): void {
     this.captureReceiptForm();
     this.loggedInUser = this.authService.getCurrentUser();
-// Retrieve organization from localStorage or receiptDataService
+    // Retrieve organization from localStorage or receiptDataService
     let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
     let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
- this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
+    this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
     this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
- // Ensure only one organization is active at a time
+    // Ensure only one organization is active at a time
     if (this.selectedOrg) {
       this.defaultOrg = null;
     } else if (this.defaultOrg) {
       this.selectedOrg = null;
     }
-// Retrieve branch from localStorage or receiptDataService
+    // Retrieve branch from localStorage or receiptDataService
     let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
     let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
-this.selectedBranch = storedSelectedBranch
+    this.selectedBranch = storedSelectedBranch
       ? JSON.parse(storedSelectedBranch)
       : null;
     this.defaultBranch = storedDefaultBranch
       ? JSON.parse(storedDefaultBranch)
       : null;
-// Ensure only one branch is active at a time
+    // Ensure only one branch is active at a time
     if (this.selectedBranch) {
       this.defaultBranch = null;
     } else if (this.defaultBranch) {
       this.selectedBranch = null;
     }
-let users = this.sessionStorage.getItem('user');
+    let users = this.sessionStorage.getItem('user');
     this.users = users ? JSON.parse(users) : null;
- const currentDate = new Date();
+    const currentDate = new Date();
     this.minDate = ''; // Set this based on your business logic (e.g., earliest backdate allowed)
     this.maxDate = this.formatDate(currentDate);
-this.fetchDrawersBanks(
+    this.fetchDrawersBanks(
       this.selectedOrg?.country.id || this.defaultOrg?.country.id
     );
     this.fetchCurrencies();
@@ -460,16 +462,16 @@ this.fetchDrawersBanks(
     this.updateDateRestrictions();
     this.restoreFormData(); // Restore saved data
     // Initialize form with default values first
-// 3. Restore UI state (visibility, requirements)
+    // 3. Restore UI state (visibility, requirements)
     const savedState = this.receiptDataService.getFormState();
-if (savedState) {
+    if (savedState) {
       // Restore UI flags
       this.showfields = savedState.showfields;
       this.makeFieldRequired = savedState.makeFieldRequired;
-// Restore form values
+      // Restore form values
       // this.receiptingDetailsForm.patchValue(savedState.formValues);
- this.selectedPaymentMode = savedState.paymentMode;
-//this.showChequeOptions = savedState.showChequeOptions;
+      this.selectedPaymentMode = savedState.paymentMode;
+      //this.showChequeOptions = savedState.showChequeOptions;
       // Update fields based on payment mode
       if (savedState.paymentMode) {
         this.updatePaymentModeFields(savedState.paymentMode);
@@ -486,7 +488,7 @@ if (savedState) {
     const today = this.formatDate(new Date()); // Get current date in 'yyyy-MM-dd' format
     this.receiptingDetailsForm = this.fb.group({
       selectedBranch: ['', Validators.required],
-      organization: ['', Validators.required], 
+      organization: ['', Validators.required],
       amountIssued: ['', Validators.required],
       receiptingPoint: ['', Validators.required],
       bankAccountType: ['', Validators.required],
@@ -508,7 +510,7 @@ if (savedState) {
       exchangeRate: ['', [Validators.required, Validators.min(0)]],
       exchangeRates: [''],
       manualExchangeRate: ['', [Validators.required, Validators.min(0.01)]],
- charges: ['no', Validators.required],
+      charges: ['no', Validators.required],
       chargeAmount: [''],
       selectedChargeType: ['', Validators.required],
     });
@@ -559,16 +561,7 @@ if (savedState) {
         }
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -668,16 +661,7 @@ if (savedState) {
           }
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+          this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -697,17 +681,13 @@ if (savedState) {
       this.receiptService
         .postManualExchangeRate(
           this.selectedCurrencyCode,
-         this.defaultBranch?.id || this.selectedBranch?.id, // organizationId
-          this.loggedInUser.
-userName,
+          this.defaultBranch?.id || this.selectedBranch?.id, // organizationId
+          this.loggedInUser.userName,
           this.manualExchangeRate
         )
         .subscribe({
           next: (response) => {
-            this.globalMessagingService.displaySuccessMessage(
-              '',
-              response.msg
-            );
+            this.globalMessagingService.displaySuccessMessage('', response.msg);
 
             // ✅ After successful save, ensure the UI reflects the new value
             this.exchangeRate = this.manualExchangeRate;
@@ -808,16 +788,7 @@ userName,
         this.paymentModes = response.data;
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -900,7 +871,7 @@ userName,
     const chequeTypeControl = this.receiptingDetailsForm.get('chequeType');
     const documentDateControl = this.receiptingDetailsForm.get('documentDate');
 
-   // Reset all relevant controls first
+    // Reset all relevant controls first
     drawersBankControl?.enable();
     paymentRefControl?.enable();
     documentDateControl?.enable();
@@ -910,11 +881,11 @@ userName,
       paymentRefControl?.setValue(null);
       documentDateControl?.setValue(null);
       chequeTypeControl?.setValue(null);
-// Disable fields for CASH mode
+      // Disable fields for CASH mode
       drawersBankControl?.disable();
       paymentRefControl?.disable();
       documentDateControl?.disable();
-// Update UI flags
+      // Update UI flags
       this.makeFieldRequired = false;
       this.showfields = false;
       this.showChequeOptions = false;
@@ -922,11 +893,11 @@ userName,
       this.showfields = true;
       this.showChequeOptions = true;
       this.makeFieldRequired = true;
-// Enable fields for CHEQUE mode
+      // Enable fields for CHEQUE mode
       drawersBankControl?.enable();
       paymentRefControl?.enable();
       documentDateControl?.enable();
-// Additional handling for post-dated cheques
+      // Additional handling for post-dated cheques
       const chequeType = chequeTypeControl?.value;
       if (chequeType === 'post_dated_cheque') {
         this.makeFieldRequired = true;
@@ -936,7 +907,7 @@ userName,
       this.showfields = true;
       this.makeFieldRequired = true;
       this.showChequeOptions = false;
-drawersBankControl?.enable();
+      drawersBankControl?.enable();
       paymentRefControl?.enable();
       documentDateControl?.enable();
       chequeTypeControl?.setValue(null);
@@ -951,13 +922,13 @@ drawersBankControl?.enable();
     const dateInput = document.getElementById(
       'documentDate'
     ) as HTMLInputElement;
-if (paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque') {
+    if (paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque') {
       const today = new Date();
       today.setDate(today.getDate() + 1); // Tomorrow
       this.dateInput.nativeElement.min = this.formatDates(today);
       // Set the `min` attribute on the date input to tomorrow (disables today & past dates)
       dateInput.min = this.formatDates(today);
-const currentDocumentDate =
+      const currentDocumentDate =
         this.receiptingDetailsForm.get('documentDate')?.value;
       if (currentDocumentDate) {
         const selectedDate = new Date(currentDocumentDate);
@@ -978,7 +949,7 @@ const currentDocumentDate =
     } else {
       const todayDate = new Date();
       todayDate.setDate(todayDate.getDate());
- this.dateInput.nativeElement.min = this.formatDate(todayDate);
+      this.dateInput.nativeElement.min = this.formatDate(todayDate);
       //dateInput.min = ''; // Clear restrictions
     }
   }
@@ -1013,25 +984,16 @@ const currentDocumentDate =
               bankAccount: null,
             });
           }
-this.selectedBank = null;
-this.receiptingDetailsForm.patchValue({
+          this.selectedBank = null;
+          this.receiptingDetailsForm.patchValue({
             bankAccount: null,
             bankAccountType: null,
           });
-// Ensure `onBankSelected` is reset to false
+          // Ensure `onBankSelected` is reset to false
           this.onBankSelected = false;
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+          this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -1042,7 +1004,7 @@ this.receiptingDetailsForm.patchValue({
    */
   onBank(event: Event): void {
     const selectedBankValue = (event.target as HTMLSelectElement).value;
-//  Guard clause - Exit immediately if 'Select' option is chosen
+    //  Guard clause - Exit immediately if 'Select' option is chosen
     if (selectedBankValue === '' || selectedBankValue === 'Select') {
       // Add 'Select' if that's actually the value in the options
       this.selectedBankCode = null;
@@ -1050,11 +1012,11 @@ this.receiptingDetailsForm.patchValue({
       this.receiptingDetailsForm.patchValue({ receiptNumber: null });
       this.selectedBank = null;
       this.onBankSelected = false;
- return;
+      return;
     }
     this.selectedBankCode = +selectedBankValue;
     this.receiptDataService.setSelectedBank(this.selectedBankCode); // Store selected bank
-   // Find the selected bank object based on the code
+    // Find the selected bank object based on the code
     this.selectedBank = this.bankAccounts.find(
       (bank) => bank.code === this.selectedBankCode
     );
@@ -1069,7 +1031,7 @@ this.receiptingDetailsForm.patchValue({
       // this.onBankSelected = !!this.selectedBank;
       // this.onBankSelected = false;
     }
-// Only fetch points/receipts if a valid bank is selected
+    // Only fetch points/receipts if a valid bank is selected
     if (this.onBankSelected) {
       this.receiptService
         .getReceiptingPoints(
@@ -1099,19 +1061,10 @@ this.receiptingDetailsForm.patchValue({
             }
           },
           error: (err) => {
-            const customMessage = this.translate.instant('fms.errorMessage');
-            const backendError =
-              err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-            this.globalMessagingService.displayErrorMessage(
-              customMessage,
-              backendError
-            );
+            this.commonMethodsService.handleApiError(err);
           },
         });
- this.fetchReceiptNumber(
+      this.fetchReceiptNumber(
         this.defaultBranch?.id || this.selectedBranch?.id,
         this.loggedInUser.code
       );
@@ -1144,16 +1097,7 @@ this.receiptingDetailsForm.patchValue({
         }
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1169,16 +1113,7 @@ this.receiptingDetailsForm.patchValue({
         this.drawersBanks = data;
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1194,16 +1129,7 @@ this.receiptingDetailsForm.patchValue({
         this.filteredNarrations = [...this.narrations]; // Copy for display
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1216,12 +1142,12 @@ this.receiptingDetailsForm.patchValue({
    */
   onNarrationDropdownChange(event: any): void {
     const selectedValue = event.target.value;
- if (selectedValue) {
+    if (selectedValue) {
       this.originalNarration = selectedValue;
       this.isNarrationFromLov = true;
-// Populate the textarea with the selected narration
+      // Populate the textarea with the selected narration
       this.receiptingDetailsForm.get('narration')?.patchValue(selectedValue);
- // Reset the dropdown to visually empty state
+      // Reset the dropdown to visually empty state
       setTimeout(() => (event.target.value = ''), 0);
 
       // Remove the selected narration from the dropdown
@@ -1237,7 +1163,7 @@ this.receiptingDetailsForm.patchValue({
    */
   onNarrationTextChange(): void {
     const narrationText = this.receiptingDetailsForm.get('narration')?.value;
-// If the user clears the narration, add it back to the dropdown
+    // If the user clears the narration, add it back to the dropdown
     if (!narrationText && this.originalNarration) {
       this.filteredNarrations = [...this.narrations]; // Restore narrations
       this.originalNarration = null; // Reset original narration
@@ -1260,16 +1186,7 @@ this.receiptingDetailsForm.patchValue({
           this.charges = response.data;
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+          this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -1284,16 +1201,7 @@ this.receiptingDetailsForm.patchValue({
         this.chargeList = response.data;
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1336,12 +1244,12 @@ this.receiptingDetailsForm.patchValue({
     const charge = this.chargeList[index];
     this.editReceiptExpenseId = charge.id; // Store receiptExpenseId for this charge
     this.receiptChargeId = charge.receiptChargeId; // Store receiptChargeId if needed
-// Populate the form with the charge details
+    // Populate the form with the charge details
     this.receiptingDetailsForm.patchValue({
       selectedChargeType: charge.receiptChargeName,
       chargeAmount: charge.amount,
     });
-// Show the Submit button and hide Save button
+    // Show the Submit button and hide Save button
     this.isSubmitButtonVisible = true;
     this.isSaveBtnActive = false;
   }
@@ -1380,16 +1288,7 @@ this.receiptingDetailsForm.patchValue({
         }, 1000);
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1420,16 +1319,7 @@ this.receiptingDetailsForm.patchValue({
         this.chargeList.splice(index, 1); // Remove from list
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1442,7 +1332,7 @@ this.receiptingDetailsForm.patchValue({
       this.receiptingDetailsForm.get('selectedChargeType')?.value;
     const chargeAmount = this.receiptingDetailsForm.get('chargeAmount')?.value;
     this.chargeAmount = chargeAmount;
- const selectedCharge = this.charges.find(
+    const selectedCharge = this.charges.find(
       (charge) => charge.name === chargeType
     );
     this.receiptChargeId = selectedCharge.id; // Fetch the receiptChargeId
@@ -1474,7 +1364,7 @@ this.receiptingDetailsForm.patchValue({
     const selectedChargeType =
       this.receiptingDetailsForm.get('selectedChargeType')?.value;
     // Populate the form with the charge details
- if (
+    if (
       !chargeAmount ||
       !selectedChargeType ||
       !this.editReceiptExpenseId ||
@@ -1495,10 +1385,10 @@ this.receiptingDetailsForm.patchValue({
       receiptChargeAmount: chargeAmount, // Use the updated charge amount
       suspenseRct: 'N',
     };
- this.receiptService.postChargeManagement(payload).subscribe({
+    this.receiptService.postChargeManagement(payload).subscribe({
       next: (response) => {
-this.isSubmitButtonVisible = false; // Hide the Submit button after submission
-// Reset the form to clear input fields
+        this.isSubmitButtonVisible = false; // Hide the Submit button after submission
+        // Reset the form to clear input fields
         // Update chargeAmount input field with edited value
         this.receiptingDetailsForm.patchValue({
           chargeAmount: chargeAmount,
@@ -1516,16 +1406,7 @@ this.isSubmitButtonVisible = false; // Hide the Submit button after submission
         this.refreshCharges();
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
     this.receiptingDetailsForm.patchValue(chargeAmount);
@@ -1550,7 +1431,7 @@ this.isSubmitButtonVisible = false; // Hide the Submit button after submission
   private runValidation(): boolean {
     // Mark all fields as touched to trigger UI validation messages
     this.receiptingDetailsForm.markAllAsTouched();
-// Re-use your existing validation logic
+    // Re-use your existing validation logic
     const requiredFields = [
       'amountIssued',
       'bankAccount',
@@ -1560,7 +1441,7 @@ this.isSubmitButtonVisible = false; // Hide the Submit button after submission
       'receiptDate',
       'receivedFrom',
     ];
-for (const field of requiredFields) {
+    for (const field of requiredFields) {
       const control = this.receiptingDetailsForm.get(field);
       if (control && control.invalid) {
         this.globalMessagingService.displayErrorMessage(
@@ -1571,11 +1452,11 @@ for (const field of requiredFields) {
         return false;
       }
     }
- const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
+    const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
     const paymentRef = this.receiptingDetailsForm.get('paymentRef')?.value;
     const drawersBank = this.receiptingDetailsForm.get('drawersBank')?.value;
     const documentDate = this.receiptingDetailsForm.get('documentDate')?.value;
- if (paymentMode && paymentMode.toLowerCase() !== 'cash') {
+    if (paymentMode && paymentMode.toLowerCase() !== 'cash') {
       if (!paymentRef) {
         this.showValidationError(
           'Payment Reference is required for non-cash payment modes.'
@@ -1598,7 +1479,7 @@ for (const field of requiredFields) {
         return false;
       }
     }
-// The post-dated cheque validation
+    // The post-dated cheque validation
     const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
     if (
       paymentMode === 'CHEQUE' &&
@@ -1611,7 +1492,7 @@ for (const field of requiredFields) {
       this.isFormValid = false;
       return false;
     }
-// If all checks pass:
+    // If all checks pass:
     this.isFormValid = true;
     return true;
   }
@@ -1633,7 +1514,7 @@ for (const field of requiredFields) {
   handleStepNavigation(stepNumber: number): void {
     const targetStep = this.steps.find((s) => s.number === stepNumber);
     if (!targetStep) return; // Should not happen
-// If the user is trying to navigate to the next step (or any future step)
+    // If the user is trying to navigate to the next step (or any future step)
     if (stepNumber > 1) {
       // Current step is 1
       if (this.runValidation()) {
@@ -1641,7 +1522,7 @@ for (const field of requiredFields) {
         this.saveFormState(); // Always save state before navigating
         this.receiptDataService.setReceiptData(
           this.receiptingDetailsForm.value
-        ); 
+        );
         this.router.navigate([targetStep.link]);
       }
       // If validation fails,Do nothing.
@@ -1682,7 +1563,7 @@ for (const field of requiredFields) {
    * @returns {void}
    */
   onBack() {
-    this.router.navigate(['/home/fms/']); 
+    this.router.navigate(['/home/fms/']);
   }
   /**
    * Navigates to the next screen
@@ -1702,6 +1583,6 @@ for (const field of requiredFields) {
     this.saveFormState();
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
     const formData = this.receiptDataService.getReceiptData();
- this.router.navigate(['/home/fms/client-search']); 
+    this.router.navigate(['/home/fms/client-search']);
   }
 }
