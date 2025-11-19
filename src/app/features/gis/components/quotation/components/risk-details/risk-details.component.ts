@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
@@ -103,6 +104,8 @@ export class RiskDetailsComponent {
   showMotorSubclassFields: boolean = false;
   showNonMotorSubclassFields: boolean = false;
   dateFormat: string;
+  primeNgDateFormat: string; // PrimeNG format
+  private datePipe: DatePipe = new DatePipe('en-US');
   coverFromDate: string;
   coverToDate: string;
   midnightexpiry: any;
@@ -530,6 +533,12 @@ export class RiskDetailsComponent {
     const dynamicFormFields = JSON.parse(sessionStorage.getItem('dynamicSubclassFormField'));
     this.dynamicSubclassFormFields = dynamicFormFields
     log.debug("Date Formart", this.dateFormat)
+    
+    // Convert dateFormat to PrimeNG format
+    this.primeNgDateFormat = this.dateFormat
+      .replace('yyyy', 'yy')
+      .replace('MM', 'mm');
+    
     // this.updateRiskDetailsForm();
     this.createScheduleDetailsForm();
     this.createSectionDetailsForm();
@@ -8145,6 +8154,44 @@ export class RiskDetailsComponent {
       }
     });
 
+  }
+
+  /**
+   * Format date for display in templates
+   * Returns formatted date string or placeholder if date is null/invalid
+   */
+  formatDateDisplay(date: any, placeholder: string = '—'): string {
+    if (!date) {
+      return placeholder;
+    }
+    
+    try {
+      const rawDate = new Date(date);
+      
+      // Check if date is valid
+      if (isNaN(rawDate.getTime())) {
+        return placeholder;
+      }
+      
+      // Use the date format from session storage
+      const formattedDate = this.datePipe.transform(rawDate, this.dateFormat);
+      return formattedDate || placeholder;
+    } catch (error) {
+      log.error('Error formatting date for display:', error);
+      return placeholder;
+    }
+  }
+
+  /**
+   * Check if a field name represents a date field
+   * Used to determine if formatting should be applied
+   */
+  isDateField(fieldName: string): boolean {
+    const dateFieldPatterns = [
+      'date', 'Date', 'from', 'From', 'to', 'To',
+      'wef', 'wet', 'expiry', 'Expiry', 'prepared', 'Prepared'
+    ];
+    return dateFieldPatterns.some(pattern => fieldName.includes(pattern));
   }
 
 }

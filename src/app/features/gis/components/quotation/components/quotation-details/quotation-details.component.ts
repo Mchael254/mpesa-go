@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
@@ -119,7 +120,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   clientId: number;
   today = new Date();
   userCode: number;
-  dateFormat: any;
+  dateFormat: string = 'dd-MMM-yyyy'; // Default format
+  primeNgDateFormat: string = 'dd-M-yy'; // PrimeNG format
+  private datePipe: DatePipe = new DatePipe('en-US');
   minDate: Date | undefined;
 
   todaysDate: Date;
@@ -378,6 +381,20 @@ log.debug("🎯 Final quotationSourceFlag in constructor:", this.quotationSource
   ngOnInit(): void {
     this.getuser();
     this.getAgents();
+
+    // Load date format from session storage
+    const storedDateFormat = sessionStorage.getItem('dateFormat');
+    if (storedDateFormat) {
+      this.dateFormat = storedDateFormat;
+      log.debug("Loaded date format from session storage:", this.dateFormat);
+    } else {
+      log.debug("Using default date format:", this.dateFormat);
+    }
+
+    // Convert dateFormat to PrimeNG format
+    this.primeNgDateFormat = this.dateFormat
+      .replace('yyyy', 'yy')
+      .replace('MM', 'mm');
 
     // Initialize client form control with the client code from session storage if exists
     const storedClientCode = sessionStorage.getItem('SelectedClientCode');
@@ -1226,6 +1243,11 @@ fetchQuotationDetails(quotationCode: number) {
     log.debug('Organization Date Format:', this.dateFormat);
     sessionStorage.setItem('dateFormat', this.dateFormat);
 
+    // Convert dateFormat to PrimeNG format
+    this.primeNgDateFormat = this.dateFormat
+      .replace('yyyy', 'yy')
+      .replace('MM', 'mm');
+
     const todaysDate = new Date();
     log.debug('todays date before being formatted', todaysDate);
 
@@ -1655,22 +1677,73 @@ fetchQuotationDetails(quotationCode: number) {
     )
   }
 
+  /**
+   * Format date for backend API (ISO format: YYYY-MM-DD)
+   * @param date - Date to format
+   * @returns Formatted date string in YYYY-MM-DD format
+   */
   formatDate(date: string | Date | null): string {
     if (!date) return '';
 
-    // Ensure the date is a Date object
-    const parsedDate = typeof date === 'string' ? new Date(date) : date;
+    try {
+      // Ensure the date is a Date object
+      const parsedDate = typeof date === 'string' ? new Date(date) : date;
 
-    if (isNaN(parsedDate.getTime())) {
-      console.error('Invalid date:', date);
+      if (isNaN(parsedDate.getTime())) {
+        log.error('Invalid date:', date);
+        return '';
+      }
+
+      // Always use ISO format (YYYY-MM-DD) for backend API
+      const formattedDate = this.datePipe.transform(parsedDate, 'yyyy-MM-dd');
+      return formattedDate || '';
+    } catch (error) {
+      log.error('Error formatting date:', error);
       return '';
     }
+  }
 
-    const year = parsedDate.getFullYear();
-    const month = String(parsedDate.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(parsedDate.getDate()).padStart(2, '0');
+  /**
+   * Format date for display in templates
+   * Returns formatted date string or placeholder if date is null/invalid
+   */
+  formatDateDisplay(date: any, placeholder: string = '—'): string {
+    if (!date) {
+      return placeholder;
+    }
+    
+    try {
+      const rawDate = new Date(date);
+      
+      // Check if date is valid
+      if (isNaN(rawDate.getTime())) {
+        return placeholder;
+      }
+      
+      // Use the date format from session storage
+      const formattedDate = this.datePipe.transform(rawDate, this.dateFormat);
+      return formattedDate || placeholder;
+    } catch (error) {
+      log.error('Error formatting date for display:', error);
+      return placeholder;
+    }
+  }
 
-    return `${year}-${month}-${day}`;
+  /**
+   * Check if a field name represents a date field
+   * Used to determine if formatting should be applied
+   */
+  isDateField(fieldName: string): boolean {
+    const dateFieldPatterns = [
+      'date', 'Date', 'DATE',
+      'wef', 'wet',
+      'created', 'updated', 'modified',
+      'timestamp', 'time'
+    ];
+    
+    return dateFieldPatterns.some(pattern => 
+      fieldName.toLowerCase().includes(pattern.toLowerCase())
+    );
   }
 
   /**

@@ -718,12 +718,14 @@ export class ImportRisksComponent {
     if (extension === 'csv') {
       const jsonData = await this.convertCsvToJson(this.selectedFile);
       console.log("JSON output after uploading:", jsonData);
+
       const importedriskPaylod = this.mapCsvToFullPayload(jsonData)
+      log.debug("📋 First Item Sample:", importedriskPaylod[0]);
+
       this.uploadImportedRisk(importedriskPaylod)
 
     }
 
-    // You can also handle XLS/XLSX differently if needed
   }
 
 
@@ -869,6 +871,43 @@ export class ImportRisksComponent {
       reader.readAsText(file);
     });
   }
+
+  /**
+   * Parses CSV date string from DD-MM-YYYY format to ISO date string YYYY-MM-DD
+   * @param dateString - Date in format DD-MM-YYYY (e.g., "19-06-2025")
+   * @returns ISO formatted date string or empty string if invalid
+   */
+  parseCsvDate(dateString: string): string {
+    if (!dateString) return "";
+
+    try {
+      const parts = dateString.trim().split('-');
+
+      if (parts.length !== 3) {
+        log.warn(`Invalid date format: ${dateString}`);
+        return "";
+      }
+
+      const [day, month, year] = parts;
+
+      // Convert to ISO format: YYYY-MM-DD
+      const isoDate = `${year}-${month}-${day}`;
+
+      // Validate the date is actually valid
+      const dateObj = new Date(isoDate);
+      if (isNaN(dateObj.getTime())) {
+        log.warn(`Invalid date value: ${dateString}`);
+        return "";
+      }
+
+      log.debug(`Parsed date: ${dateString} -> ${isoDate}`);
+      return isoDate;
+    } catch (error) {
+      log.error(`Error parsing date ${dateString}:`, error);
+      return "";
+    }
+  }
+
   mapCsvToFullPayload(csvData: any[]): any[] {
     return csvData.map(row => ({
 
@@ -877,16 +916,16 @@ export class ImportRisksComponent {
       agentClientId: row["INSURED ID"] || "",
       agentClientName: row["INSURED NAME"] || "",
       agentClientSurname: "",
-      withEffectFrom: row["EFF DATE"],
+      withEffectFrom: this.parseCsvDate(row["EFF DATE"]),
       agentPolicyId: "",
       insuranceClass: "",
       coverType: row["Cover Type"] || "",
-      withEffectTo: row["EXP DATE"],
+      withEffectTo: this.parseCsvDate(row["EXP DATE"]),
       transactionDateString: "",
       transactionNo: "",
-      premium: (row["PREMIUM"]) || 0,
-      taxes: (row["LEVIES"]) || 0,
-      propertyId: (row["REG NO"]),
+      premium: Number(row["PREMIUM"]) || 0,
+      taxes: Number(row["LEVIES"]) || 0,
+      propertyId: row["REG NO"] || "",
       make: row["Make/Model"] || "",
       model: row["Model /Type"] || "",
       yearOfManufacture: row["YOM"] ? Number(row["YOM"]) : 0,
@@ -2095,6 +2134,32 @@ export class ImportRisksComponent {
     flatten(this.selectedRisk);
 
     log.debug('Patched form:', this.riskDetailsForm.value);
+  }
+
+  saveRiskDetail() {
+    // Validate quotation code exists
+    if (!this.quotationCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Quotation code is required.');
+      log.error('Cannot save risk details: quotationCode is missing');
+      return;
+    }
+
+    log.debug('Saving risk details for quotation code:', this.quotationCode);
+
+    this.quotationService.saveRiskDetails(this.quotationCode).subscribe({
+      next: (response) => {
+        log.debug('Risk details saved successfully:', response);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Risk details saved successfully!');
+
+        // Optionally refresh the uploaded risks after saving
+        this.fetchUploadedRisks();
+      },
+      error: (err) => {
+        log.error('Failed to save risk details:', err);
+        const errorMessage = err.error?.message || 'Failed to save risk details. Please try again.';
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    })
   }
 
   deleteRisks(selectedRows: any[], type: 'single' | 'bulk') {

@@ -169,15 +169,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
       })
   }
 
-
-
-
-
-
-
-
-
-
   ngAfterViewInit() {
     if (this.addMoreBenefitsModalRef?.nativeElement) {
       this.bsModalInstance = bootstrap.Modal.getOrCreateInstance(this.addMoreBenefitsModalRef.nativeElement);
