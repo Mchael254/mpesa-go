@@ -249,14 +249,12 @@ export class DmsService {
     const params = new HttpParams().set('riskID', `${riskID}`);
     log.info('Fetching documents for Risk ID: ', `${riskID}`);
 
-    return this.api.GET<DmsDocument[]>(
+  return this.api.GET<DmsDocument[]>(
       `getValuationDocs?${params}`,
       API_CONFIG.DMS_SERVICE
     );
   }
-  //fms uploadFile endpoint
   uploadFiles(requests: ReceiptUploadRequest[]): Observable<any> {
-    //const payload = requests.map((r)=>JSON.stringify(r)).join(',');
     return this.api.POST<any>(
       `uploadAllFinanceDocument`,
       JSON.stringify(requests),
