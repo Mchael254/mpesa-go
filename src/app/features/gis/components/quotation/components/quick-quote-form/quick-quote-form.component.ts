@@ -2444,7 +2444,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       premium: totalPremium,
       branchCode: this.userBranchId || 1,
       comments: formModel.quotComment,
-      clientType: 'I'
+      clientType: 'I',
+      quoteType: 'QQ',
     }
   }
 
