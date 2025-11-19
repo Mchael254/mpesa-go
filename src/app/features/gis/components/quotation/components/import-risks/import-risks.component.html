@@ -67,7 +67,7 @@
         <div class="d-flex justify-content-between align-items-center ">
 
           <!-- LEFT: Tabs -->
-          <ul class="nav nav-tabs" id="riskTabs" role="tablist">
+          <!-- <ul class="nav nav-tabs" id="riskTabs" role="tablist">
             <li class="nav-item" role="presentation">
               <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#allRisksTab" type="button"
                 (click)="activeTab = 'ALL'">
@@ -88,7 +88,31 @@
                 Needs review
               </button>
             </li>
+          </ul> -->
+          <ul class="nav nav-tabs" id="riskTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" [ngClass]="{'active': activeTab === 'ALL'}" data-bs-toggle="tab"
+                data-bs-target="#allRisksTab" type="button" (click)="activeTab = 'ALL'">
+                All risks
+              </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" [ngClass]="{'active': activeTab === 'VALID'}" data-bs-toggle="tab"
+                data-bs-target="#validTab" type="button" (click)="activeTab = 'VALID'">
+                Valid
+              </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" [ngClass]="{'active': activeTab === 'REVIEW'}" data-bs-toggle="tab"
+                data-bs-target="#reviewTab" type="button" (click)="activeTab = 'REVIEW'">
+                Needs review
+              </button>
+            </li>
           </ul>
+
+
 
           <!-- RIGHT: Buttons -->
           <div>
@@ -96,9 +120,11 @@
               Validate
             </button>
 
-            <button class="btn btn-primary" (click)="deleteRisks()">
-              Delete
+            <button class="btn btn-primary" [disabled]="isBulkDeleting" (click)="deleteSelectedRisks()">
+              <i *ngIf="isBulkDeleting" class="pi pi-spin pi-spinner me-2"></i>
+              {{ isBulkDeleting ? 'Deleting...' : 'Delete' }}
             </button>
+
           </div>
 
         </div>
@@ -106,7 +132,7 @@
         <div class="tab-content ">
 
           <!-- ALL risks  TAB -->
-          <div class="tab-pane fade show active" id="allRisksTab" role="tabpanel">
+          <div class="tab-pane fade " [ngClass]="{'show active': activeTab === 'ALL'}" id="allRisksTab" role="tabpanel">
             <p-table [value]="allRisks" [resizableColumns]="true" [(selection)]="selectedAll"
               [paginator]="allRisks?.length > 10" [rowsPerPageOptions]="[10, 20, 100]" [rows]="10"
               (selectionChange)="onRiskSelectionChange($event)">
@@ -122,6 +148,7 @@
                   <th>Premium Band</th>
                   <th>Cover from</th>
                   <th>Cover to</th>
+                  <th style="width:120px; text-align:center;">Actions</th>
                 </tr>
               </ng-template>
 
@@ -135,6 +162,20 @@
                   <td>{{ row.binderCode }}</td>
                   <td>{{ row.withEffectFrom }}</td>
                   <td>{{ row.withEffectTo }}</td>
+                  <!-- ACTION BUTTONS -->
+                  <td style="text-align:center;">
+                    <!-- Edit button -->
+                    <button class="text-button" (click)="openEditRiskModal(row);">
+                      Edit
+                    </button>
+
+                    <!-- Delete button -->
+                    <button class="text-button" [disabled]="isSingleDeleting" (click)="deleteSingleRisk(row)">
+                      Delete
+                    </button>
+                  </td>
+
+
 
                 </tr>
               </ng-template>
@@ -143,7 +184,7 @@
 
 
           <!-- VALID TAB -->
-          <div class="tab-pane fade" id="validTab" role="tabpanel">
+          <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'VALID'}" id="validTab" role="tabpanel">
             <p-table [value]="validRisks" [resizableColumns]="true" [(selection)]="selectedValid"
               (selectionChange)="onRiskSelectionChange($event)">
               <ng-template pTemplate="header">
@@ -171,12 +212,15 @@
                   <td>{{ row.withEffectFrom }}</td>
                   <td>{{ row.withEffectTo }}</td>
 
-                  <!-- Action buttons -->
                   <td style="text-align:center;">
-                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-1">
+                    <!-- Edit button -->
+                    <button class="text-button" (click)="openEditRiskModal(row);">
+                      Edit
                     </button>
 
-                    <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm p-1">
+                    <!-- Delete button -->
+                    <button class="text-button" [disabled]="isSingleDeleting" (click)="deleteSingleRisk(row)">
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -187,7 +231,7 @@
 
 
           <!-- NEEDS REVIEW TAB -->
-          <div class="tab-pane fade" id="reviewTab" role="tabpanel">
+          <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'REVIEW'}" id="reviewTab" role="tabpanel">
             <p-table [value]="needsReviewRisks" [resizableColumns]="true" [(selection)]="selectedReview"
               (selectionChange)="onRiskSelectionChange($event)">
               <ng-template pTemplate="header">
@@ -205,24 +249,27 @@
               </ng-template>
 
               <ng-template pTemplate="body" let-row>
-                <tr>
+                <tr *ngFor="let row of needsReviewRisks" [attr.data-bs-toggle]="'tooltip'"
+                  [attr.title]="row.validationRemarks" class="tooltip-row">
                   <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
 
-                  <td>{{ row.ClientCode }}</td>
-                  <td>{{ row.ClientName }}</td>
-                  <td>{{ row.WEF }}</td>
-                  <td>{{ row.WET }}</td>
-                  <td>{{ row.PremiumBind }}</td>
-                  <td>{{ row.PropertyId }}</td>
-                  <td>{{ row.ItemDesc }}</td>
-                  <td>{{ row.CoverTypeShortDesc }}</td>
+                  <td>{{ row.insuredName | sentenceCase }}</td>
+                  <td>{{ row.propertyId | sentenceCase }}</td>
+                  <td>{{ row.riskDescription | sentenceCase }}</td>
+                  <td>{{ row.coverType | sentenceCase}}</td>
+                  <td>{{ row.binderCode }}</td>
+                  <td>{{ row.withEffectFrom }}</td>
+                  <td>{{ row.withEffectTo }}</td>
 
-                  <!-- ACTION BUTTONS -->
                   <td style="text-align:center;">
-                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-1">
+                    <!-- Edit button -->
+                    <button class="text-button" (click)="openEditRiskModal(row);">
+                      Edit
                     </button>
 
-                    <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm p-1">
+                    <!-- Delete button -->
+                    <button class="text-button" [disabled]="isSingleDeleting" (click)="deleteSingleRisk(row)">
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -234,6 +281,281 @@
         </div>
 
       </div>
+      <div class="modal fade" id="addRisk" #addRiskModal tabindex="-1" role="dialog" aria-labelledby="addRiskLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-content">
+
+            <div class="modal-body">
+              <!-- <div *ngIf="motorClassAllowed == 'Y'">
+                                  <ngx-spinner *ngIf="showModalSpinner" name="modal-spinner" [fullScreen]="false"
+                                      bdColor="rgba(255,255,255,0.8)" color="#00529B" type="ball-spin-clockwise" size="medium"
+                                      class="modal-overlay-spinner">
+                                      <p style="color:#00529B">Scanning logbook...</p>
+                                  </ngx-spinner>
+      
+                              </div> -->
+
+              <h5 *ngIf="!isEditMode" class="modal-title mt-3 mb-2 addRiskTitle ">
+                {{ 'gis.quotation.add_risk' | translate }}
+                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+              </h5>
+
+              <h5 *ngIf="isEditMode" class="modal-title mt-3 mb-2 addRiskTitle ">
+                {{ 'gis.quotation.edit_risk' | translate }}
+                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+              </h5>
+
+
+
+              <form [formGroup]="riskDetailsForm">
+                <div class="row ">
+                  <ng-container *ngFor="let field of formData; let i = index">
+                    <div class="col-sm-6 col-6 mb-4">
+                      <div class="form-group form-group-sm">
+                        <label *ngIf="field.name" [attr.for]="i + field.name" id="quote-label"
+                          [ngClass]="{ 'required': field.isMandatory === 'Y' }">
+                          {{ field.label | translate }}
+                        </label>
+
+
+                        <!-- text input -->
+                        <input *ngIf="field.type === 'text'" type="text" class="form-control"
+                          [formControlName]="field.name" [attr.placeholder]="field.label | translate" />
+
+                        <!-- select -->
+
+                        <ng-container
+                          *ngIf="field.name !== 'insureds' && riskDetailsForm && riskDetailsForm.contains(field.name)">
+                          <p-dropdown *ngIf="field.type === 'select'" [formControlName]="field.name"
+                            [options]="field.selectOptions" optionLabel="label" optionValue="value" [filter]="true"
+                            [showClear]="true" [attr.placeholder]="field.label | translate">
+                          </p-dropdown>
+                        </ng-container>
+
+                        <!-- INSURED -->
+                        <ng-container *ngIf="field.name === 'insureds' && clientsData?.length">
+                          <p-dropdown formControlName="insureds" [options]="clientsData" optionLabel="clientFullName"
+                            [filter]="true" filterBy="clientFullName">
+
+                          </p-dropdown>
+                        </ng-container>
+
+
+                        <!-- <ng-container *ngIf="field.name === 'insureds' && clientsData?.length">
+                                                      <p-dropdown formControlName="insureds" [options]="clientsData"
+                                                          optionLabel="clientFullName" optionValue="id"
+                                                          placeholder="Select Insured" [filter]="true"
+                                                          filterBy="clientFullName">
+                                                      </p-dropdown>
+                                                  </ng-container> -->
+
+                        <!-- date -->
+                        <ng-container
+                          *ngIf="field.name !== 'coverFrom' && field.name !== 'coverTo' && riskDetailsForm && riskDetailsForm.contains(field.name)">
+                          <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
+                            [dateFormat]="dateFormat" [showIcon]="true" [attr.placeholder]="field.label | translate">
+                          </p-calendar>
+                        </ng-container>
+
+
+                        <!-- number -->
+                        <input *ngIf="field.type === 'number'" type="text" class="form-control"
+                          [formControlName]="field.name" [attr.placeholder]="field.label | translate" />
+
+                        <!-- currency -->
+                        <input *ngIf="field.type === 'currency'" type="text" class="form-control" currencyMask
+                          [options]="currencyObj" [formControlName]="field.name"
+                          [attr.placeholder]="field.label | translate" />
+
+                        <!-- validation -->
+                        <div *ngIf="
+                                                      riskDetailsForm.get(field.name)?.invalid &&
+                                                      riskDetailsForm.get(field.name)?.touched"
+                          class="text-danger small mt-1">
+                          {{ field.label | translate }} is required.
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+
+                  <!-- dynamic subclass fields -->
+                  <ng-container *ngFor="let field of subclassFormData; let j = index">
+                    <div *ngIf="field.name !== 'ncdLevel' || ncdStatusSelected" class="col-sm-6 col-6 mb-4">
+                      <div class="form-group form-group-sm">
+                        <!-- <label *ngIf="field.name" [attr.for]="j + field.name" id="quote-label"
+                                                      [ngClass]="{ required: field.isMandatory === 'Y' }">
+                                                      {{ field.label | translate }}
+                                                  </label> -->
+                        <label *ngIf="field.name !== 'ncdLevel' || ncdStatusSelected" [attr.for]="j + field.name"
+                          id="quote-label" [ngClass]="{ required: field.isMandatory === 'Y' }">
+                          {{ field.label | translate }}
+                        </label>
+
+
+                        <!-- text input fields -->
+                        <ng-container
+                          *ngIf="field.name !== 'registrationNumber' && field.name !== 'riskDescription' && field.name !== 'ncdStatus' && field.name !== 'coverDays' && riskDetailsForm && riskDetailsForm.contains(field.name)">
+
+                          <input *ngIf="field.type === 'text'" type="text" class="form-control "
+                            [formControlName]="field.name" />
+                        </ng-container>
+                        <ng-container *ngIf="field.name === 'ncdStatus'">
+                          <div *ngIf="field.name === 'ncdStatus'">
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" type="radio" formControlName="ncdStatus" id="ncdStatusYes"
+                                value="Y" (change)="onNcdStatusChange($event)">
+                              <label class="form-check-label quote-label" for="ncdStatusYes">
+                                {{ 'gis.quotation.yes' |
+                                translate }}</label>
+                            </div>
+                            <div class="form-check form-check-inline ms-4">
+                              <input class="form-check-input" type="radio" formControlName="ncdStatus" id="ncdStatusNo"
+                                value="N" (change)="onNcdStatusChange($event)">
+                              <label class="form-check-label quote-label" for="ncdStatusNo">
+                                {{
+                                'gis.quotation.no' |
+                                translate }}</label>
+                            </div>
+                          </div>
+                        </ng-container>
+                        <ng-container *ngIf="field.name === 'registrationNumber'">
+                          <input type="text" id="quote-input" class="form-control form-control-sm "
+                            formControlName="registrationNumber"
+                            (input)="riskIdPassed($event); transformToUpperCase($event)" placeholder="KAA 123X">
+                        </ng-container>
+                        <ng-container *ngIf="motorClassAllowed =='Y' && field.name === 'riskDescription'">
+                          <input type="text" id="quote-input" class="form-control   readonly-input"
+                            formControlName="riskDescription" [readonly]="true" [value]="vehiclemakeModel">
+
+                        </ng-container>
+                        <ng-container *ngIf="field.name === 'coverDays'">
+                          <input type="text" id="quote-input" class="form-control   bg-light text-muted"
+                            formControlName="coverDays" [readonly]="true">
+
+                        </ng-container>
+                        <ng-container *ngIf="motorClassAllowed =='N' && field.name === 'riskDescription'">
+                          <input type="text" id="quote-input" class="form-control " formControlName="riskDescription">
+
+                        </ng-container>
+                        <!-- select fields -->
+                        <ng-container *ngIf="field.name !== 'yearOfManufacture' 
+                                                               && field.name !== 'periodRates'
+                                                               && field.name !== 'conveyanceType'
+                                                                && field.name !== 'territory'
+                                                                 && field.name !== 'ncdLevel'
+                                                              && riskDetailsForm 
+                                                              && riskDetailsForm.contains(field.name)">
+                          <p-dropdown *ngIf="field.type === 'select'" [formControlName]="field.name"
+                            [options]="field.selectOptions" optionLabel="label" optionValue="value" [filter]="true"
+                            [showClear]="true" [attr.placeholder]="field.label | translate"
+                            (onChange)="handleSelectChange(field.name, $event)">
+                          </p-dropdown>
+                        </ng-container>
+                        <!-- YEAR OF MANUFACTURE -->
+                        <ng-container *ngIf="field.name === 'yearOfManufacture'">
+                          <!-- <p-dropdown formControlName="yearOfManufacture" [options]="yearList"
+                                                          placeholder="" [filter]="true" filterBy="label">
+                                                      </p-dropdown> -->
+                          <p-dropdown formControlName="yearOfManufacture" [options]="yearList" optionLabel="label"
+                            optionValue="value" [filter]="true" filterBy="label" [showClear]="true">
+                          </p-dropdown>
+                        </ng-container>
+                        <!-- MARINE AND FIRE FIELDS -->
+                        <!-- PERIOD RATES -->
+                        <ng-container *ngIf="field.name === 'periodRates'">
+                          <p-dropdown formControlName="periodRates" [options]="periodRates" optionValue="label"
+                            placeholder="" [filter]="true" optionLabel="label">
+                          </p-dropdown>
+                        </ng-container>
+                        <!-- CONVEYANCE TYPE -->
+                        <ng-container *ngIf="field.name === 'conveyanceType'">
+                          <p-dropdown formControlName="conveyanceType" [options]="conveyannceTypes" placeholder=""
+                            [filter]="true" optionLabel="label" optionValue="value">
+                          </p-dropdown>
+                        </ng-container>
+                        <!-- NCD Level -->
+                        <ng-container *ngIf="ncdStatusSelected && field.name === 'ncdLevel'">
+                          <p-dropdown formControlName="ncdLevel" [options]="ncdLevels" placeholder="" [filter]="true"
+                            optionLabel="label" optionValue="value">
+                          </p-dropdown>
+                        </ng-container>
+                        <!-- TERRITORIES -->
+                        <ng-container *ngIf="field.name === 'territory'">
+                          <p-dropdown formControlName="territory" [options]="territories" placeholder="" [filter]="true"
+                            optionLabel="description" optionValue="description">
+                          </p-dropdown>
+                        </ng-container>
+                        <!-- DATE -->
+                        <ng-container
+                          *ngIf="field.name !== 'coverFrom' && field.name !== 'coverTo' && riskDetailsForm && riskDetailsForm.contains(field.name)">
+                          <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
+                            [dateFormat]="dateFormat" [showIcon]="true" [attr.placeholder]="field.label | translate">
+                          </p-calendar>
+                        </ng-container>
+                        <!-- Cover From -->
+                        <p-calendar *ngIf="field.name === 'coverFrom'" [formControlName]="field.name"
+                          [dateFormat]="dateFormat" [showIcon]="true" [attr.placeholder]="field.label | translate"
+                          (onSelect)="onDateChange()">
+                        </p-calendar>
+
+                        <!-- Cover To -->
+                        <p-calendar *ngIf="field.name === 'coverTo'" [formControlName]="field.name"
+                          [dateFormat]="dateFormat" [showIcon]="true" [attr.placeholder]="field.label | translate"
+                          (onSelect)="onDateChange()">
+                        </p-calendar>
+
+
+                        <!-- number -->
+                        <input *ngIf="field.type === 'number'" type="number" class="form-control"
+                          [formControlName]="field.name" />
+
+                        <!-- currency -->
+                        <input *ngIf="field.type === 'currency'" type="text" class="form-control" currencyMask
+                          [options]="currencyObj" [formControlName]="field.name"
+                          [attr.placeholder]="field.label | translate" />
+                        <div
+                          *ngIf="riskDetailsForm.get(field.name)?.touched && riskDetailsForm.get(field.name)?.errors as errors"
+                          class="text-danger small mt-1">
+
+                          <div *ngIf="errors['required']">
+                            {{ field.label | translate }} {{
+                            'gis.quotation.is_required' | translate }}
+                          </div>
+
+                          <div *ngIf="errors['pattern']">
+                            {{ field.label | translate }}
+                            {{ 'gis.quotation.format_is_invalid' | translate }}
+                          </div>
+
+                        </div>
+
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </form>
+
+
+              <div class="mt-5 d-flex justify-content-end">
+                <button type="button" class="btn btn-outline-primary mx-2" id="saveDetails"
+                  data-bs-dismiss="modal">{{'gis.policy.cancel' |
+                  translate}}</button>
+                <!-- <button *ngIf="!isEditMode" type="button" class="btn btn-primary " id="saveDetails"> {{
+                  'gis.quotation.save' | translate }}</button> -->
+                <button *ngIf="isEditMode" type="button" class="btn btn-primary " id="saveDetails"
+                  (click)="saveEditedRisk()"> {{
+                  'gis.quotation.save_changes' | translate
+                  }}</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
 
       <!-- Mapping Modal -->
       <div *ngIf="showMappingModal" class="modal-overlay">

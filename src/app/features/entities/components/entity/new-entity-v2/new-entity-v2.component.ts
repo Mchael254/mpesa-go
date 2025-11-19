@@ -45,9 +45,9 @@ import { AccountsEnum } from "../../../data/enums/accounts-enum";
 import { AccountService } from "../../../services/account/account.service";
 import {
   AccountTypeDTO,
-  AddressV2DTO,
+  AddressV2DTO, AgentDTO,
   AgentV2DTO,
-  ContactDetailsV2DTO,
+  ContactDetailsV2DTO, Cr12DetailsDTO,
   IntermediaryRefereeDTO,
   PaymentDetailsDTO, WealthAmlDetailsDTO
 } from "../../../data/AgentDTO";
@@ -58,6 +58,8 @@ import { TableLazyLoadEvent } from "primeng/table";
 import { GenericResponse } from "../../../../fms/data/receipting-dto";
 import { GLAccountDTO } from "../../../../fms/data/receipt-management-dto";
 import { ReceiptManagementService } from "../../../../fms/services/receipt-management.service";
+import {ChannelService} from "../../../../crm/services/channel.service";
+import {ChannelsDTO} from "../../../../crm/data/channels";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -144,6 +146,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   payeeDetails: Payee[] = [];
   ownershipDetails: OwnerDetail[] = [];
   cr12Details: Cr12Detail[] = [];
+  channelsData: ChannelsDTO[] = [];
+  relationshipManagersData: AgentDTO[] = [];
 
   shouldUploadProfilePhoto: boolean = false;
   isCategorySelected: boolean = false;
@@ -188,9 +192,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     accountName: string;
     accountNumber: string;
   } = {
-      accountName: '',
-      accountNumber: '',
-    };
+    accountName: '',
+    accountNumber: '',
+  };
   filteredGlAccounts: GLAccountDTO[] = [];
   columns: any = [
     { field: 'accountNumber', header: 'ID', visible: true },
@@ -218,6 +222,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     private authService: AuthService,
     private receiptManagementService: ReceiptManagementService,
     private clientsService: ClientService,
+    private channelService: ChannelService,
   ) {
 
     this.uploadForm = this.fb.group({
@@ -498,13 +503,13 @@ export class NewEntityV2Component implements OnInit, OnChanges {
          }
        })
      }*!/
- 
+
      for (const section of formGroupSections) {
        const { subGroup = [], groupId } = section;
        formGroupSections.forEach(section => {
          section.fields = [];
        });
- 
+
        if (!subGroup.length) {
          const sectionFields = fields.filter(f => f.formGroupingId === groupId);
          log.info("subGroup is empty for groupId:", groupId);
@@ -513,11 +518,11 @@ export class NewEntityV2Component implements OnInit, OnChanges {
          this.createFieldsByPresentationType(groupId, sectionFields)
          continue;
        }
- 
+
        for (const sg of subGroup) {
          const { subGroupId, presentationType } = sg;
          const subGroupFields = fields.filter(f => f.formSubGroupingId === subGroupId);
- 
+
          if (presentationType === "fields") {
            log.info("subGroup presentationType 'fields':", subGroupId, groupId);
            log.info("fields for fields", subGroupFields);
@@ -528,13 +533,13 @@ export class NewEntityV2Component implements OnInit, OnChanges {
            log.info("fields for table", subGroupFields);
            this.trialFields = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
            this.tablePayload = sg;
- 
+
            const payload = {
              ...sg,
              fields: subGroupFields
            };
            this.tablePayloads.push(payload);
- 
+
              log.info("subgroup info", sg, payload)
          }
        }
@@ -542,18 +547,18 @@ export class NewEntityV2Component implements OnInit, OnChanges {
      formGroupSections.forEach(section => {
        section.fields = [];
      });
- 
+
      visibleFormFields.forEach(field => {
        const section = formGroupSections.find(s => s.groupId === field.formGroupingId);
        if (section) {
          section.fields.push(field);
        }
      });
- 
+
      this.formGroupSections = formGroupSections;
      log.info(`form group sections >>> `, this.formGroupSections);
      // this.addFieldsToSections(formGroupSections);
- 
+
      /!*this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_individual_aml_details');
      this.corporateContactDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_contact_person_details');
      this.corporateAddressDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_branch_details');
@@ -994,7 +999,6 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       next: (response) => {
         log.info(`client saved >>> `, response);
         const clientCode = response.clientCode;
-        sessionStorage.setItem('newClientCode', JSON.stringify(clientCode))
 
         // Upload profile picture only if it exists
         if (this.profilePicture) {
@@ -1040,7 +1044,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       ...formValues.int_individual_financial_details,
       ...formValues.int_individual_wealth_aml_details,
       ...formValues.int_individual_agency_referee_details,
-      ...formValues.int_individual_privacy_policy
+      ...formValues.int_individual_privacy_policy,
+      ...formValues.int_corporate_prime_identity,
+      ...formValues.int_corporate_contact_details,
+      ...formValues.int_corporate_address_details,
+      ...formValues.int_corporate_financial_details,
+      ...formValues.int_corporate_wealth_aml_details,
+      ...formValues.int_corporate_privacy_policy
+
     }
     log.info(`agent payloadObject >>> `, payloadObject, formValues);
 
@@ -1048,27 +1059,59 @@ export class NewEntityV2Component implements OnInit, OnChanges {
 
     const contactDetails: ContactDetailsV2DTO[] = contactData.length > 0
       ? contactData.map(item => ({
-        titleId: item?.title?.id,
-        emailAddress: item?.email,
-        smsNumber: item?.smsNo,
-        phoneNumber: item?.primaryContactNo,
-        contactChannel: item?.prefContactChannel?.id,
-        whatsappNumber: item?.whatsAppNo,
+        titleId: item?.title?.id || item?.contactTitle?.id,
+        emailAddress: item?.email || item?.contactEmail,
+        smsNumber: item?.smsNo || item?.contactSmsNo,
+        phoneNumber: item?.primaryContactNo || item?.contactOfficeNo,
+        contactChannel: item?.prefContactChannel?.id || item?.contactPrefContactChannel?.id,
+        whatsappNumber: item?.whatsAppNo || item?.contactWhatsappNo,
+        principalContactName: item?.contactPrimaryName,
+        websiteUrl: item?.contactWebsiteUrl,
       }))
       : [];
     log.info(`contactDetails >>> `, contactDetails);
+
+    const cr12Data = this.getDataByPattern('cr12_details');
+    const cr12Details: Cr12DetailsDTO[] = cr12Data.length > 0
+      ? cr12Data.map(item => ({
+        directorName: item.cr12Name,
+        directorIdRegNo: item.companyRegistrationNumber,
+        directorDob: item.companyRegistrationDate,
+        address: item.cr12Address,
+        certificateReferenceNo: item.referenceNumber,
+        certificateRegistrationYear: item.referenceNumberYear,
+      }))
+      : [];
 
     const wealthAmlData = this.getDataByPattern('aml_details');
 
     const wealthAmlDetails: WealthAmlDetailsDTO[] = wealthAmlData.length > 0
       ? wealthAmlData.map(item => ({
         nationalityCountryId: item.nationality?.id,
-        fundsSource: item.sourceOfFunds?.label,
+        fundsSource: item.sourceOfFunds?.label || item.sourceOfFundAml?.label,
         modeOfIdentity: item.docIdType?.id,
         idNumber: item.wealthDocIdNumber,
+        tradingName: item.tradingName,
+        registeredName: item.registeredName,
+        certificateRegistrationNumber: item.certificateRegistrationNumber,
+        certificateRegistrationYear: item.certificateRegistrationYear,
+        operatingCountryId: item.operatingCountry?.id,
+        parentCountryId: item.parentCountry?.id,
+        sectorId: item.sectorAml?.id,
+        cr12Details
       }))
       : [];
     log.info(`wealthAmlDetails >>> `, wealthAmlDetails);
+
+    const ownershipData = this.getDataByPattern('ownership_details');
+    const ownershipDetails = ownershipData.length > 0
+      ? ownershipData.map(item => ({
+        name: item.ownershipName,
+        idNumber: item.ownershipDocIdNo,
+        contactPersonPhone: item.ownershipMobileNo,
+        percentOwnership: item.percentOwnership,
+      }))
+      : [];
 
     const refereeData = this.getDataByPattern('ref_details');
 
@@ -1088,46 +1131,51 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     log.info(`refereeDetails >>> `, refereeDetails);
 
     const address: AddressV2DTO = {
-      countryId: payloadObject.country?.id,
-      physicalAddress: payloadObject.physicalAddress,
-      postalCode: payloadObject.postalCode?.id,
-      stateId: payloadObject.countyState?.id,
-      townId: payloadObject.cityTown?.id,
+      countryId: payloadObject.country?.id || payloadObject.addressCountry?.id,
+      physicalAddress: payloadObject.physicalAddress || payloadObject.addressPhysical,
+      postalCode: payloadObject.postalCode?.id || payloadObject.addressPostalCode?.id,
+      stateId: payloadObject.countyState?.id || payloadObject.addressCounty?.id,
+      townId: payloadObject.cityTown?.id || payloadObject.addressCity?.id,
     }
 
     const paymentDetails: PaymentDetailsDTO = {
-      accountNumber: payloadObject.accountNo,
-      bankBranchId: payloadObject.branchName?.id,
-      commissionAllowed: payloadObject.commissionAllowed.toUpperCase(),
-      commissionEffectiveDate: payloadObject.commissionStatusEffectiveDate,
-      commissionStatusDate: payloadObject.commissionStatusDate,
-      creditLimit: payloadObject.creditLimit,
-      glAccountNumber: this.selectedTableRecord?.accountNumber,
-      paymentFrequency: payloadObject.freqOfPayment?.id,
-      paymentTerms: payloadObject.paymentTerms,
-      taxAuthorityCode: payloadObject.taxAuthorityCode,
-      vatApplicable: payloadObject.vatApplicability.toUpperCase(),
+      accountNumber: payloadObject.accountNo || payloadObject.financialAccNo,
+      bankBranchId: payloadObject.branchName?.id || payloadObject.financialBranchName?.id,
+      commissionAllowed: payloadObject?.commissionAllowed?.toUpperCase() || payloadObject?.financialCommAllowed?.toUpperCase(),
+      commissionEffectiveDate: payloadObject.commissionStatusEffectiveDate || payloadObject.financialCommStatusEffectiveDate,
+      commissionStatusDate: payloadObject.commissionStatusDate || payloadObject.financialCommStatusDate,
+      creditLimit: payloadObject.creditLimit || payloadObject.financialCreditLimit,
+      glAccountNumber: this.selectedTableRecord?.accountNumber || payloadObject.financialGLAcc,
+      paymentFrequency: payloadObject.freqOfPayment?.id || payloadObject.financialPaymentFrequency?.id,
+      paymentTerms: payloadObject.paymentTerms || payloadObject.financialPaymentTerms,
+      taxAuthorityCode: payloadObject.taxAuthorityCode || payloadObject.financialTaxAuthCode,
+      vatApplicable: payloadObject?.vatApplicability?.toUpperCase() || payloadObject?.financialVatApplicability?.toUpperCase(),
       // paymentMode not there
     }
+    const accountType = this.accountTypeData.find(accType => accType.accountType === payloadObject.accountTypeIndividual?.toUpperCase() ||
+      accType.accountType === payloadObject.accountType?.toUpperCase())?.id
 
     const agent: AgentV2DTO = {
-      accountTypeId: this.accountTypeData.find(accType => accType.accountType === payloadObject.accountTypeIndividual.toUpperCase())?.id,
+      accountTypeId: accountType,
       address: address,
       category: payloadObject?.category,
       contactDetails: contactDetails,
-      countryId: payloadObject.citizenship?.id,
-      dateOfBirth: payloadObject?.dateOfBirth,
+      countryId: payloadObject.citizenship?.id || payloadObject?.parent_country?.id,
+      dateOfBirth: payloadObject?.dateOfBirth || payloadObject?.dateOfIncorporation,
       gender: payloadObject?.gender,
-      idNumber: payloadObject?.docIdNumber,
+      idNumber: payloadObject?.docIdNumber || payloadObject?.businessRegNumber,
       licenceNumber: payloadObject?.iraLicenseNo,
       maritalStatus: payloadObject?.maritalStatus?.label,
-      name: payloadObject?.fullName,
+      name: payloadObject?.fullName || payloadObject?.corporateFullName,
       paymentDetails: paymentDetails,
       pinNumber: payloadObject?.taxPinNumber,
       referees: refereeDetails,
       wealthAmlDetails: wealthAmlDetails,
+      ownershipDetails: ownershipDetails,
       withEffectFromDate: payloadObject?.wef,
-      withEffectToDate: payloadObject?.wet
+      withEffectToDate: payloadObject?.wet,
+      businessChannelCode: payloadObject?.businessSources?.id,
+      accountManagerCode: payloadObject?.relationsshipManager?.id,
 
     }
     log.info(`agentDto >>> `, agent);
@@ -1297,6 +1345,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       case 'organizationType':
       case 'clientType':
       case 'accountTypeIndividual':
+      case 'accountType':
         this.fetchRequiredDocuments(formValues);
         break;
       case 'bankBranchCode':
@@ -1305,6 +1354,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         log.info(`selectedbank branch >>> `, selected, this.selectedBankBranch);
         break;
       case 'commissionAllowed':
+      case 'financialCommAllowed':
         this.refreshVisibility();
         break;
       default:
@@ -1318,10 +1368,10 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param formValues
    */
   fetchRequiredDocuments(formValues): void {
-    const selectedOrgOrClientOrAccType = formValues.organizationType || formValues.clientType || formValues.accountTypeIndividual;
+    const selectedOrgOrClientOrAccType = formValues.organizationType || formValues.clientType || formValues.accountTypeIndividual || formValues.accountType;
     if (formValues.category && formValues.role && selectedOrgOrClientOrAccType && this.isCategorySelected) {
       const accountType: PartyTypeDto = this.roles.filter(
-        (r: PartyTypeDto) => r.partyTypeName.toLowerCase() === formValues.role.toLowerCase())[0];
+        (r:PartyTypeDto) => r.partyTypeName.toLowerCase() === formValues.role.toLowerCase())[0];
 
       const category: string = formValues.category;
 
@@ -1548,6 +1598,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       case 'citizenship':
       case 'country':
       case 'addressCountry':
+      case 'parent_country':
         this.fetchCountries(sectionIndex, fieldIndex, subGroupIndex);
         break;
       case 'countyState':
@@ -1584,13 +1635,17 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         this.fetchPremiumFrequencies(sectionIndex, fieldIndex, subGroupIndex);
         break;
       case 'businessSources':
-        this.fetchPreferredCommunicationChannels(sectionIndex, fieldIndex, subGroupIndex);
+        this.fetchChannels(sectionIndex, fieldIndex, subGroupIndex);
         break;
       case 'accountTypeIndividual':
+      case 'accountType':
         this.fetchAccountTypes();
         break;
       case 'cnt_individual_contact_details_branch':
         this.fetchClientBranches(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'relationsshipManager':
+        this.fetchRelationshipManagers(sectionIndex, fieldIndex, subGroupIndex);
         break;
 
       default:
@@ -1952,6 +2007,39 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     }
   }
 
+  fetchChannels(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
+    if (!(this.channelsData.length > 0)) {
+      this.channelService.getChannels().subscribe({
+        next: (data: ChannelsDTO[]) => {
+          this.channelsData = data;
+          const channelsStringArr = data.map((id: ChannelsDTO) => this.utilService.normalizeOption(id));
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, channelsStringArr);
+          log.info(`channelsStringArr >>> `, channelsStringArr)
+        },
+        error: err => {
+          log.error(`could not fetch: `, err);
+        }
+      });
+    }
+  }
+
+  fetchRelationshipManagers(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
+    if (!(this.relationshipManagersData.length > 0)) {
+      this.intermediaryService.getAgents(null, 50, null, null, 10).subscribe({
+        next: (data: Pagination<AgentDTO>) => {
+          this.relationshipManagersData = data.content;
+          const relationshipManagerStringArr = data.content.map((agent: AgentDTO) =>
+            this.utilService.normalizeOption(agent)
+          );
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, relationshipManagerStringArr);
+          log.info(`relationshipManagerStringArr >>> `, relationshipManagerStringArr);
+        },
+        error: err => {
+          log.error(`could not fetch: `, err);
+        }
+      });
+    }
+  }
 
   /**
    * Fetch system roles
@@ -2098,7 +2186,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         next: (data: AccountTypeDTO[]) => {
           this.accountTypeData = data;
           const accTypeStringArr: string[] = data.map((accType: AccountTypeDTO) => accType.accountType.toLowerCase());
-          const index: number = this.uploadGroupSections.selects.findIndex((field: ConfigFormFieldsDto) => field.fieldId === "accountTypeIndividual");
+          const index: number = this.uploadGroupSections.selects.findIndex((field: ConfigFormFieldsDto) => field.fieldId === "accountTypeIndividual" || field.fieldId === "accountType");
           this.uploadGroupSections.selects[index].options = accTypeStringArr;
           log.info(`acc Types: `, accTypeStringArr);
         },
@@ -2223,7 +2311,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
             break;
         }
       },
-      error: (err) => { }
+      error: (err) => {}
     })
   }
 
@@ -2681,6 +2769,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         "paymentMode": {
           "type": "string",
           "description": "Payment mode"
+        },
+        "businessSources": {
+          "type": "string",
+          "description": "Business sources"
+        },
+        "relationsshipManager": {
+          "type": "string",
+          "description": "Relationship manager"
         }
       },
       "required": []
@@ -2760,6 +2856,41 @@ export class NewEntityV2Component implements OnInit, OnChanges {
             commissionStatusDate: data.commissionStatusDate,
             freqOfPayment: data.freqOfPayment,
             paymentMode: data.paymentMode
+          },
+          int_corporate_prime_identity: {
+            corporateFullName: data.fullName,
+            businessRegNumber: data.docIdNumber,
+            taxPinNumber: data.taxPinNumber,
+            dateOfIncorporation: data.dateOfBirth,
+            parent_country: data.citizenship,
+            businessSources: data.businessSources,
+            relationsshipManager: data.relationsshipManager,
+            wef: data.wef,
+            wet: data.wet
+          },
+          int_corporate_address_details: {
+            address: data.address,
+            addressCountry: data.country,
+            addressCounty: data.countyState,
+            addressCity: data.cityTown,
+            addressPhysical: data.physicalAddress,
+            addressPostal: data.postalAddress,
+            addressPostalCode: data.postalCode
+          },
+          int_corporate_financial_details: {
+            financialBankName: data.bankName,
+            financialBranchName: data.branchName,
+            financialAccNo: data.accountNo,
+            financialGLAcc: data.glAccount,
+            financialTaxAuthCode: data.taxAuthorityCode,
+            financialVatApplicability: data.vatApplicability,
+            financialCreditLimit: data.creditLimit,
+            financialPaymentTerms: data.paymentTerms,
+            financialCommAllowed: data.commissionAllowed,
+            financialCommStatusEffectiveDate: data.commissionStatusEffectiveDate,
+            financialCommStatusDate: data.commissionStatusDate,
+            financialPaymentFrequency: data.freqOfPayment,
+            financialPaymentMode: data.paymentMode
           }
         });
 
