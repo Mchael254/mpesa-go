@@ -361,7 +361,7 @@ export class ClientAllocationComponent {
    * @type {string}
    * @memberof ClientAllocationComponent
    */
-  pdCheque:string;
+  pdCheque: string;
   /**
    * @description message
    */
@@ -473,8 +473,8 @@ export class ClientAllocationComponent {
     public translate: TranslateService,
     private intermediaryService: IntermediaryService,
     private receiptManagementService: ReceiptManagementService,
-    private dmsService:DmsService,
-    private commonMethodsService:CommonMethodsService 
+    private dmsService: DmsService,
+    private commonMethodsService: CommonMethodsService
   ) {}
   /**
    * Angular lifecycle hook that initializes the component.
@@ -1190,7 +1190,7 @@ export class ClientAllocationComponent {
           this.globalGetAllocation = this.getAllocation;
         },
         error: (err) => {
-           this.commonMethodsService.handleApiError(err);
+          this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -1256,7 +1256,7 @@ export class ClientAllocationComponent {
         }
       },
       error: (err) => {
-         this.commonMethodsService.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1436,7 +1436,6 @@ export class ClientAllocationComponent {
               module: 'CB-RECEIPTS',
               originalFileName: this.selectedFile.name,
               filename: this.selectedFile.name,
-
               //I fed the referenceNo: field with values of policy number to match the expected string format
               //i.e replaced referenceNo:detail.referenceNumber with referenceNo:detail.policyNumber
               referenceNo: detail.policyNumber,
@@ -1452,24 +1451,21 @@ export class ClientAllocationComponent {
 
       this.dmsService.uploadFiles(requests).subscribe({
         next: (response) => {
-          this.globalDocId = response.docId;
-
+          this.globalDocId = response[0].docId;
           this.globalMessagingService.displaySuccessMessage(
             'Success',
             'Receipt uploaded successfully'
           );
           this.fileUploaded = true;
-          if (response.docId) {
-            this.globalDocId = response.docId;
-
-            // Store file in uploadedFiles immediately
+          if (response[0].docId) {
+            this.globalDocId = response[0].docId;
+            // Store file in uploadedFiles array immediately
             const uploadedFile = {
-              docId: response.docId, // Ensure we store docId properly
+              docId: response[0].docId, // use the first docId from response since they are similar
               docName: this.selectedFile.name,
               contentType: this.selectedFile.type,
               byteData: this.base64Output, // Store base64 for immediate use
             };
-
             this.uploadedFiles.push(uploadedFile);
           }
           this.selectedFile = null;
@@ -1481,7 +1477,7 @@ export class ClientAllocationComponent {
           this.fetchDocByDocId(this.globalDocId);
         },
         error: (err) => {
-           this.commonMethodsService.handleApiError(err);
+          this.commonMethodsService.handleApiError(err);
         },
       });
     } catch (err) {
@@ -1516,7 +1512,7 @@ export class ClientAllocationComponent {
         );
       },
       error: (err) => {
-         this.commonMethodsService.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1603,7 +1599,7 @@ export class ClientAllocationComponent {
         }
       },
       error: (err) => {
-         this.commonMethodsService.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1620,7 +1616,7 @@ export class ClientAllocationComponent {
           this.parameterStatus = response.data;
         },
         error: (err) => {
-           this.commonMethodsService.handleApiError(err);
+          this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -1644,14 +1640,18 @@ export class ClientAllocationComponent {
   /**
    * @description function to set the chequeType by checking the type of cheque selected
    */
-  checkChequeType(){
-    if(this.paymentMode==='CHEQUE' &&
-      this.chequeType === 'post_dated_cheque'){
-        this.pdCheque='Y'
-      }else if(this.paymentMode==='CHEQUE' &&
-      this.chequeType === 'open_cheque'){
-        this.pdCheque='N'
-      }
+  checkChequeType() {
+    if (
+      this.paymentMode === 'CHEQUE' &&
+      this.chequeType === 'post_dated_cheque'
+    ) {
+      this.pdCheque = 'Y';
+    } else if (
+      this.paymentMode === 'CHEQUE' &&
+      this.chequeType === 'open_cheque'
+    ) {
+      this.pdCheque = 'N';
+    }
   }
   /**
    * Submits the receipt data to the backend.
@@ -1750,17 +1750,17 @@ export class ClientAllocationComponent {
       receiptCode: this.receiptCode,
       receiptDate: this.receiptDate
         ? this.receiptDate.toISOString().split('T')[0]
-        : null, 
+        : null,
       amount: String(this.storedData?.amountIssued || 0), // Add decimal points for BigDecimal fields
       paidBy: this.receivedFrom,
       currencyCode: String(this.currency),
 
-      branchCode: String(this.defaultBranch?.id || this.selectedBranch?.id), 
+      branchCode: String(this.defaultBranch?.id || this.selectedBranch?.id),
       paymentMode: this.paymentMode,
       paymentMemo: this.paymentRef || null,
       docDate: this.documentDate
         ? this.documentDate.toISOString().split('T')[0]
-        : null, 
+        : null,
       //drawerBank: formValues.drawersBank || 'N/A',
       drawerBank: this.drawersBank || null,
       userCode: this.loggedInUser.code,
@@ -1779,7 +1779,7 @@ export class ClientAllocationComponent {
       chequeNo: null,
       ipfFinancier: null,
       receiptSms: 'Y',
-      receiptChequeType:  this.pdCheque || null,
+      receiptChequeType: this.pdCheque || null,
       vatInclusive: null,
       //rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
       rctbbrCode: null,
@@ -1808,7 +1808,7 @@ export class ClientAllocationComponent {
           'receiptNo',
           this.receiptResponse.receiptNumber
         );
-         this.sessionStorage.setItem(
+        this.sessionStorage.setItem(
           'branchReceiptCode',
           this.receiptResponse.receiptCode
         );
@@ -1851,7 +1851,7 @@ export class ClientAllocationComponent {
         this.patchFormControl();
       },
       error: (err) => {
-         this.commonMethodsService.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1922,7 +1922,7 @@ export class ClientAllocationComponent {
       recipientEmail: shareData?.recipientEmail,
       recipientPhone: shareData?.recipientPhone,
       receiptNumber: this.receiptResponse.receiptNumber,
-      branchReceiptCode:this.receiptResponse.receiptCode,
+      branchReceiptCode: this.receiptResponse.receiptCode,
       orgCode: String(this.defaultOrg?.id || this.selectedOrg?.id),
     };
     this.receiptManagementService.shareReceipt(body).subscribe({
@@ -1949,7 +1949,7 @@ export class ClientAllocationComponent {
             modal.hide();
           }
         }
-       this.commonMethodsService.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
         //route to receipt capture screen if receipt share fails
         this.router.navigate(['/home/fms/receipt-capture']);
       },
@@ -1975,7 +1975,7 @@ export class ClientAllocationComponent {
         );
       },
       error: (err) => {
-         this.commonMethodsService.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -2159,14 +2159,14 @@ export class ClientAllocationComponent {
           'receiptNo',
           this.receiptResponse.receiptNumber
         );
-                  this.globalMessagingService.displaySuccessMessage(
+        this.globalMessagingService.displaySuccessMessage(
           '',
           this.receiptResponse.message
         );
         this.router.navigate(['/home/fms/receipt-preview']);
       },
       error: (err) => {
-         this.commonMethodsService.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -2340,7 +2340,7 @@ export class ClientAllocationComponent {
       },
 
       error: (err) => {
-       this.commonMethodsService.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
