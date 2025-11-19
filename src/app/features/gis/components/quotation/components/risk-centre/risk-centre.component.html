@@ -15,13 +15,16 @@
                         {{ currencyObj.prefix }}{{ premiums?.gross | number:'1.2-2' }}
                     </span>
                 </div>
-
-
-
                 <div class="d-flex align-items-baseline gap-2">
                     <small class="text-muted">Net premium:</small>
                     <span class="text-dark fs-5 fw-semibold">
                         {{ currencyObj.prefix }}{{ premiums?.net | number:'1.2-2' }}
+                    </span>
+                </div>
+                <div class="d-flex align-items-baseline gap-2">
+                    <small class="text-muted">Sum insured:</small>
+                    <span class="text-dark fs-5 fw-semibold">
+                        {{ currencyObj.prefix }}{{ premiums?.sumInsured | number:'1.2-2' }}
                     </span>
                 </div>
 

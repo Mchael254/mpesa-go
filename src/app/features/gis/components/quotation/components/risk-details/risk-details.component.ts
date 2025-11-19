@@ -426,7 +426,7 @@ export class RiskDetailsComponent {
   aiErrorMessage: string | null = null;
   exceptionsData: any;
   premiumComputed: boolean = false;
-  premiums: { net: number; gross: number; };
+  premiums: { net: number; gross: number; sumInsured: number };
   levelNumber: number;
 
   constructor(
@@ -1898,9 +1898,10 @@ export class RiskDetailsComponent {
         comments: this.quotationDetails.comments,
         clientType: this.quotationDetails.clientType,
         multiUser: this.quotationDetails.multiUser,
-        clientCode: this.quotationDetails.clientCode,
+        clientCode: this.quotationDetails.clientCode || null,
         prospectCode: this.quotationDetails.prospectCode,
         sumInsured: sumInsuredToPass,
+        quoteType: 'NQ',
 
       };
 
@@ -2094,8 +2095,9 @@ export class RiskDetailsComponent {
         comments: this.quotationDetails.comments,
         clientType: this.quotationDetails.clientType,
         multiUser: this.quotationDetails.multiUser,
-        clientCode: this.quotationDetails.clientCode,
+        clientCode: this.quotationDetails.clientCode || null,
         prospectCode: this.quotationDetails.prospectCode,
+        quoteType: 'NQ',
       };
 
       this.quotationService.processQuotation(payload).pipe(
@@ -2933,30 +2935,67 @@ export class RiskDetailsComponent {
     this.showColumnModal = true;
   }
 
+  // setColumnsFromRiskLimit(sample: RiskLimit) {
+  //   const defaultVisibleFields = [
+  //     'rowNumber',
+  //     'calcGroup',
+
+  //     'sectionShortDescription',
+  //     'limitAmount',
+  //     'premiumRate',
+  //     'rateType'
+  //   ];
+  //   const excludedFields = ['code', 'quotationCode', 'quotationProCode', 'productCode']; // adjust as needed
+
+  //   this.columns = Object.keys(sample)
+  //     .filter((key) => !excludedFields.includes(key))
+  //     .map((key) => ({
+  //       field: key,
+  //       header: this.sentenceCase(key),
+  //       visible: defaultVisibleFields.includes(key),
+  //     }));
+
+  //   // manually add actions column
+  //   this.columns.push({ field: 'actions', header: 'Actions', visible: true });
+  // }
+
   setColumnsFromRiskLimit(sample: RiskLimit) {
     const defaultVisibleFields = [
       'rowNumber',
       'calcGroup',
-      'sectionCode',
       'sectionShortDescription',
       'limitAmount',
       'premiumRate',
       'rateType'
     ];
+
     const excludedFields = ['code', 'quotationCode', 'quotationProCode', 'productCode']; // adjust as needed
 
-    this.columns = Object.keys(sample)
-      .filter((key) => !excludedFields.includes(key))
+    // start with defaultVisibleFields that exist in sample
+    const columns: any[] = defaultVisibleFields
+      .filter((key) => key in sample && !excludedFields.includes(key))
       .map((key) => ({
         field: key,
         header: this.sentenceCase(key),
-        visible: defaultVisibleFields.includes(key),
+        visible: true,
       }));
 
-    // manually add actions column
-    this.columns.push({ field: 'actions', header: 'Actions', visible: true });
-  }
+    // add any remaining fields from sample that are not excluded or already added
+    Object.keys(sample)
+      .filter((key) => !excludedFields.includes(key) && !defaultVisibleFields.includes(key))
+      .forEach((key) => {
+        columns.push({
+          field: key,
+          header: this.sentenceCase(key),
+          visible: false, // default to hidden
+        });
+      });
 
+    // finally, add actions column
+    columns.push({ field: 'actions', header: 'Actions', visible: true });
+
+    this.columns = columns;
+  }
 
 
   sentenceCase(text: string): string {
@@ -3164,8 +3203,9 @@ export class RiskDetailsComponent {
       comments: this.quotationDetails.comments,
       clientType: this.quotationDetails.clientType,
       multiUser: this.quotationDetails.multiUser,
-      clientCode: this.quotationDetails.clientCode,
+      clientCode: this.quotationDetails.clientCode || null,
       prospectCode: this.quotationDetails.prospectCode,
+      quoteType: 'NQ',
     };
 
     this.quotationService.processQuotation(payload).subscribe({
@@ -6126,6 +6166,7 @@ export class RiskDetailsComponent {
 
         let totalNetPremium = 0;
         let totalGrossPremium = 0;
+        let totalSumInsured = 0
 
         data.forEach(group => {
           group.riskLevelPremiums?.forEach(risk => {
@@ -6142,10 +6183,20 @@ export class RiskDetailsComponent {
             });
           });
         });
+        data.forEach(group => {
+          group.riskLevelPremiums?.forEach(risk => {
+            const computed = risk?.sumInsured || 0;
+            totalSumInsured += computed;
+
+
+
+          });
+        });
 
         this.premiums = {
           net: totalNetPremium,
-          gross: totalGrossPremium
+          gross: totalGrossPremium,
+          sumInsured: totalSumInsured
         };
 
 

@@ -233,6 +233,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
 
+
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -320,32 +321,32 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.selectedClient = JSON.parse(sessionStorage.getItem('client'))
     log.debug("product Form details", this.productDetails)
 
-const reusedQuotation = sessionStorage.getItem('reusedQuotation');
-log.debug("🔍 Constructor - reusedQuotation exists?", !!reusedQuotation)
-if (reusedQuotation) {
-    const data = JSON.parse(reusedQuotation);
-    const quotationCode = data._embedded.newQuotationCode;
-    if (quotationCode) {
+    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+    log.debug("🔍 Constructor - reusedQuotation exists?", !!reusedQuotation)
+    if (reusedQuotation) {
+      const data = JSON.parse(reusedQuotation);
+      const quotationCode = data._embedded.newQuotationCode;
+      if (quotationCode) {
         this.quotationCode = quotationCode
         this.quotationSourceFlag = 'reused';
         log.debug("🔵 Set quotationSourceFlag = 'reused'");
+      }
     }
-}
 
-const revisedQuotation = sessionStorage.getItem('revisedQuotation');
-log.debug("🔍 Constructor - revisedQuotation exists?", !!revisedQuotation)
-log.debug("Revised", revisedQuotation)
-if (revisedQuotation) {
-    const data = JSON.parse(revisedQuotation);
-    const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
-    if (quotationCode) {
+    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+    log.debug("🔍 Constructor - revisedQuotation exists?", !!revisedQuotation)
+    log.debug("Revised", revisedQuotation)
+    if (revisedQuotation) {
+      const data = JSON.parse(revisedQuotation);
+      const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
+      if (quotationCode) {
         this.quotationCode = quotationCode;
         this.quotationSourceFlag = 'revised';
         log.debug("🟢 Set quotationSourceFlag = 'revised'");
+      }
     }
-}
 
-log.debug("🎯 Final quotationSourceFlag in constructor:", this.quotationSourceFlag);
+    log.debug("🎯 Final quotationSourceFlag in constructor:", this.quotationSourceFlag);
 
     const ticketJson = sessionStorage.getItem('activeTicket');
     log.debug("ticket data", ticketJson)
@@ -756,62 +757,62 @@ log.debug("🎯 Final quotationSourceFlag in constructor:", this.quotationSource
     const input = event.target as HTMLInputElement;
     this.addProductClausesTable.filter(input.value, 'heading', 'contains');
   }
-fetchQuotationDetails(quotationCode: number) {
+  fetchQuotationDetails(quotationCode: number) {
     log.debug("Quotation Number to use:", quotationCode);
-    
-    
+
+
     this.spinner.show();
-    
+
     this.quotationService.getQuotationDetails(quotationCode)
-        .subscribe({
-            next: (res: any) => {
-                this.quotationDetails = res;
-                log.debug("Quotation details-risk details", this.quotationDetails);
+      .subscribe({
+        next: (res: any) => {
+          this.quotationDetails = res;
+          log.debug("Quotation details-risk details", this.quotationDetails);
 
-                const revisedQuotation = sessionStorage.getItem('revisedQuotation');
-                const reusedQuotation = sessionStorage.getItem('reusedQuotation');
-                const activeTicket = sessionStorage.getItem('activeTicket');
+          const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+          const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+          const activeTicket = sessionStorage.getItem('activeTicket');
 
-                log.debug("🔍 fetchQuotationDetails - revisedQuotation exists?", !!revisedQuotation);
-                log.debug("🔍 fetchQuotationDetails - reusedQuotation exists?", !!reusedQuotation);
-                log.debug("🔍 fetchQuotationDetails - activeTicket exists?", !!activeTicket);
+          log.debug("🔍 fetchQuotationDetails - revisedQuotation exists?", !!revisedQuotation);
+          log.debug("🔍 fetchQuotationDetails - reusedQuotation exists?", !!reusedQuotation);
+          log.debug("🔍 fetchQuotationDetails - activeTicket exists?", !!activeTicket);
 
-                
-                setTimeout(() => {
-                    if (revisedQuotation) {
-                        log.debug('Patching revised quotation data...');
-                        this.patchRevisedQuotationData();
-                      
-                    } else if (reusedQuotation) {
-                        log.debug('Patching reused quotation data...');
-                        this.patchReusedQuotationData();
-                      
-                    } else if (activeTicket) {
-                        log.debug('Patching ticket quotation data...');
-                        this.patchReusedQuotationData();
-                    }
 
-              
-                    this.cd.detectChanges();
-                    
-                    
-                    this.spinner.hide();
+          setTimeout(() => {
+            if (revisedQuotation) {
+              log.debug('Patching revised quotation data...');
+              this.patchRevisedQuotationData();
 
-                    
-                }, 3000);
-            },
-            error: (error: HttpErrorResponse) => {
-          
-                this.spinner.hide();
-                
-                log.debug("Error log", error.error.message);
-                this.globalMessagingService.displayErrorMessage(
-                    'Error',
-                    error.error.message
-                );
-            },
-        })
-}
+            } else if (reusedQuotation) {
+              log.debug('Patching reused quotation data...');
+              this.patchReusedQuotationData();
+
+            } else if (activeTicket) {
+              log.debug('Patching ticket quotation data...');
+              this.patchReusedQuotationData();
+            }
+
+
+            this.cd.detectChanges();
+
+
+            this.spinner.hide();
+
+
+          }, 3000);
+        },
+        error: (error: HttpErrorResponse) => {
+
+          this.spinner.hide();
+
+          log.debug("Error log", error.error.message);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error.message
+          );
+        },
+      })
+  }
   //product clauses
   toggleProductClausesopen() {
     this.isProductClauseOpen = !this.isProductClauseOpen;
@@ -1423,7 +1424,7 @@ fetchQuotationDetails(quotationCode: number) {
         currencyRate: this.exchangeRate,
         agentShortDescription: quotationFormValues?.agent?.shortDesc || "Direct",
         agentCode: quotationFormValues?.agent?.id || 0,
-        clientCode: this.selectedClientCode,
+        clientCode: this.selectedClientCode || null,
         clientType: "I",
         wefDate: this.formatDate(this.productDetails[0].coverFrom),
         wetDate: this.formatDate(this.productDetails[0].coverTo),
@@ -1503,7 +1504,7 @@ fetchQuotationDetails(quotationCode: number) {
         currencyRate: this.exchangeRate,
         agentShortDescription: quotationFormValues?.agent?.shortDesc || "Direct",
         agentCode: quotationFormValues?.agent?.id || 0,
-        clientCode: this.selectedClientCode,
+        clientCode: this.selectedClientCode || null,
         clientType: "I",
         wefDate: this.formatDate(this.productDetails[0].coverFrom),
         wetDate: this.formatDate(this.productDetails[0].coverTo),
@@ -1514,7 +1515,7 @@ fetchQuotationDetails(quotationCode: number) {
         internalComments: quotationFormValues?.internalComments,
         introducerCode: quotationFormValues?.introducer,
         marketerAgentCode: quotationFormValues?.marketer?.id,
-
+        quoteType: 'NQ',
         quotationProducts: this.productDetails.map((value) => {
           const incomingProductCode = Number(value.productCode?.code ?? value.productCode);
 
@@ -1711,15 +1712,15 @@ fetchQuotationDetails(quotationCode: number) {
     if (!date) {
       return placeholder;
     }
-    
+
     try {
       const rawDate = new Date(date);
-      
+
       // Check if date is valid
       if (isNaN(rawDate.getTime())) {
         return placeholder;
       }
-      
+
       // Use the date format from session storage
       const formattedDate = this.datePipe.transform(rawDate, this.dateFormat);
       return formattedDate || placeholder;
@@ -1740,8 +1741,8 @@ fetchQuotationDetails(quotationCode: number) {
       'created', 'updated', 'modified',
       'timestamp', 'time'
     ];
-    
-    return dateFieldPatterns.some(pattern => 
+
+    return dateFieldPatterns.some(pattern =>
       fieldName.toLowerCase().includes(pattern.toLowerCase())
     );
   }
@@ -3359,25 +3360,25 @@ fetchQuotationDetails(quotationCode: number) {
       log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
 
 
-  
-  const branchCode = data.branchCode;
-  if (branchCode) {
-    this.branchService.getBranchById(branchCode).subscribe({
-      next: (branchObj) => {
-        log.debug("Default branch object:", branchObj);
 
-  
-        const exists = this.branch?.some(b => b.id === branchObj.id);
-        if (!exists) {
-          this.branch = [...(this.branch || []), branchObj];
-        }
+      const branchCode = data.branchCode;
+      if (branchCode) {
+        this.branchService.getBranchById(branchCode).subscribe({
+          next: (branchObj) => {
+            log.debug("Default branch object:", branchObj);
 
-      
-        this.quotationForm.get('branch')?.setValue(branchObj.id);
-      },
-      error: (err) => console.error("Error fetching branch:", err)
-    });
-  }
+
+            const exists = this.branch?.some(b => b.id === branchObj.id);
+            if (!exists) {
+              this.branch = [...(this.branch || []), branchObj];
+            }
+
+
+            this.quotationForm.get('branch')?.setValue(branchObj.id);
+          },
+          error: (err) => console.error("Error fetching branch:", err)
+        });
+      }
 
 
       if (this.quotationForm) {
@@ -3610,25 +3611,25 @@ fetchQuotationDetails(quotationCode: number) {
       log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
 
 
-   
-  const branchCode = data.branchCode;
-  if (branchCode) {
-    this.branchService.getBranchById(branchCode).subscribe({
-      next: (branchObj) => {
-        log.debug("Default branch object:", branchObj);
 
-        
-        const exists = this.branch?.some(b => b.id === branchObj.id);
-        if (!exists) {
-          this.branch = [...(this.branch || []), branchObj];
-        }
+      const branchCode = data.branchCode;
+      if (branchCode) {
+        this.branchService.getBranchById(branchCode).subscribe({
+          next: (branchObj) => {
+            log.debug("Default branch object:", branchObj);
 
-        
-        this.quotationForm.get('branch')?.setValue(branchObj.id);
-      },
-      error: (err) => console.error("Error fetching branch:", err)
-    });
-  }
+
+            const exists = this.branch?.some(b => b.id === branchObj.id);
+            if (!exists) {
+              this.branch = [...(this.branch || []), branchObj];
+            }
+
+
+            this.quotationForm.get('branch')?.setValue(branchObj.id);
+          },
+          error: (err) => console.error("Error fetching branch:", err)
+        });
+      }
 
 
 
@@ -3647,7 +3648,7 @@ fetchQuotationDetails(quotationCode: number) {
         externalComments: data.comments || ''
       });
 
-      
+
 
       if (agentObject) {
         this.quotationForm.get('agent')?.setValue(agentObject, { emitEvent: false });

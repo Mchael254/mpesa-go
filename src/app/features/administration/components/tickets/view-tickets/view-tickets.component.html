@@ -68,14 +68,14 @@
             <th class="head">
               {{'mngt_wrkflw.tickets.selectAll' | translate }}
             </th>
-            <th class="head" pSortableColumn="date">
-              {{'mngt_wrkflw.tickets.createdOn'| translate }} <p-sortIcon field="date"></p-sortIcon>
+            <th class="head" pSortableColumn="createdDate">
+              {{'mngt_wrkflw.tickets.createdOn'| translate }} <p-sortIcon field="createdDate"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="task.activityName">
-              {{'mngt_wrkflw.tickets.ticketName' | translate }} <p-sortIcon field="task.activityName"></p-sortIcon>
+            <th class="head" pSortableColumn="ticketName">
+              {{'mngt_wrkflw.tickets.ticketName' | translate }} <p-sortIcon field="ticketName"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="sysModule">
-              {{'mngt_wrkflw.tickets.refNo' | translate }}. <p-sortIcon field="sysModule"></p-sortIcon>
+            <th class="head" pSortableColumn="referenceNo">
+              {{'mngt_wrkflw.tickets.refNo' | translate }}. <p-sortIcon field="referenceNo"></p-sortIcon>
             </th>
             <th class="head" pSortableColumn="clientName">
               {{'mngt_wrkflw.tickets.client' | translate }} <p-sortIcon field="clientName"></p-sortIcon>
@@ -86,49 +86,14 @@
             <th class="head" pSortableColumn="reporter">
               {{'mngt_wrkflw.tickets.ticketFrom' | translate }} <p-sortIcon field="reporter"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="assignee">
-              {{'mngt_wrkflw.tickets.ticketAssignee' | translate }} <p-sortIcon field="assignee"></p-sortIcon>
+            <th class="head" pSortableColumn="ticketTo">
+              {{'mngt_wrkflw.tickets.ticketAssignee' | translate }} <p-sortIcon field="ticketTo"></p-sortIcon>
             </th>
             <th class="head">
               Actions
             </th>
           </tr>
-          <!-- <tr>
-            <th class="head">
-              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-            </th>
-            <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('createdOn');"
-                (input)="getInputs($event, 'createdOn')">
-            </th>
-            <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('activityName');"
-                (input)="getInputs($event, 'activityName')">
-            </th>
-            <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('referenceNo');"
-                (input)="getInputs($event, 'referenceNo')">
-            </th>
-            <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('clientName');"
-                (input)="getInputs($event, 'clientName')">
-            </th>
-            <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('agentName');"
-                (input)="getInputs($event, 'agentName')">
-            </th>
-            <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('reporter');"
-                (input)="getInputs($event, 'reporter')">
-            </th>
-            <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('assignee');"
-                (input)="getInputs($event, 'assignee')">
-            </th>
-            <th></th>
 
-
-          </tr> -->
           <tr class=" filter-row mb-5 mt-5">
 
             <td class="head">
@@ -136,7 +101,7 @@
             </td>
 
             <td style="background-color: #ffffff;">
-              <p-calendar name="selectedDateFrom" [(ngModel)]="selectedDateFrom" [dateFormat]="dateFormat"
+              <p-calendar name="selectedDateFrom" [(ngModel)]="selectedDateFromFE" [dateFormat]="dateFormat"
                 [showIcon]="true" [showButtonBar]="true" [minDate]="minDate"
                 (onSelect)="onCreatedDateInputChange($event)" (onClear)="onCreatedDateInputChange(null)" appendTo="body"
                 (keyup.enter)="applyFilter()" styleClass="calendar-input w-100">
@@ -213,7 +178,7 @@
             <td class="body">
               <p-tableCheckbox [value]="ticket"></p-tableCheckbox>
             </td>
-            <td class="body">{{ ticket.createdDate | date: 'yyyy-MM-dd' }}</td>
+            <td class="body">{{ ticket.createdDate | date: dateFormat}}</td>
             <td class="body" style="cursor:pointer;">{{ ticket.ticketName }}</td>
             <td class="body">
               {{

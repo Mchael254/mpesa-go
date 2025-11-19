@@ -808,6 +808,11 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
             this.router.navigate(['/home/gis/quotation/quotation-summary']);
             break;
+          case 'Authorize Exception':
+            taskName && sessionStorage.setItem('ticketStatus', taskName);
+
+            this.router.navigate(['/home/gis/quotation/quotation-summary']);
+            break;
 
           case 'Confirm Quotation':
             taskName && sessionStorage.setItem('ticketStatus', taskName);
