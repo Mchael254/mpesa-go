@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
@@ -317,6 +318,25 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   private documentBlobs: { [id: string]: Blob } = {};
   exceptionsColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
   selectedExceptions: ExceptionListDto[] = [];
+  dateFormat: string = 'dd-MMM-yyyy'; // Default format
+  private datePipe: DatePipe = new DatePipe('en-US');
+
+  /**
+   * Custom validator for multiple email addresses
+   * Supports comma, semicolon, or space separated emails
+   */
+  private multipleEmailValidator(control: any) {
+    if (!control.value || control.value.trim() === '') {
+      return null; // Let required validator handle empty values
+    }
+
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emails = control.value.split(/[,;\s]+/).map((email: string) => email.trim()).filter((email: string) => email.length > 0);
+    
+    const invalidEmails = emails.filter((email: string) => !emailPattern.test(email));
+    
+    return invalidEmails.length > 0 ? { invalidEmails: true } : null;
+  }
 
   constructor(
     public quotationService: QuotationsService,
@@ -511,9 +531,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     });
     this.viewDocForm = this.fb.group({
-      to: ['', [Validators.required, Validators.email]],
-      cc: ['', Validators.email],
-      bcc: ['', Validators.email],
+      to: ['', [Validators.required, this.multipleEmailValidator.bind(this)]],
+      cc: ['', this.multipleEmailValidator.bind(this)],
+      bcc: ['', this.multipleEmailValidator.bind(this)],
       subject: [''],
       wording: [''],
       phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
@@ -523,6 +543,16 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const currencySymbol = sessionStorage.getItem('currencySymbol')
     log.debug("currency Object:", currencySymbol)
     log.debug("currency Delimeter:", currencyDelimiter)
+    
+    // Load date format from session storage
+    const storedDateFormat = sessionStorage.getItem('dateFormat');
+    if (storedDateFormat) {
+      this.dateFormat = storedDateFormat;
+      log.debug("Loaded date format from session storage:", this.dateFormat);
+    } else {
+      log.debug("Using default date format:", this.dateFormat);
+    }
+    
     this.currencyObj = {
       prefix: currencySymbol + ' ',
       allowNegative: false,
@@ -1888,20 +1918,73 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   convertDate(date: any) {
     log.debug("DATE TO BE CONVERTED", date)
-    const rawDate = new Date(date);
-    log.debug(' Raw before being formatted', rawDate);
+    
+    if (!date) {
+      return '';
+    }
+    
+    try {
+      const rawDate = new Date(date);
+      log.debug('Raw date before being formatted', rawDate);
+      
+      // Check if date is valid
+      if (isNaN(rawDate.getTime())) {
+        log.error('Invalid date:', date);
+        return '';
+      }
+      
+      // Use the date format from session storage
+      const formattedDate = this.datePipe.transform(rawDate, this.dateFormat);
+      
+      log.debug('Converted date using format', this.dateFormat, ':', formattedDate);
+      return formattedDate || '';
+    } catch (error) {
+      log.error('Error converting date:', error);
+      return '';
+    }
+  }
 
-    // Extract the day, month, and year
-    const day = rawDate.getDate();
-    const month = rawDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-    const year = rawDate.getFullYear();
+  /**
+   * Format date for display in templates
+   * Returns formatted date string or placeholder if date is null/invalid
+   */
+  formatDate(date: any, placeholder: string = '—'): string {
+    if (!date) {
+      return placeholder;
+    }
+    
+    try {
+      const rawDate = new Date(date);
+      
+      // Check if date is valid
+      if (isNaN(rawDate.getTime())) {
+        return placeholder;
+      }
+      
+      // Use the date format from session storage
+      const formattedDate = this.datePipe.transform(rawDate, this.dateFormat);
+      return formattedDate || placeholder;
+    } catch (error) {
+      log.error('Error formatting date:', error);
+      return placeholder;
+    }
+  }
 
-    // Format the date in 'dd-Month-yyyy' format
-    const formattedDate = `${day}-${month}-${year}`;
-
-    this.convertedDate = formattedDate;
-    log.debug('Converted date', this.convertedDate);
-    return this.convertedDate
+  /**
+   * Check if a field name represents a date field
+   * Used to determine if formatting should be applied
+   */
+  isDateField(fieldName: string): boolean {
+    const dateFieldPatterns = [
+      'date', 'Date', 'DATE',
+      'wef', 'wet',
+      'created', 'updated', 'modified',
+      'timestamp', 'time'
+    ];
+    
+    return dateFieldPatterns.some(pattern => 
+      fieldName.toLowerCase().includes(pattern.toLowerCase())
+    );
   }
 
 
@@ -3764,7 +3847,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Send reports via Email
+   * Send reports via Email (supports multiple emails)
    */
   async sendReportViaEmailMethod() {
     const viewDocForm = this.viewDocForm.value;
@@ -3775,7 +3858,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     log.debug("Report blobs", this.reportBlobs)
     const attachments = await Promise.all(
       this.selectedReports.map(async (report: any) => {
-        const reportKey = report.rptCode || report.code; // <-- unified key
+        const reportKey = report.rptCode || report.code; 
         const blob = this.reportBlobs[reportKey];
         console.log('Blob for report', reportKey, blob);
         if (!blob) return null;
@@ -3795,11 +3878,22 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // Filter out any nulls (in case blob not found)
     const filteredAttachments = attachments.filter(att => att !== null);
 
+    // Helper function to parse and validate email addresses
+    const parseEmailAddresses = (emailString: string): string[] => {
+      if (!emailString || emailString.trim() === '') return [];
+      
+      // Split by comma, semicolon, or space and trim each email
+      return emailString
+        .split(/[,;\s]+/)
+        .map(email => email.trim())
+        .filter(email => email.length > 0);
+    };
+
     const payload: EmailDto = {
       code: null,
-      address: [viewDocForm.to],
-      ccAddress: [viewDocForm.cc],
-      bccAddress: [viewDocForm.bcc],
+      address: parseEmailAddresses(viewDocForm.to),
+      ccAddress: parseEmailAddresses(viewDocForm.cc),
+      bccAddress: parseEmailAddresses(viewDocForm.bcc),
       subject: viewDocForm.subject,
       message: viewDocForm.wording,
       status: 'D',

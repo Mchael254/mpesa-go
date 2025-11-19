@@ -764,7 +764,12 @@
                           <tr [class.p-highlight]="risk === selectedRisk" [pSelectableRow]="risk" class="point"
                             (click)="handleRowClick(risk)" [class.disabled]="!risk?.code">
                             <td *ngFor="let col of riskColumns" [hidden]="!col.visible">
-                              {{ getCellValue(risk, col.field) }}
+                              <ng-container *ngIf="isDateField(col.field); else notDateField">
+                                {{ formatDate(getCellValue(risk, col.field)) }}
+                              </ng-container>
+                              <ng-template #notDateField>
+                                {{ getCellValue(risk, col.field) }}
+                              </ng-template>
                             </td>
                           </tr>
                         </ng-template>
@@ -892,15 +897,21 @@
 
                                     <!-- Default branch checks internally -->
                                     <ng-container *ngSwitchDefault>
-                                      <ng-container *ngIf="col.field === 'limitAmount' || col.field === 'premiumAmount'
-                                                      || col.field === 'freeLimit'; else defaultField">
-                                        <div class="text-end">
-                                          {{ section[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
-                                        </div>
+                                      <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
+                                        {{ formatDate(section[col.field]) }}
                                       </ng-container>
+                                      
+                                      <ng-template #checkCurrencyField>
+                                        <ng-container *ngIf="col.field === 'limitAmount' || col.field === 'premiumAmount'
+                                                        || col.field === 'freeLimit'; else defaultField">
+                                          <div class="text-end">
+                                            {{ section[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                                          </div>
+                                        </ng-container>
 
-                                      <ng-template #defaultField>
-                                        {{ section[col.field] }}
+                                        <ng-template #defaultField>
+                                          {{ section[col.field] }}
+                                        </ng-template>
                                       </ng-template>
                                     </ng-container>
 
@@ -1266,17 +1277,23 @@
 
                                     <!-- Currency + numeric fields -->
                                     <ng-container *ngSwitchDefault>
-                                      <ng-container *ngIf="col.field === 'value'; else defaultField">
-                                        <div class="text-end">
-                                          {{ getCellValue(rowData, col.field) | currency: currencyObj?.prefix : 'symbol'
-                                          : '1.2-2'
-                                          }}
-                                        </div>
+                                      <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
+                                        {{ formatDate(getCellValue(rowData, col.field)) }}
                                       </ng-container>
+                                      
+                                      <ng-template #checkCurrencyField>
+                                        <ng-container *ngIf="col.field === 'value'; else defaultField">
+                                          <div class="text-end">
+                                            {{ getCellValue(rowData, col.field) | currency: currencyObj?.prefix : 'symbol'
+                                            : '1.2-2'
+                                            }}
+                                          </div>
+                                        </ng-container>
 
-                                      <!-- Default (non-currency fields) -->
-                                      <ng-template #defaultField>
-                                        {{ getCellValue(rowData, col.field) }}
+                                        <!-- Default (non-currency fields) -->
+                                        <ng-template #defaultField>
+                                          {{ getCellValue(rowData, col.field) }}
+                                        </ng-template>
                                       </ng-template>
                                     </ng-container>
 
@@ -1389,7 +1406,12 @@
                             <ng-template pTemplate="body" let-rowData>
                               <tr>
                                 <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
-                                  {{ getCellValue(rowData, col.field) }}
+                                  <ng-container *ngIf="isDateField(col.field); else notDateField">
+                                    {{ formatDate(getCellValue(rowData, col.field)) }}
+                                  </ng-container>
+                                  <ng-template #notDateField>
+                                    {{ getCellValue(rowData, col.field) }}
+                                  </ng-template>
                                 </td>
                               </tr>
                             </ng-template>
@@ -1477,15 +1499,21 @@
 
                                     <!-- Currency + numeric fields -->
                                     <ng-container *ngSwitchDefault>
-                                      <ng-container *ngIf="col.field === 'value'; else defaultField">
-                                        <div class="text-end">
-                                          {{ sanitizeCurrency(getCellValue(rowData, col.field))
-                                          | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
-                                        </div>
+                                      <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
+                                        {{ formatDate(getCellValue(rowData, col.field)) }}
                                       </ng-container>
+                                      
+                                      <ng-template #checkCurrencyField>
+                                        <ng-container *ngIf="col.field === 'value'; else defaultField">
+                                          <div class="text-end">
+                                            {{ sanitizeCurrency(getCellValue(rowData, col.field))
+                                            | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                                          </div>
+                                        </ng-container>
 
-                                      <ng-template #defaultField>
-                                        {{ getCellValue(rowData, col.field) }}
+                                        <ng-template #defaultField>
+                                          {{ getCellValue(rowData, col.field) }}
+                                        </ng-template>
                                       </ng-template>
                                     </ng-container>
 
@@ -1575,17 +1603,23 @@
 
                                     <!-- Default branch -->
                                     <ng-container *ngSwitchDefault>
-                                      <ng-container
-                                        *ngIf="col.field === 'amount' || col.field === 'discAmount'; else defaultField">
-                                        <div class="text-end">
-                                          {{ commission[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
-                                          }}
-                                        </div>
+                                      <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
+                                        {{ formatDate(commission[col.field]) }}
                                       </ng-container>
+                                      
+                                      <ng-template #checkCurrencyField>
+                                        <ng-container
+                                          *ngIf="col.field === 'amount' || col.field === 'discAmount'; else defaultField">
+                                          <div class="text-end">
+                                            {{ commission[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
+                                            }}
+                                          </div>
+                                        </ng-container>
 
-                                      <ng-template #defaultField>
-                                        {{ col.field === 'agentDto' ? commission.agentDto?.name : commission[col.field]
-                                        }}
+                                        <ng-template #defaultField>
+                                          {{ col.field === 'agentDto' ? commission.agentDto?.name : commission[col.field]
+                                          }}
+                                        </ng-template>
                                       </ng-template>
 
                                     </ng-container>
@@ -1690,9 +1724,13 @@
 
                                     </ng-container>
                                     <ng-container *ngSwitchDefault>
-                                      {{ col.field === 'name' && !riskDoc['name'] ? riskDoc['actualName'] :
-                                      riskDoc[col.field] }}
-
+                                      <ng-container *ngIf="isDateField(col.field); else notDateField">
+                                        {{ formatDate(riskDoc[col.field]) }}
+                                      </ng-container>
+                                      <ng-template #notDateField>
+                                        {{ col.field === 'name' && !riskDoc['name'] ? riskDoc['actualName'] :
+                                        riskDoc[col.field] }}
+                                      </ng-template>
                                     </ng-container>
 
                                   </ng-container>
@@ -1983,7 +2021,7 @@
                   <td>{{ row.setStandard }}</td>
                   <td>{{ row.usedStandard }}</td>
                   <td>{{ row.authorizedBy || '—' }}</td>
-                  <td>{{ row.authorizedDate || '—' }}</td>
+                  <td>{{ formatDate(row.authorizedDate) }}</td>
                 </tr>
               </ng-template>
 
@@ -2570,22 +2608,43 @@
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label class="quote-label">Email address <span class="text-danger">*</span></label>
-                    <input pInputText type="email" class="form-control" formControlName="to" />
+                    <input pInputText type="text" class="form-control" formControlName="to" 
+                           placeholder="Enter email addresses separated by comma, semicolon, or space" />
                     <div *ngIf="viewDocForm.get('to')?.invalid && viewDocForm.get('to')?.touched"
                       class="text-danger small">
-                      Valid email required
+                      <span *ngIf="viewDocForm.get('to')?.errors?.['required']">Email address is required</span>
+                      <span *ngIf="viewDocForm.get('to')?.errors?.['invalidEmails']">One or more email addresses are invalid</span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                      You can enter multiple emails separated by comma, semicolon, or space
                     </div>
                   </div>
                   <div class="col-md-6">
                     <label class="quote-label">CC</label>
-                    <input pInputText type="email" class="form-control" formControlName="cc" />
+                    <input pInputText type="text" class="form-control" formControlName="cc" 
+                           placeholder="Enter CC email addresses (optional)" />
+                    <div *ngIf="viewDocForm.get('cc')?.invalid && viewDocForm.get('cc')?.touched"
+                      class="text-danger small">
+                      <span *ngIf="viewDocForm.get('cc')?.errors?.['invalidEmails']">One or more email addresses are invalid</span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                      Multiple emails supported (comma, semicolon, or space separated)
+                    </div>
                   </div>
                 </div>
 
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label class="quote-label">BCC</label>
-                    <input pInputText type="email" class="form-control" formControlName="bcc" />
+                    <input pInputText type="text" class="form-control" formControlName="bcc" 
+                           placeholder="Enter BCC email addresses (optional)" />
+                    <div *ngIf="viewDocForm.get('bcc')?.invalid && viewDocForm.get('bcc')?.touched"
+                      class="text-danger small">
+                      <span *ngIf="viewDocForm.get('bcc')?.errors?.['invalidEmails']">One or more email addresses are invalid</span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                      Multiple emails supported (comma, semicolon, or space separated)
+                    </div>
                   </div>
                   <div class="col-md-6">
                     <label class="quote-label">Subject</label>
