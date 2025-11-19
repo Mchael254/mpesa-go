@@ -127,7 +127,15 @@ export interface RiskDmsDocument {
   valuerName?: string;
   voucherNo?: string;
 }
-
-
-
-
+export interface ReceiptUploadRequest {
+  docType: string;
+  docData: string;
+  module: string;
+  originalFileName: string;
+  filename: string;
+  referenceNo?: string;
+  docDescription?: string;
+  amount?: number;
+  paymentMethod?: string;
+  policyNumber?: string;
+}

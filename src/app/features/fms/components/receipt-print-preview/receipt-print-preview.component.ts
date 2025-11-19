@@ -11,6 +11,7 @@ import { ReportsService } from '../../../../shared/services/reports/reports.serv
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EncryptionService } from 'src/app/shared/services/encryption/encryption.service';
+import { CommonMethodsService } from '../../services/common-methods.service';
 /**
  * @Component ReceiptPrintPreviewComponent
  * @description
@@ -54,16 +55,16 @@ export class ReceiptPrintPreviewComponent {
    * by the template binding `[fileName]="documentData?.fileName ?? ''"`, though it's not explicitly set in this component.
    */
   documentData: any;
-  isPrinting:boolean=false;
-   
+  isPrinting: boolean = false;
+
   // A local flag to prevent revoking URL too early
   private isNavigating = false;
   /**this flag checks if the receipt is set for printing or reprinting
    * if it is set for reprinting which its value is yes,then we hide the printed and unprinted buttons
    * and just show a back btn to navigate back to receipt management screen
    */
-  reprintedReceipt:string;
-     // SET THE FLAG: The user is initiating an action that will lead to navigation.
+  reprintedReceipt: string;
+  // SET THE FLAG: The user is initiating an action that will lead to navigation.
   private hasMadeChoice = false;
   /**
    * @constructor
@@ -81,36 +82,38 @@ export class ReceiptPrintPreviewComponent {
     private receiptService: ReceiptService,
     private receiptDataService: ReceiptDataService,
     private translate: TranslateService,
-    private encryptionService:EncryptionService
+    private encryptionService: EncryptionService,
+     private commonMethodsService :CommonMethodsService 
   ) {}
 
   /**
-     * This is a browser event that triggers when the user tries to close the tab or refresh.
-     * It provides a final warning, complementing the CanDeactivate guard.
-     * @param event The BeforeUnloadEvent object.
-     */
-    @HostListener('window:beforeunload', ['$event'])
-    unloadNotification($event: any): void {
-      if (!this.hasMadeChoice) {
-        // This will trigger the browser's native "Are you sure you want to leave?" prompt.
-        $event.returnValue = true; 
-      }
+   * This is a browser event that triggers when the user tries to close the tab or refresh.
+   * It provides a final warning, complementing the CanDeactivate guard.
+   * @param event The BeforeUnloadEvent object.
+   */
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any): void {
+    if (!this.hasMadeChoice) {
+      // This will trigger the browser's native "Are you sure you want to leave?" prompt.
+      $event.returnValue = true;
     }
-  
-    /**
-     * This method is REQUIRED by the CanComponentDeactivate interface.
-     * Our guard will call this method to decide whether to allow navigation away from this component.
-     */
-    canDeactivate(): boolean {
-      // If the user has not clicked "Printed" or "Unprinted", block navigation.
-      if (!this.hasMadeChoice) {
-      
-        alert('You must select "Printed" or "Unprinted" before leaving this page.');
-        return false; // Block navigation
-      }
-      return true; // Allow navigation
+  }
+
+  /**
+   * This method is REQUIRED by the CanComponentDeactivate interface.
+   * Our guard will call this method to decide whether to allow navigation away from this component.
+   */
+  canDeactivate(): boolean {
+    // If the user has not clicked "Printed" or "Unprinted", block navigation.
+    if (!this.hasMadeChoice) {
+      alert(
+        'You must select "Printed" or "Unprinted" before leaving this page.'
+      );
+      return false; // Block navigation
     }
-    
+    return true; // Allow navigation
+  }
+
   /**
    * @method ngOnInit
    * @description Lifecycle hook called after component initialization.
@@ -119,19 +122,19 @@ export class ReceiptPrintPreviewComponent {
    */
   ngOnInit() {
     const receiptNumber = this.sessionStorage.getItem('receiptNumber');
-    
+
     this.receiptNumber = JSON.parse(receiptNumber);
-   
-    const status =  this.sessionStorage.getItem('reprinted');
-   
+
+    const status = this.sessionStorage.getItem('reprinted');
+
     this.reprintedReceipt = status; // This will be true or false
-    
+
     let defaultOrg = this.sessionStorage.getItem('defaultOrg');
     let selectedOrg = this.sessionStorage.getItem('selectedOrg');
     this.defaultOrg = defaultOrg ? JSON.parse(defaultOrg) : null;
     this.selectedOrg = selectedOrg ? JSON.parse(selectedOrg) : null;
     this.getReceiptToPrint();
-   this.checkReprintedRct();
+    this.checkReprintedRct();
   }
   /**
    * @method getReceiptToPrint
@@ -167,62 +170,48 @@ export class ReceiptPrintPreviewComponent {
         //this.downlaod(this.filePath,'receiptpdf');
       },
       error: (err) => {
-        
-        const customMessage = this.translate.instant('fms.errorMessage');
-
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.error?.message ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-           customMessage,
-          backendError
-        );
-         // On error, also set the flag and navigate back
+        this.commonMethodsService.handleApiError(err);
+        // On error, also set the flag and navigate back
         this.handleNavigationError();
-
-       
-        
       },
     });
   }
   // Consolidated navigation logic
   private navigateBackToPrintTab() {
-      this.isNavigating = true;
-      this.sessionStorage.setItem('printTabStatus', JSON.stringify(true));
-       this.sessionStorage.removeItem('receiptNumber');
-      this.sessionStorage.removeItem('reprinted');
-      this.sessionStorage.removeItem('shareType');
-      this.sessionStorage.removeItem('recipient');
-      this.sessionStorage.removeItem('printStatus');
-      this.router.navigate(['/home/fms/receipt-management']);
-
+    this.isNavigating = true;
+    this.sessionStorage.setItem('printTabStatus', JSON.stringify(true));
+    this.sessionStorage.removeItem('receiptNumber');
+    this.sessionStorage.removeItem('reprinted');
+    this.sessionStorage.removeItem('shareType');
+    this.sessionStorage.removeItem('recipient');
+    this.sessionStorage.removeItem('printStatus');
+    this.router.navigate(['/home/fms/receipt-management']);
   }
   // Handles API error navigation
   private handleNavigationError(customError?: string) {
     const customMessage = this.translate.instant('fms.errorMessage');
-      if (customError) {
-        this.globalMessagingService.displayErrorMessage(customMessage, customError);
-      }
-      this.navigateBackToPrintTab();
+    if (customError) {
+      this.globalMessagingService.displayErrorMessage(
+        customMessage,
+        customError
+      );
+    }
+    this.navigateBackToPrintTab();
   }
   /**this method is initialized to at ngOnInit,if we are reprinting a receipt,then we allow users
    * to navigate back using browser' navigation btns or the compoenent's button
    */
- checkReprintedRct():void{
-     if(this.reprintedReceipt == 'yes'){
- this.hasMadeChoice = true;
+  checkReprintedRct(): void {
+    if (this.reprintedReceipt == 'yes') {
+      this.hasMadeChoice = true;
     }
-   
   }
   /**
    * @method navigateToReceiptCapture
    * @description Navigates the user back to the main receipt management view.
    * Typically used when the user clicks the 'Unprinted' button or cancels the operation.
    */
- 
+
   navigateToReceiptManagment(): void {
     this.hasMadeChoice = true;
     this.navigateBackToPrintTab();
@@ -244,12 +233,8 @@ export class ReceiptPrintPreviewComponent {
           '',
           response?.msg || response?.error || response?.status
         );
-         // On success, set the flag and navigate
+        // On success, set the flag and navigate
         this.navigateBackToPrintTab();
-
-
-
-
       },
 
       error: (err) => {
@@ -277,8 +262,8 @@ The perfect place to do this is in the ngOnDestroy lifecycle hook, which runs ju
   // Clean up the blob URL to prevent memory leaks
   /**this.isNavigating flag was to handle a potential memory leak related to window.URL.createObjectURL(blob). */
   ngOnDestroy() {
-      if (this.filePath && !this.isNavigating) {
-          window.URL.revokeObjectURL(this.filePath);
-      }
+    if (this.filePath && !this.isNavigating) {
+      window.URL.revokeObjectURL(this.filePath);
+    }
   }
 }

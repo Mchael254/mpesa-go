@@ -25,11 +25,8 @@ import {
   BranchDTO,
   UsersDTO,
   printDTO,
-  ReceiptUploadRequest,
   acknowledgementSlipDTO,
- 
   ReceiptParticularsDTO,
- 
 } from '../data/receipting-dto';
 
 import { ApiService } from '../../../shared/services/api/api.service';
@@ -60,15 +57,12 @@ export class ReceiptService {
     );
   }
 
- 
-
   getNarrations(): Observable<{ data: NarrationDTO[] }> {
     return this.api.GET<{ data: NarrationDTO[] }>(
       `narrations`,
       API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
     );
   }
-
 
   getReceiptNumber(
     branchCode: number,
@@ -97,16 +91,15 @@ export class ReceiptService {
     );
   }
 
- 
   getBanks(
     branchCode: number,
     currCode: number,
-    pymentMethodCode?:string
+    pymentMethodCode?: string
   ): Observable<{ data: BanksDTO[] }> {
     const params = new HttpParams()
       .set('branchCode', `${branchCode}`)
       .set('currCode', `${currCode}`)
-      .set('pymentMethodCode',`${pymentMethodCode}`);
+      .set('pymentMethodCode', `${pymentMethodCode}`);
     return this.api.GET<{ data: BanksDTO[] }>(
       `banks`,
       API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
@@ -201,7 +194,6 @@ export class ReceiptService {
       params
     );
   }
-
   getClients(
     systemCode: number,
     acctCode: number,
@@ -239,44 +231,6 @@ export class ReceiptService {
       params
     );
   }
-
-  // ... existing code ...
-  uploadFiles(requests: ReceiptUploadRequest[]): Observable<any> {
-    // Map requests to simple objects
-    const formattedRequests = requests.map((request) =>
-      JSON.stringify({
-        docType: request.docType,
-        docData: request.docData,
-        module: request.module,
-        originalFileName: request.originalFileName,
-        filename: request.filename,
-        referenceNo: request.referenceNo,
-        description: request.docDescription,
-        amount: request.amount,
-        paymentMethod: request.paymentMethod,
-        policyNumber: request.policyNumber,
-      })
-    );
-
-    // Join the JSON strings with commas to remove array brackets
-    const payload = formattedRequests.join(',');
-
-    // Send the payload as a raw string
-    return this.api.POST<any>(
-      `uploadAllFinanceDocument`,
-      payload,
-      API_CONFIG.DMS_SERVICE
-    );
-  }
-
-  saveClientDocs(data: any): Observable<any> {
-    return this.api.POST<any>(
-      `uploadAllFinanceDocument
-`,
-      JSON.stringify(data),
-      API_CONFIG.DMS_SERVICE
-    );
-  }
   postAllocation(userCode: number, data: AllocationDTO): Observable<any> {
     const endpoint = `allocations/save?userCode=${userCode}`;
     return this.api.POST<any>(
@@ -285,7 +239,10 @@ export class ReceiptService {
       API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
     );
   }
-  postEmptyAllocation(userCode: number, data: ReceiptParticularsDTO[]): Observable<any> {
+  postEmptyAllocation(
+    userCode: number,
+    data: ReceiptParticularsDTO[]
+  ): Observable<any> {
     const endpoint = `allocations/save?userCode=${userCode}`;
     const payload = { receiptParticulars: data }; // Now 'data' is an array
     return this.api.POST<any>(
@@ -293,8 +250,7 @@ export class ReceiptService {
       payload,
       API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
     );
-}
-
+  }
   saveReceipt(data: ReceiptSaveDTO): Observable<any> {
     const endpoint = `receipts/save`;
     const fullUrl = `${API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL}${endpoint}`;
@@ -318,7 +274,6 @@ export class ReceiptService {
       params
     );
   }
-
 
   deleteAllocation(
     receiptDetailCode: number
@@ -358,29 +313,25 @@ export class ReceiptService {
       params
     );
   }
-  updateReceiptStatus(data: number[]):Observable<any>{
-    return this.api.POST<any>(
-        `receipts/update-print-status`,
-        data,
-        API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
-      )
-    
-
-  }
-  updateSlipStatus(data: number[]){
+  updateReceiptStatus(data: number[]): Observable<any> {
     return this.api.POST<any>(
       `receipts/update-print-status`,
       data,
       API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
-    )
+    );
   }
-  generateAcknowledgementSlip(data:acknowledgementSlipDTO ):Observable<any>{
+  updateSlipStatus(data: number[]) {
     return this.api.POST<any>(
-        `acknowledgement-slips/generate`,
-        data,
-        API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
-      )
-    
-
+      `receipts/update-print-status`,
+      data,
+      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+    );
+  }
+  generateAcknowledgementSlip(data: acknowledgementSlipDTO): Observable<any> {
+    return this.api.POST<any>(
+      `acknowledgement-slips/generate`,
+      data,
+      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+    );
   }
 }
