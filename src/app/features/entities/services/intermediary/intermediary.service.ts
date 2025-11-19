@@ -31,14 +31,16 @@ export class IntermediaryService {
     page: number | null = 0,
     size: number | null = 5,
     sortList: string = 'createdDate',
-    order: string = 'desc'
+    order: string = 'desc',
+    accountTypeId: number = null,
   ): Observable<Pagination<AgentDTO>> {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
       // .set('organizationId', 2)
       .set('sortListFields', `${sortList}`)
-      .set('order', `${order}`);
+      .set('order', `${order}`)
+      .set('accountTypeId', `${accountTypeId}`);
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.api.GET<Pagination<AgentDTO>>(
       `agents`,
