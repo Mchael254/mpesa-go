@@ -242,6 +242,7 @@ export class ImportRisksComponent {
   ncdStatusSelected: boolean;
   passedRiskId: any;
   isRiskValidated: boolean = false;
+  loggedInUser: string;
 
   constructor(
     public subclassService: SubclassesService,
@@ -265,6 +266,8 @@ export class ImportRisksComponent {
       subclass: [''],
       uploadFile: ['']
     });
+    this.loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+    log.debug("Logged in user", this.loggedInUser)
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedProduct'] && this.selectedProduct) {
@@ -2316,7 +2319,7 @@ export class ImportRisksComponent {
 
     log.debug('Saving risk details for quotation code:', this.quotationCode);
 
-    this.quotationService.saveRiskDetails(this.quotationCode).subscribe({
+    this.quotationService.saveRiskDetails(this.quotationCode, this.loggedInUser).subscribe({
       next: (response) => {
         log.debug('Risk details saved successfully:', response);
         this.globalMessagingService.displaySuccessMessage('Success', 'Risk details saved successfully!');
