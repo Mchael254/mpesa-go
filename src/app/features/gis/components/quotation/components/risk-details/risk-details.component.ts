@@ -5297,7 +5297,7 @@ export class RiskDetailsComponent {
       this.selectedSubclassCode = savedSubclass;
     }
 
-    log.debug('subclass code',savedSubclass)
+    log.debug('subclass code', savedSubclass)
 
     const subclassCode = this.selectedSubclassCode;
     log.debug('subclass code', this.selectedSubclassCode)
