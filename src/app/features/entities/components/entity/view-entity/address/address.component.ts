@@ -44,15 +44,15 @@ export class AddressComponent implements OnInit {
 
   states: StateDto[];
   clientState: StateDto;
-  states$: Observable<StateDto[]>;
+  // states$: Observable<StateDto[]>;
 
   towns: TownDto[] = [];
   clientTown: TownDto;
-  towns$: Observable<TownDto[]>;
+  // towns$: Observable<TownDto[]>;
 
   postalCodes: PostalCodesDTO[] = [];
-  clientPostalCode: PostalCodesDTO
-  postalCodes$: Observable<PostalCodesDTO[]>
+  // clientPostalCode: PostalCodesDTO
+  // postalCodes$: Observable<PostalCodesDTO[]>
 
   language: string = 'en';
   editForm: FormGroup;
@@ -74,7 +74,7 @@ export class AddressComponent implements OnInit {
 
 
   constructor(
-    private fb: FormBuilder,
+    // private fb: FormBuilder,
     private utilService: UtilService,
     private countryService: CountryService,
     private globalMessagingService: GlobalMessagingService,
