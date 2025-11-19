@@ -45,7 +45,7 @@ export class RiskCentreComponent {
   isCollapsed = false;
   riskDetailscolumns = false
   ticketStatus: string
-  premiums: { net: number; gross: number; };
+  premiums: { net: number; gross: number; sumInsured: number };
   public currencyObj: NgxCurrencyConfig;
   importRiskvisible: boolean = false;
   private offcanvas!: Offcanvas;

@@ -124,9 +124,10 @@ export class ViewTicketsComponent implements OnInit {
   ticketAssignee: string;
   agentName: string;
   agentId: number;
-  dateFormat: string = 'dd-mm-yy';
+  dateFormat: string;
+  primeNgDateFormat: string;
   minDate: Date | undefined;
-
+  selectedDateFromFE: Date
 
   constructor(
     private authService: AuthService,
@@ -145,7 +146,14 @@ export class ViewTicketsComponent implements OnInit {
     private utilService: UtilService,
 
   ) {
+    this.dateFormat = sessionStorage.getItem('dateFormat');
 
+
+
+    // PrimeNG format mapping
+    this.primeNgDateFormat = this.dateFormat
+      .replace('yyyy', 'yy')
+      .replace('MM', 'mm');
   }
   ngOnInit(): void {
     // this.getAllTicketsFromCubeJs();
@@ -316,10 +324,11 @@ export class ViewTicketsComponent implements OnInit {
 
   lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
     const ticketFilter: any = this.ticketsService.ticketFilterObject();
+    log.info('Lazy lord event :', event);
 
     const pageIndex = event.first / event.rows;
     const queryColumn = event.sortField;
-    const sort = 'desc';
+    const sort = event.sortOrder === 1 ? 'asc' : 'desc';
     const pageSize = 100;
     const sortField = 'createdDate'
     log.info('Sort field:', queryColumn);
@@ -328,9 +337,9 @@ export class ViewTicketsComponent implements OnInit {
     const dateFrom = this.selectedDateFrom || null;
     const ticketName = this.ticketName && this.ticketName.trim() !== "" ? this.ticketName.trim() : null;
     const referenceNo = this.referenceNo && this.referenceNo.trim() !== "" ? this.referenceNo.trim() : null;
-    const client = this.clientName || null;
+    const client = this.clientCode || null;
     const ticketAssignee = this.ticketAssignee || null;
-    const intermediary = this.agentName || null;
+    const intermediary = this.agentId?.toString() || null;
 
     this.getAllTickets(pageIndex, pageSize, sortField, sort?.toString(),
       dateFrom,
@@ -376,13 +385,13 @@ export class ViewTicketsComponent implements OnInit {
           // Hide spinner
           this.spinner.hide();
 
-          // ✅ Extract sysModule values from nested ticket object
-          const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
+          // // ✅ Extract sysModule values from nested ticket object
+          // const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
 
-          // ✅ Process the codes as needed
-          const result = codeValues.map((code) => this.getTicketCode(code));
+          // // ✅ Process the codes as needed
+          // const result = codeValues.map((code) => this.getTicketCode(code));
 
-          log.info('Ticket Codes Extracted:', result);
+          // log.info('Ticket Codes Extracted:', result);
         },
         (error) => {
           log.error('Error fetching tickets:', error);
@@ -1216,6 +1225,7 @@ export class ViewTicketsComponent implements OnInit {
   inputCreatedDate(event) {
     const value = (event.target as HTMLInputElement).value;
     this.selectedDateFrom = value;
+    this.selectedDateFromFE = new Date(value)
   }
 
   inputTicketTo(event) {
@@ -1237,26 +1247,53 @@ export class ViewTicketsComponent implements OnInit {
     this.applyFilter();
 
   }
-  onClientSelected(event: any) {
-    let cleanClientName = event.clientFullName;
-    if (cleanClientName) {
-      cleanClientName = cleanClientName.replace(/\bnull\b/gi, '').trim();
-      cleanClientName = cleanClientName === '' ? null : cleanClientName;
-    }
+  // onClientSelected(event: any) {
+  //   let cleanClientName = event.clientFullName;
+  //   if (cleanClientName) {
+  //     cleanClientName = cleanClientName.replace(/\bnull\b/gi, '').trim();
+  //     cleanClientName = cleanClientName === '' ? null : cleanClientName;
+  //   }
 
+  //   this.clientName = cleanClientName;
+  //   this.clientCode = event.id;
+
+  //   // Close the modal after selection
+  //   this.isClientSearchModalVisible = false;
+  //   this.cdr.detectChanges();
+
+  //   // Optional: Log for debugging
+  //   log.debug('Selected Client-quote management:', event);
+  //   log.debug('Cleaned client name:', cleanClientName);
+  //   this.applyFilter();
+
+  // }
+  onClientSelected(event: any) {
+    // Build full name safely
+    let cleanClientName = [
+      event.firstName,
+      event.lastName
+    ]
+      .filter(x => x && x !== "null")   // remove null values
+      .join(" ")
+      .trim();
+
+    // If empty, set null
+    cleanClientName = cleanClientName === "" ? null : cleanClientName;
+
+    // Assign to filter model
     this.clientName = cleanClientName;
     this.clientCode = event.id;
 
-    // Close the modal after selection
+    // Close modal
     this.isClientSearchModalVisible = false;
     this.cdr.detectChanges();
 
-    // Optional: Log for debugging
-    log.debug('Selected Client-quote management:', event);
-    log.debug('Cleaned client name:', cleanClientName);
-    this.applyFilter();
+    log.debug("Selected Client-quote management:", event);
+    log.debug("Cleaned client name:", cleanClientName);
 
+    this.applyFilter();
   }
+
   formatDate(date: Date): string {
     log.debug("Date (formatDate method):", date)
     const year = date.getFullYear();
@@ -1272,6 +1309,7 @@ export class ViewTicketsComponent implements OnInit {
       const SelectedFormatedDate = this.formatDate(selectedDateFrom)
       this.selectedDateFrom = SelectedFormatedDate
       log.debug(" SELECTED FORMATTED DATE from:", this.selectedDateFrom)
+      this.applyFilter()
     } else {
 
     }

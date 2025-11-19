@@ -249,8 +249,7 @@
               </ng-template>
 
               <ng-template pTemplate="body" let-row>
-                <tr *ngFor="let row of needsReviewRisks" [attr.data-bs-toggle]="'tooltip'"
-                  [attr.title]="row.validationRemarks" class="tooltip-row">
+                <tr [attr.data-bs-toggle]="'tooltip'" [attr.title]="row.validationRemarks" class="tooltip-row">
                   <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
 
                   <td>{{ row.insuredName | sentenceCase }}</td>

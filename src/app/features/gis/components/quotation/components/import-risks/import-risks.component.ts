@@ -276,7 +276,7 @@ export class ImportRisksComponent {
       this.quoteProductCode = this.selectedProduct?.code
       this.loadSelectedProductRiskFields(selectedProductCode)
       this.checkMotorClass(selectedProductCode)
-
+      this.selectedProductCode = selectedProductCode
 
 
 
@@ -298,8 +298,8 @@ export class ImportRisksComponent {
     this.selectedCoverToDate = sessionStorage.getItem("selectedCoverToDate");
     log.debug("selectedCoverFromDate", this.selectedCoverFromDate);
     log.debug("selectedCoverToDate", this.selectedCoverToDate);
-    this.selectedProductCode = JSON.parse(sessionStorage.getItem("selectedProduct"));
-    log.debug("selectedProductCode-import risk", this.selectedProductCode);
+    // this.selectedProductCode = JSON.parse(sessionStorage.getItem("selectedProduct"));
+    // log.debug("selectedProductCode-import risk", this.selectedProductCode);
 
     // Initialize mapping with empty selections
     this.systemFields.forEach(field => {
@@ -336,12 +336,14 @@ export class ImportRisksComponent {
         keyboard: false
       });
     }
-    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.forEach((el: any) => {
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    console.log("Found tooltip elements:", tooltips.length);
+
+    tooltips.forEach((el: any) => {
+      console.log("Initializing tooltip for:", el);
       new bootstrap.Tooltip(el, {
-        trigger: 'hover',
-        html: true,
-        boundary: 'viewport'
+        container: 'body',
+        trigger: 'hover'
       });
     });
 
@@ -623,6 +625,8 @@ export class ImportRisksComponent {
     // Retrieve the selected subclass code from the event
     this.selectedSubclassCode = event.value;
     log.debug('Selected Subclass Code:', this.selectedSubclassCode);
+    // this.onSubclassSelected(this.selectedSubclassCode)
+
     if (this.selectedSubclassCode) {
       this.subclassSelected = true;
       this.fetchUploadedRisks()
@@ -949,7 +953,7 @@ export class ImportRisksComponent {
       gisIpuPropertyId: "",
       transactOnlyCheck: "",
       transferred: "",
-      gisClientCode: 0,
+      gisClientCode: this.selectedClientCode,
       gisIpuCode: 0,
       policyNumber: row["POL NO"] || "",
       notTransferredReason: "",
@@ -1215,14 +1219,18 @@ export class ImportRisksComponent {
         }
       });
     }
+    // this.insuredCode = this.selectedRisk.insuredName
+    // log.debug("Insured code", this.insuredCode)
+    // this.loadClientsThenInsured()
     log.debug("Selected risk:", risk)
     this.selectedRisk = risk
+    this.selectedRisk && this.getVehicleMake()
     log.debug("Risk form Values:", this.riskDetailsForm.value)
     this.riskDetailsForm.patchValue(risk);
     this.riskDetailsForm.patchValue({ subclass: risk.subclassCode });
     this.riskDetailsForm.patchValue({ insureds: risk.insuredName });
     this.onSubclassSelected(this.selectedSubclassCode)
-    // this.loadSelectedSubclassRiskFields(this.selectedSubclassCode)
+    // this.patchEditValues();
   }
   onRiskSelectionChange(event: any) {
     log.debug('Risk selected to be validated', event)
@@ -1525,6 +1533,7 @@ export class ImportRisksComponent {
     const pageSize = 20;
     const pageIndex = 0;
 
+
     this.clientService.getClients(pageIndex, pageSize).pipe(
       tap((data: any) => {
         data.content.forEach(client => {
@@ -1731,15 +1740,16 @@ export class ImportRisksComponent {
 
 
       log.debug("VehicleMake list", this.vehicleMakeList)
-      if (this.storedRiskFormDetails) {
-        const selectedVehicleMake = this.vehicleMakeList.find(make => make.code === this.storedRiskFormDetails?.vehicleMake);
-        if (selectedVehicleMake) {
-          log.debug("selected vehicle make:", selectedVehicleMake)
-          this.riskDetailsForm.patchValue({ vehicleMake: selectedVehicleMake });
-          this.getVehicleModel(selectedVehicleMake.code)
+      const selectedVehicleMake = this.vehicleMakeList.find(make =>
+        make.name?.toLowerCase().includes(this.selectedRisk?.make?.toLowerCase())
+      );
+      if (selectedVehicleMake) {
+        log.debug("selected vehicle make:", selectedVehicleMake)
+        this.riskDetailsForm.patchValue({ vehicleMake: selectedVehicleMake });
+        this.getVehicleModel(selectedVehicleMake.code)
 
-        }
       }
+
 
 
     })
@@ -2011,47 +2021,164 @@ export class ImportRisksComponent {
 
   //   log.debug('Patched form with selectedRisk:', this.riskDetailsForm.value);
   // }
+  // private patchEditValues(): void {
+  //   log.debug('SelectedRisk:', this.selectedRisk);
+
+  //   if (!this.selectedRisk) return;
+
+  //   const parseDate = (value: any): Date | null => {
+  //     if (!value) return null;
+
+  //     // Already a Date
+  //     if (value instanceof Date) return value;
+
+  //     // ISO, or YYYY-MM-DD
+  //     if (typeof value === 'string' && value.includes('-')) {
+  //       return new Date(value);
+  //     }
+
+  //     // DD/MM/YYYY handling
+  //     if (typeof value === 'string' && value.includes('/')) {
+  //       const parts = value.split('/');
+  //       if (parts.length !== 3) return null;
+  //       const [day, month, year] = parts;
+  //       return new Date(+year, +month - 1, +day);
+  //     }
+
+  //     return null;
+  //   };
+
+  //   // Convert dropdown values to number
+  //   const toNumberSafe = (val: any) => {
+  //     if (val === null || val === undefined || val === '') return null;
+  //     return Number(val);
+  //   };
+
+  //   // Helper: convert to number + patch
+  //   const patchSelectValue = (formControlName: string, selectedValue: any) => {
+  //     if (!this.riskDetailsForm.contains(formControlName)) return;
+  //     const ctrl = this.riskDetailsForm.get(formControlName);
+  //     ctrl?.setValue(toNumberSafe(selectedValue));
+  //   };
+
+  //   // ----- Explicit mappings -----
+  //   const explicitFields: Record<string, string> = {
+  //     coverType: 'coverTypeCode',
+  //     premiumBand: 'binderCode',
+  //     registrationNumber: 'propertyId',
+  //     riskDescription: 'itemDesc',
+  //     riskId: 'propertyId'
+  //   };
+
+  //   Object.keys(explicitFields).forEach(formControl => {
+  //     const riskKey = explicitFields[formControl];
+  //     if (this.selectedRisk[riskKey] !== undefined && this.riskDetailsForm.contains(formControl)) {
+  //       this.riskDetailsForm.get(formControl)?.setValue(this.selectedRisk[riskKey]);
+  //     }
+  //   });
+
+  //   // ----- Value fields -----
+  //   ['value', 'sumInsured'].forEach(ctrl => {
+  //     if (this.riskDetailsForm.contains(ctrl)) {
+  //       this.riskDetailsForm.get(ctrl)?.setValue(this.selectedRisk.sumInsured);
+  //     }
+  //   });
+
+  //   // ----- Critical fields -----
+  //   const criticalFields: Record<string, string> = {
+  //     coverFrom: 'withEffectFrom',
+  //     coverTo: 'withEffectTo',
+  //     chasisNumber: 'chassisNumber',
+  //     vehicleMake: 'make',
+  //     vehicleModel: 'model',
+  //     seatingCapacity: 'carryingCapacity',
+  //     color: 'color',
+  //     subclass: 'subclassCode',
+  //     insureds: 'insuredName'
+  //   };
+
+  //   Object.keys(criticalFields).forEach(formControl => {
+  //     const riskKey = criticalFields[formControl];
+
+  //     if (this.selectedRisk[riskKey] !== undefined && this.riskDetailsForm.contains(formControl)) {
+  //       const value = this.selectedRisk[riskKey];
+
+  //       if (formControl === 'coverFrom' || formControl === 'coverTo') {
+  //         this.riskDetailsForm.get(formControl)?.setValue(parseDate(value));
+  //       }
+
+  //       else if (['vehicleMake', 'vehicleModel', 'color', 'subclass'].includes(formControl)) {
+  //         patchSelectValue(formControl, value);
+  //       }
+
+  //       // Simple values
+  //       else {
+  //         this.riskDetailsForm.get(formControl)?.setValue(value);
+  //       }
+  //     }
+  //   });
+
+  //   // ----- Recursive patcher -----
+  //   const flatten = (obj: any) => {
+  //     Object.keys(obj).forEach(key => {
+  //       const value = obj[key];
+
+  //       const excluded = [
+  //         'coverType', 'binderCode', 'propertyId', 'itemDesc', 'sumInsured',
+  //         'withEffectFrom', 'withEffectTo', 'chassisNumber', 'make', 'model',
+  //         'carryingCapacity', 'color', 'subclassCode', 'insuredName'
+  //       ];
+  //       if (excluded.includes(key)) return;
+
+  //       if (value && typeof value === 'object') {
+  //         if (Array.isArray(value) && value.length > 0) flatten(value[0]);
+  //         else flatten(value);
+  //       } else {
+  //         if (this.riskDetailsForm.contains(key)) {
+  //           this.riskDetailsForm.get(key)?.setValue(value);
+  //         }
+  //       }
+  //     });
+  //   };
+
+  //   flatten(this.selectedRisk);
+
+  //   log.debug('Patched form:', this.riskDetailsForm.value);
+  // }
+
   private patchEditValues(): void {
     log.debug('SelectedRisk:', this.selectedRisk);
-
     if (!this.selectedRisk) return;
 
+    // ----- Helper functions -----
+
+    // Parse dates from string or Date object
     const parseDate = (value: any): Date | null => {
       if (!value) return null;
-
-      // Already a Date
       if (value instanceof Date) return value;
-
-      // ISO, or YYYY-MM-DD
-      if (typeof value === 'string' && value.includes('-')) {
-        return new Date(value);
-      }
-
-      // DD/MM/YYYY handling
-      if (typeof value === 'string' && value.includes('/')) {
+      if (typeof value === 'string' && value.includes('-')) return new Date(value); // ISO or YYYY-MM-DD
+      if (typeof value === 'string' && value.includes('/')) { // DD/MM/YYYY
         const parts = value.split('/');
         if (parts.length !== 3) return null;
         const [day, month, year] = parts;
         return new Date(+year, +month - 1, +day);
       }
-
       return null;
     };
 
-    // Convert dropdown values to number
+    // Safe number conversion
     const toNumberSafe = (val: any) => {
       if (val === null || val === undefined || val === '') return null;
       return Number(val);
     };
 
-    // Helper: convert to number + patch
+    // Patch numeric dropdown
     const patchSelectValue = (formControlName: string, selectedValue: any) => {
       if (!this.riskDetailsForm.contains(formControlName)) return;
-      const ctrl = this.riskDetailsForm.get(formControlName);
-      ctrl?.setValue(toNumberSafe(selectedValue));
+      this.riskDetailsForm.get(formControlName)?.setValue(toNumberSafe(selectedValue));
     };
 
-    // ----- Explicit mappings -----
+    // ----- Explicit field mappings -----
     const explicitFields: Record<string, string> = {
       coverType: 'coverTypeCode',
       premiumBand: 'binderCode',
@@ -2087,32 +2214,75 @@ export class ImportRisksComponent {
       insureds: 'insuredName'
     };
 
+    const numericDropdowns = ['subclass'];  // values that must be numeric
+    const stringDropdowns = ['color'];      // values that are string only
+
     Object.keys(criticalFields).forEach(formControl => {
       const riskKey = criticalFields[formControl];
+      if (!this.riskDetailsForm.contains(formControl)) return;
+      let value = this.selectedRisk[riskKey];
+      if (value === undefined || value === null) return;
 
-      if (this.selectedRisk[riskKey] !== undefined && this.riskDetailsForm.contains(formControl)) {
-        const value = this.selectedRisk[riskKey];
+      // Date fields
+      if (['coverFrom', 'coverTo'].includes(formControl)) {
+        this.riskDetailsForm.get(formControl)?.setValue(parseDate(value));
+      }
+      // Numeric dropdowns
+      else if (numericDropdowns.includes(formControl)) {
+        patchSelectValue(formControl, value);
+      }
+      // Vehicle fields that can be string (name) or numeric (code)
+      else if (['vehicleMake', 'vehicleModel'].includes(formControl)) {
+        let patchValue: string | number = value;
+        log.debug('Patch value for vehicle make and model', patchValue)
+        // Determine options list
+        let options = formControl === 'vehicleMake' ? this.vehicleMakeList : this.vehicleModelDetails;
 
-        if (formControl === 'coverFrom' || formControl === 'coverTo') {
-          this.riskDetailsForm.get(formControl)?.setValue(parseDate(value));
+        // Cast options to a definite array of objects with name/code
+        const optionsArray = options as { name: string; code: number }[];
+        log.debug('Options array', optionsArray)
+
+        if (Array.isArray(optionsArray)) {
+          if (typeof value === 'string') {
+            log.debug('patch value was string')
+
+            const match = optionsArray.find(opt => opt.name.toLowerCase() === value.toLowerCase());
+            if (match) {
+              patchValue = match.code;
+              log.debug('patch value was string', match)
+            } else {
+              patchValue = Number(value);
+              log.debug('patch value has been  turned to number', patchValue)
+
+            }
+
+          } else if (!isNaN(Number(value))) {
+            log.debug('patch value was number')
+            patchValue = Number(value);
+          }
+        } else {
+          patchValue = Number(value);
         }
 
-        else if (['vehicleMake', 'vehicleModel', 'color', 'subclass'].includes(formControl)) {
-          patchSelectValue(formControl, value);
-        }
+        this.riskDetailsForm.get(formControl)?.setValue(patchValue);
+      }
 
-        // Simple values
-        else {
-          this.riskDetailsForm.get(formControl)?.setValue(value);
-        }
+      // String dropdowns
+      else if ((['color'].includes(formControl))) {
+        let patchColorValue = value;
+        patchColorValue = Number(patchColorValue);
+        this.riskDetailsForm.get(formControl)?.setValue(patchColorValue);
+      }
+      // Other simple fields
+      else {
+        this.riskDetailsForm.get(formControl)?.setValue(value);
       }
     });
 
-    // ----- Recursive patcher -----
+    // ----- Recursive patcher for nested objects -----
     const flatten = (obj: any) => {
       Object.keys(obj).forEach(key => {
         const value = obj[key];
-
         const excluded = [
           'coverType', 'binderCode', 'propertyId', 'itemDesc', 'sumInsured',
           'withEffectFrom', 'withEffectTo', 'chassisNumber', 'make', 'model',

@@ -34,6 +34,7 @@ export interface QuotationDetailsRequestDto {
   polPropHoldingCoPrpCode?: number;
   chequeRequisition?: string;
   premium: number;
+  quoteType: string,
   quotationProducts: QuotationProduct[];
 }
 
