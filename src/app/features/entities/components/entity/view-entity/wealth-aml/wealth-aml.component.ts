@@ -572,7 +572,7 @@ export class WealthAmlComponent implements OnInit {
       ...this.selectedOwnershipDetail,
       name: formValues.overview_stakeholder_name,
       idNumber: formValues.overview_stakeholder_doc_id_no,
-      contactPersonPhone: (formValues.overview_stakeholder_mobile_no?.internationalNumber)?.replace(/\s+/g, ''),
+      contactPersonPhone: (formValues.overview_stakeholder_mobile_no?.internationalNumber)?.replace(/\s+/g, '') ?? null,
       percentOwnership: formValues.overview_stakeholder_percent_ownership,
     }
 
