@@ -24,7 +24,7 @@ import { AuthorizePolicyModalComponent } from "../authorize-policy-modal/authori
 import { PolicyDetailsDTO } from "../../../data/policy-details-dto";
 import { QuotationsService } from 'src/app/features/gis/components/quotation/services/quotations/quotations.service';
 import * as bootstrap from 'bootstrap';
-import { GroupedUser } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
+import { GroupedUser, QuotationDetails } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
 import { ClaimsService } from 'src/app/features/gis/components/claim/services/claims.service';
 import { UtilService } from 'src/app/shared/services';
 
@@ -128,6 +128,12 @@ export class ViewTicketsComponent implements OnInit {
   primeNgDateFormat: string;
   minDate: Date | undefined;
   selectedDateFromFE: Date
+  quotationDetails: QuotationDetails
+  quoteType: string;
+  userDetails: any;
+  user: any;
+  userCode: number;
+
 
   constructor(
     private authService: AuthService,
@@ -152,10 +158,12 @@ export class ViewTicketsComponent implements OnInit {
 
     // PrimeNG format mapping
     this.primeNgDateFormat = this.dateFormat
-      .replace('yyyy', 'yy')
-      .replace('MM', 'mm');
+      ?.replace('yyyy', 'yy')
+      ?.replace('MM', 'mm');
   }
   ngOnInit(): void {
+    this.getuser();
+
     // this.getAllTicketsFromCubeJs();
     this.createSortForm();
     this.getAllTicketTypes();
@@ -291,7 +299,30 @@ export class ViewTicketsComponent implements OnInit {
     })
 
   }
+  getuser() {
+    this.user = this.authService.getCurrentUserName();
+    log.debug("Username", this.user)
+    this.userDetails = this.authService.getCurrentUser();
+    log.info('Login UserDetails', this.userDetails);
+    this.user = this.userDetails.fullName || this.authService.getCurrentUserName();
+    this.userCode = this.userDetails.code;
+    log.debug('User Code ', this.userCode);
+    sessionStorage.setItem('userCode', JSON.stringify(this.userCode))
 
+    this.dateFormat = this.userDetails?.orgDateFormat;
+    log.debug('Organization Date Format:', this.dateFormat);
+    sessionStorage.setItem('dateFormat', this.dateFormat);
+
+    // Convert dateFormat to PrimeNG format
+    this.primeNgDateFormat = this.dateFormat
+      .replace('yyyy', 'yy')
+      .replace('MM', 'mm');
+
+    const todaysDate = new Date();
+    log.debug('todays date before being formatted', todaysDate);
+
+
+  }
   getAllTickets(
     pageIndex: number,
     pageSize: number,
@@ -1001,46 +1032,118 @@ export class ViewTicketsComponent implements OnInit {
   }
 
 
+  // processTicket(ticket: any): void {
+  //   const ticketName = ticket.ticketName?.trim();
+  //   log.debug("Ticket chosen", ticket);
+  //   this.utilService.clearSessionStorageData()
+  //   this.utilService.clearNormalQuoteSessionStorage()
+  //   // Save the whole ticket in session storage
+  //   sessionStorage.setItem('activeTicket', JSON.stringify(ticket));
+  //   const quotationCode = ticket.quotationCode
+  //   sessionStorage.setItem('quotationCode', quotationCode.toString());
+  //   this.quotationService.getQuotationDetails(quotationCode)
+  //     .pipe(untilDestroyed(this)).subscribe((response: any) => {
+  //       log.debug("Quotation details>>>", response)
+  //       this.quotationDetails = response
+  //       sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationDetails))
+  //       const quoteType = this.quotationDetails.quoteType
+  //       this.quoteType = quoteType
+  //     });
+
+  //   if (this.quotationDetails) {
+  //     switch (ticketName) {
+  //       case 'Quotation Data Entry':
+  //         if (this.quoteType === 'QQ') {
+  //           sessionStorage.setItem('ticketStatus', ticketName);
+  //           this.router.navigate(['/home/gis/quotation/quote-summary']);
+  //         } else if (this.quoteType === 'NQ') {
+  //           this.router.navigate(['/home/gis/quotation/quotation-details']);
+  //         }
+  //         break;
+
+  //       case 'Authorize Quotation':
+  //         sessionStorage.setItem('ticketStatus', ticketName);
+  //         this.router.navigate(['/home/gis/quotation/quotation-summary']);
+  //         break;
+
+  //       case 'Confirm Quotation':
+  //         sessionStorage.setItem('ticketStatus', ticketName);
+  //         sessionStorage.setItem('confirmMode', 'true');
+
+  //         this.router.navigate(['/home/gis/quotation/quotation-summary']);
+  //         break;
+
+  //       case 'Authorize Exception':
+  //         sessionStorage.setItem('ticketStatus', ticketName);
+
+  //         sessionStorage.setItem('showExceptions', 'true');
+  //         this.router.navigate(['/home/gis/quotation/quotation-summary']);
+  //         break;
+
+  //       default:
+  //         console.warn('Unknown ticket type:', ticketName);
+  //         break;
+  //     }
+  //   }
+  // }
   processTicket(ticket: any): void {
     const ticketName = ticket.ticketName?.trim();
     log.debug("Ticket chosen", ticket);
-    this.utilService.clearSessionStorageData()
-    this.utilService.clearNormalQuoteSessionStorage()
-    // Save the whole ticket in session storage
+
+    this.utilService.clearSessionStorageData();
+    this.utilService.clearNormalQuoteSessionStorage();
+
     sessionStorage.setItem('activeTicket', JSON.stringify(ticket));
-    const quotationCode = ticket.quotationCode
+
+    const quotationCode = ticket.quotationCode;
     sessionStorage.setItem('quotationCode', quotationCode.toString());
 
+    this.quotationService.getQuotationDetails(quotationCode)
+      .pipe(untilDestroyed(this))
+      .subscribe((response: any) => {
+        log.debug("Quotation details>>>", response);
 
-    switch (ticketName) {
-      case 'Quotation Data Entry':
-        sessionStorage.setItem('ticketStatus', ticketName);
-        this.router.navigate(['/home/gis/quotation/quotation-details']);
-        break;
+        this.quotationDetails = response;
+        sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationDetails));
 
-      case 'Authorize Quotation':
-        sessionStorage.setItem('ticketStatus', ticketName);
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
-        break;
+        this.quoteType = this.quotationDetails.quoteType;
 
-      case 'Confirm Quotation':
-        sessionStorage.setItem('ticketStatus', ticketName);
-        sessionStorage.setItem('confirmMode', 'true');
+        if (this.quotationDetails) {
+          switch (ticketName) {
+            case 'Quotation Data Entry':
+              sessionStorage.setItem('ticketStatus', ticketName);
 
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
-        break;
+              if (this.quoteType === 'QQ') {
+                this.router.navigate(['/home/gis/quotation/quote-summary']);
+              } else if (this.quoteType === 'NQ' || this.quoteType === '' ||
+                this.quoteType === null) {
+                this.router.navigate(['/home/gis/quotation/quotation-details']);
+              }
+              break;
 
-      case 'Authorize Exception':
-        sessionStorage.setItem('ticketStatus', ticketName);
+            case 'Authorize Quotation':
+              sessionStorage.setItem('ticketStatus', ticketName);
+              this.router.navigate(['/home/gis/quotation/quotation-summary']);
+              break;
 
-        sessionStorage.setItem('showExceptions', 'true');
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
-        break;
+            case 'Confirm Quotation':
+              sessionStorage.setItem('ticketStatus', ticketName);
+              sessionStorage.setItem('confirmMode', 'true');
+              this.router.navigate(['/home/gis/quotation/quotation-summary']);
+              break;
 
-      default:
-        console.warn('Unknown ticket type:', ticketName);
-        break;
-    }
+            case 'Authorize Exception':
+              sessionStorage.setItem('ticketStatus', ticketName);
+              sessionStorage.setItem('showExceptions', 'true');
+              this.router.navigate(['/home/gis/quotation/quotation-summary']);
+              break;
+
+            default:
+              console.warn('Unknown ticket type:', ticketName);
+              break;
+          }
+        }
+      });
   }
 
 

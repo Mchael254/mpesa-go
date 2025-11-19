@@ -1699,8 +1699,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.user = this.authService.getCurrentUserName();
     this.userDetails = this.authService.getCurrentUser();
     log.info('Login UserDetails', this.userDetails);
-    this.userBranchId = this.userDetails?.branchId;
-    log.debug('User Branch Id', this.userBranchId);
+    // this.userBranchId = this.userDetails?.branchId;
+    // log.debug('User Branch Id', this.userBranchId);
     this.userCode = this.userDetails.code
     log.debug('User Code ', this.userCode);
     this.dateFormat = this.userDetails?.orgDateFormat;
@@ -1747,15 +1747,33 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.branchList = data;
-        const branch = this.branchList.filter(
-          (branch) => branch.id == this.userBranchId
-        );
+        // const branch = this.branchList.filter(
+        //   (branch) => branch.id == this.userBranchId
+        // );
         this.branchDescriptionArray = data.map((branch) => {
           return {
             code: branch.id,
             description: this.capitalizeWord(branch.name),
           }
         })
+        const userCode = this.userCode?.toString()
+        this.quotationService.getUserBranches(userCode).subscribe({
+          next: (userBranches) => {
+            if (!userBranches?.length) return;
+            log.debug('user branches', userBranches)
+            //Get the first user branchId
+            const firstUserBranchId = userBranches[0].branchId;
+
+            //Match it against the full branch list
+            const matchedBranch = this.branchList.find(b => b.id === firstUserBranchId);
+            this.userBranchId = matchedBranch.id
+            log.debug("User branch Id;", this.userBranchId)
+
+          },
+          error: (err) => {
+            console.error('Error fetching user branches:', err);
+          }
+        });
       });
   }
 
@@ -2442,7 +2460,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       wefDate: this.formatDate(new Date(formModel.effectiveDate)),
       wetDate: formModel.products[0]?.effectiveTo,
       premium: totalPremium,
-      branchCode: this.userBranchId || 1,
+      branchCode: this.userBranchId || null,
       comments: formModel.quotComment,
       clientType: 'I',
       quoteType: 'QQ',
