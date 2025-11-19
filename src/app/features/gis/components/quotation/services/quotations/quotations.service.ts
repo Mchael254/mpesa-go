@@ -1321,12 +1321,12 @@ export class QuotationsService {
     pageSize: number = 100,
     sortField: string = 'createdDate',
     sortOrder: string = 'desc',
+    dateFrom?: string,
     ticketName?: string,
     referenceNo?: string,
     client?: string,
-    ticketAssignee?: string,
     intermediary?: string,
-    dateFrom?: string,
+    ticketAssignee?: string,
   ): Observable<any> {
     const params: any = {
       pageNo,
@@ -1336,12 +1336,12 @@ export class QuotationsService {
     };
 
     // Add optional filters if they are provided
+    if (dateFrom) params.dateFrom = dateFrom;
     if (ticketName) params.ticketName = ticketName;
     if (referenceNo) params.referenceNo = referenceNo;
     if (client) params.client = client;
-    if (ticketAssignee) params.ticketAssignee = ticketAssignee;
     if (intermediary) params.intermediary = intermediary;
-    if (dateFrom) params.dateFrom = dateFrom;
+    if (ticketAssignee) params.ticketAssignee = ticketAssignee;
 
     return this.api.GET<any>(
       'v1/tickets',
@@ -1540,14 +1540,14 @@ export class QuotationsService {
 
 
   deleteRiskRecord(id: number): Observable<any> {
-  return this.api.DELETE<any>(
-    `v1/policy-electronic-data/${id}`,
-    API_CONFIG.GIS_COMMONS_SERVICE
-  ).pipe(
-    retry(1),
-    catchError(this.errorHandl)
-  );
-}
+    return this.api.DELETE<any>(
+      `v1/policy-electronic-data/${id}`,
+      API_CONFIG.GIS_COMMONS_SERVICE
+    ).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
 
   saveRiskDetails(quotationCode: string | number) {
     return this.api.POST<any>(

@@ -3399,12 +3399,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       identifierValue = smsCtrl.value;
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate OTP code
+
 
     const payload = {
       identifier: identifierValue,
       subject: "Action Required: Verify Your Consent with OTP",
-      body: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent: ${otp}`
+      body: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent: `
     };
 
     this.quotationService.generateOTP(payload, selectedMethod).subscribe({
@@ -3413,7 +3413,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           "Success",
           `OTP sent successfully via ${selectedMethod}`
         );
-        this.otpResponse = { otp: otp, ...res };
+        this.otpResponse = res;
         this.otpGenerated = true;
         this.cdr.detectChanges();
         sessionStorage.setItem('otpGenerated', JSON.stringify(this.otpGenerated));
