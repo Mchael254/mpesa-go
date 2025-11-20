@@ -2254,23 +2254,6 @@
 
         <!-- Left-side buttons -->
         <div class="d-flex gap-2 flex-wrap">
-
-          <!-- <button
-            style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"
-            (click)="navigateToRiskCenter()" [disabled]="viewQuoteFlag">
-            {{ 'gis.quotation.back' | translate }}
-          </button>
-
-          <button type="button" class="btn btn-outline-primary" (click)="openReassignQuotationModal()"
-            [disabled]="afterRejectQuote||viewQuoteFlag">
-            {{ "gis.quotation.reassign" | translate }}
-          </button> -->
-
-          <!-- <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
-            [disabled]="afterRejectQuote||viewQuoteFlag">
-            {{ 'gis.quotation.reject' | translate }}
-          </button> -->
-          <!-- Back Button -->
           <!-- Back Button -->
           <span class="mt-2"
             [pTooltip]="afterRejectQuote || viewQuoteFlag ? 'No further action — quotation already authorized.' : null"
@@ -2608,26 +2591,24 @@
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label class="quote-label">Email address <span class="text-danger">*</span></label>
-                    <input pInputText type="text" class="form-control" formControlName="to" 
-                           placeholder="Enter email addresses separated by comma, semicolon, or space" />
+                    <input pInputText type="text" class="form-control" formControlName="to" />
                     <div *ngIf="viewDocForm.get('to')?.invalid && viewDocForm.get('to')?.touched"
                       class="text-danger small">
                       <span *ngIf="viewDocForm.get('to')?.errors?.['required']">Email address is required</span>
                       <span *ngIf="viewDocForm.get('to')?.errors?.['invalidEmails']">One or more email addresses are invalid</span>
                     </div>
-                    <div class="text-muted small mt-1">
+                    <div *ngIf="viewDocForm.get('to')?.value" class="text-muted small mt-1">
                       You can enter multiple emails separated by comma, semicolon, or space
                     </div>
                   </div>
                   <div class="col-md-6">
                     <label class="quote-label">CC</label>
-                    <input pInputText type="text" class="form-control" formControlName="cc" 
-                           placeholder="Enter CC email addresses (optional)" />
+                    <input pInputText type="text" class="form-control" formControlName="cc" />
                     <div *ngIf="viewDocForm.get('cc')?.invalid && viewDocForm.get('cc')?.touched"
                       class="text-danger small">
                       <span *ngIf="viewDocForm.get('cc')?.errors?.['invalidEmails']">One or more email addresses are invalid</span>
                     </div>
-                    <div class="text-muted small mt-1">
+                    <div *ngIf="viewDocForm.get('cc')?.value" class="text-muted small mt-1">
                       Multiple emails supported (comma, semicolon, or space separated)
                     </div>
                   </div>
@@ -2642,7 +2623,7 @@
                       class="text-danger small">
                       <span *ngIf="viewDocForm.get('bcc')?.errors?.['invalidEmails']">One or more email addresses are invalid</span>
                     </div>
-                    <div class="text-muted small mt-1">
+                    <div *ngIf="viewDocForm.get('bcc')?.value" class="text-muted small mt-1">
                       Multiple emails supported (comma, semicolon, or space separated)
                     </div>
                   </div>

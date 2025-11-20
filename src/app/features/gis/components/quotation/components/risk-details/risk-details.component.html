@@ -476,6 +476,8 @@
         </div>
     </div>
 </div>
+
+
 <!-- SCHEDULE DETAILS CARD -->
 <div class="card  mb-3">
     <div class="card-body my-4 mx-4">
@@ -531,7 +533,7 @@
                                     <ng-container *ngSwitchDefault>
 
                                         <ng-container
-                                            *ngIf="col.field === 'value'|| col.field === 'SumInsured' || col.field === 'Value'; else defaultCell">
+                                            *ngIf="col.field === 'value' || col.field === 'sumInsured' || col.field === 'policyLimit' || col.field === 'content' || col.field === 'deductible' || col.field === 'Value'; else defaultCell">
                                             <div class="text-end"> {{ row[col.field] | currency: currencyObj?.prefix :
                                                 'symbol' : '1.2-2' }}
                                             </div>
