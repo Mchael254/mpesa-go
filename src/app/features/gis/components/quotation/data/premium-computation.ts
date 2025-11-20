@@ -132,6 +132,7 @@ export interface RiskLevelPremium {
 }
 
 export interface CoverTypeDetail {
+  newadditionalBenefits: any[];
   subclassCode: number;
   description: string;
   coverTypeCode: number;
