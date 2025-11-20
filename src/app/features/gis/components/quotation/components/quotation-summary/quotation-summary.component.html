@@ -175,6 +175,11 @@
 
           <div class="row mb-2">
             <div class="col-md-4 d-flex">
+              <p class="label w-50">Tax amt.</p>
+              <p class="content w-50">{{ totalTaxAmount | currency: currencyObj?.prefix :
+                'symbol' : '1.2-2' }}</p>
+            </div>
+            <div class="col-md-4 d-flex">
               <p class="label w-50">Comm amt.</p>
               <p class="content w-50">{{ quotationView?.commissionAmount | currency: currencyObj?.prefix :
                 'symbol' : '1.2-2' }}</p>
@@ -324,13 +329,13 @@
                     [pEditableRow]="product" class="hover:!bg-gray-50 !cursor-pointer transition-colors">
 
                     <td *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header"
-                      [ngClass]="{ 'text-end': col.field === 'premium' || col.field === 'totalSumInsured' }">
+                      [ngClass]="{ 'text-start': col.field === 'premium' || col.field === 'totalSumInsured' }">
 
                       <ng-container [ngSwitch]="col.field">
                         <ng-container *ngSwitchDefault>
                           <ng-container *ngSwitchDefault>
                             <ng-container
-                              *ngIf="col.field === 'premium' || col.field === 'totalSumInsured'; else defaultField">
+                              *ngIf="col.field === 'premium' || col.field === 'totalSumInsured' || col.field === 'commission' ; else defaultField">
                               {{ product[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
                               }}
                             </ng-container>
