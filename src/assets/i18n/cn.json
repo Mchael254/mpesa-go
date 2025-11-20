@@ -2608,7 +2608,8 @@
       "paymentRequired": "需要支付方式",
       "dateTo": "结束日期是必填项",
       "dateFrom": "开始日期是必填项",
-      "orDrag": "或将文件拖到此处"
+      "orDrag": "或将文件拖到此处",
+      "detach": "分离"
     }
   },
   "campaignMngmt": {

@@ -2620,7 +2620,8 @@
       "paymentRequired": "Njia ya malipo inahitajika",
       "dateTo": "Tarehe ya mwisho inahitajika",
       "dateFrom": "Tarehe ya kuanza inahitajika",
-      "orDrag": "au buruta faili hapa"
+      "orDrag": "au buruta faili hapa",
+      "detach": "Tenganisha"
     }
   },
   "campaignMngmt": {
