@@ -1238,7 +1238,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.user = this.userDetails.fullName || this.authService.getCurrentUserName();
     this.userCode = this.userDetails.code;
     log.debug('User Code ', this.userCode);
+    const loggedInUser = this.userDetails.userName
     sessionStorage.setItem('userCode', JSON.stringify(this.userCode))
+    sessionStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
 
     this.dateFormat = this.userDetails?.orgDateFormat;
     log.debug('Organization Date Format:', this.dateFormat);
