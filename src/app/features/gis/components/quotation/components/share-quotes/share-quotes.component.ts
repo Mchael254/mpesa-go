@@ -64,7 +64,7 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
     this.shareForm = this.fb.group({
       clientName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', []]
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]]
 
     });
 
@@ -164,15 +164,38 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
       // Email required, phone not required
       emailControl?.setValidators([Validators.required, Validators.email]);
       phoneControl?.clearValidators();
+      phoneControl?.reset(); // Clear phone value when switching to email
     } else {
-      // Phone required, email not required
-      phoneControl?.setValidators([Validators.required]);
+      // Phone required (for both WhatsApp and SMS), email not required
+      phoneControl?.setValidators([Validators.required, Validators.pattern(/^[0-9]{10}$/)]);
       emailControl?.clearValidators();
+      emailControl?.reset(); // Clear email value when switching to phone
     }
 
     // Update the validation state
     emailControl?.updateValueAndValidity();
     phoneControl?.updateValueAndValidity();
+  }
+
+  /**
+   * Format phone number to international format (254XXXXXXXXX)
+   * @param phoneNumber - The phone number to format
+   * @returns Formatted phone number with 254 prefix
+   */
+  formatPhoneNumber(phoneNumber: string): string {
+    const cleaned = phoneNumber.replace(/\D/g, '');
+
+    // If already starts with 254, return as is
+    if (cleaned.startsWith('254')) {
+      return cleaned;
+    }
+
+    if (!cleaned.match(/^(01|07)/)) {
+      throw new Error("Invalid phone number format");
+    }
+
+    // Convert to 254 format by removing leading 0 and adding 254
+    return '254' + cleaned.substring(1);
   }
 
 
