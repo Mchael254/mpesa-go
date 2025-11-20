@@ -355,7 +355,8 @@
                         <ng-container
                           *ngIf="field.name !== 'coverFrom' && field.name !== 'coverTo' && riskDetailsForm && riskDetailsForm.contains(field.name)">
                           <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                            [dateFormat]="dateFormat" [showIcon]="true" [attr.placeholder]="field.label | translate">
+                            [dateFormat]="primeNgDateFormat" [showIcon]="true"
+                            [attr.placeholder]="field.label | translate">
                           </p-calendar>
                         </ng-container>
 
@@ -491,19 +492,20 @@
                         <ng-container
                           *ngIf="field.name !== 'coverFrom' && field.name !== 'coverTo' && riskDetailsForm && riskDetailsForm.contains(field.name)">
                           <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                            [dateFormat]="dateFormat" [showIcon]="true" [attr.placeholder]="field.label | translate">
+                            [dateFormat]="primeNgDateFormat" [showIcon]="true"
+                            [attr.placeholder]="field.label | translate">
                           </p-calendar>
                         </ng-container>
                         <!-- Cover From -->
                         <p-calendar *ngIf="field.name === 'coverFrom'" [formControlName]="field.name"
-                          [dateFormat]="dateFormat" [showIcon]="true" [attr.placeholder]="field.label | translate"
-                          (onSelect)="onDateChange()">
+                          [dateFormat]="primeNgDateFormat" [showIcon]="true"
+                          [attr.placeholder]="field.label | translate" (onSelect)="onDateChange()">
                         </p-calendar>
 
                         <!-- Cover To -->
                         <p-calendar *ngIf="field.name === 'coverTo'" [formControlName]="field.name"
-                          [dateFormat]="dateFormat" [showIcon]="true" [attr.placeholder]="field.label | translate"
-                          (onSelect)="onDateChange()">
+                          [dateFormat]="primeNgDateFormat" [showIcon]="true"
+                          [attr.placeholder]="field.label | translate" (onSelect)="onDateChange()">
                         </p-calendar>
 
 
