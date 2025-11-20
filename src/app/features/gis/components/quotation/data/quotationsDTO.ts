@@ -1498,7 +1498,7 @@ export interface RiskCommissionDto {
   amount?: number;
   discAmount?: number;
   accountType?: string;
-  commissionAmount?: number;
+
   withHoldingRate?: number;
   withHoldingTax?: number;
 }

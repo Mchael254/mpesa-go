@@ -243,6 +243,7 @@ export class ImportRisksComponent {
   passedRiskId: any;
   isRiskValidated: boolean = false;
   loggedInUser: string;
+  primeNgDateFormat: string;
 
   constructor(
     public subclassService: SubclassesService,
@@ -327,6 +328,12 @@ export class ImportRisksComponent {
       align: 'left',
     };
     this.dateFormat = sessionStorage.getItem('dateFormat');
+
+    // Convert dateFormat to PrimeNG format
+    this.primeNgDateFormat = this.dateFormat
+      .replace('yyyy', 'yy')
+      .replace('MM', 'mm');
+
 
   }
   ngOnDestroy(): void { }
@@ -923,11 +930,11 @@ export class ImportRisksComponent {
       agentClientId: row["INSURED ID"] || "",
       agentClientName: row["INSURED NAME"] || "",
       agentClientSurname: "",
-      withEffectFrom: this.parseCsvDate(row["EFF DATE"]),
+      withEffectFrom: (row["EFF DATE"]),
       agentPolicyId: "",
       insuranceClass: "",
       coverType: row["Cover Type"] || "",
-      withEffectTo: this.parseCsvDate(row["EXP DATE"]),
+      withEffectTo: (row["EXP DATE"]),
       transactionDateString: "",
       transactionNo: "",
       premium: Number(row["PREMIUM"]) || 0,
