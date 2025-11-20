@@ -320,6 +320,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   selectedExceptions: ExceptionListDto[] = [];
   dateFormat: string = 'dd-MMM-yyyy'; // Default format
   private datePipe: DatePipe = new DatePipe('en-US');
+  totalTaxAmount: number = 0;
 
   /**
    * Custom validator for multiple email addresses
@@ -749,6 +750,16 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           log.debug("quotation code", this.quotationCode)
         }
 
+        this.branchCode=this.quotationView.branchCode
+
+        log.debug("BranchCode",this.branchCode)
+
+        this.branchService.getBranchById(this.branchCode).subscribe(data => {
+  
+         this.branch = data.name || 'N/A'; 
+        log.debug("Branch to display:", this.branch);
+         });
+
         this.marketerCommissionAmount = this.quotationView.marketerCommissionAmount;
         log.debug("marketerCommissionAmount", this.marketerCommissionAmount);
 
@@ -772,6 +783,17 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
         log.debug('Subclass Code:', subclassCode);
         log.debug('Quotation Product Code:', quotationProductCode)
+
+        if (firstProduct) {
+  
+         this.taxDetails = firstProduct.taxInformation || [];
+
+  
+        this.totalTaxAmount = this.taxDetails.reduce((sum, tax) => sum + (tax.taxAmount || 0), 0);
+
+       log.debug('Tax Details:', this.taxDetails);
+       log.debug('Total Tax Amount:', this.totalTaxAmount);
+        }
 
         // Extract product details
         this.quotationProducts = this.quotationView.quotationProducts;
@@ -2798,45 +2820,46 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showLimitsOfLiabilityColumnModal = true;
   }
-  setColumnsFromProductDetails(sample: ProductDetails) {
-    const defaultVisibleFields = [
-      'productName',
-      'wet',
-      'wef',
-      'premium',
-      'commission'
-    ];
+ setColumnsFromProductDetails(sample: ProductDetails) {
+  const defaultVisibleFields = [
+    'productName',
+    'premium',
+    'commission',
+    'wet',
+    'wef'
+  ];
 
-    const excludedFields = [
-      'productClauses',
-      'taxInformation',
-      'riskInformation',
+  const excludedFields = [
+    'productClauses',
+    'taxInformation',
+    'riskInformation',
+    'limitsOfLiability'
+  ];
 
-      'limitsOfLiability'
-
-
-
-
-
-    ];
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
 
 
-    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+  keys = keys.sort((a, b) => {
+    const indexA = defaultVisibleFields.indexOf(a);
+    const indexB = defaultVisibleFields.indexOf(b);
 
+    if (indexA !== -1 && indexB !== -1) {
+      return indexA - indexB; 
+    }
 
-    keys = keys.sort((a, b) => {
-      if (a === 'productName') return -1;
-      if (b === 'productName') return 1;
-      return 0;
-    });
+    if (indexA !== -1) return -1; 
+    if (indexB !== -1) return 1;  
 
+    return a.localeCompare(b); 
+  });
 
-    this.columns = keys.map(key => ({
-      field: key,
-      header: this.sentenceCase(key),
-      visible: defaultVisibleFields.includes(key),
-    }));
-  }
+  this.columns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key),
+  }));
+}
+
 
   setColumnsFromTaxesDetails(sample: TaxDetails) {
     const defaultVisibleFields = [
