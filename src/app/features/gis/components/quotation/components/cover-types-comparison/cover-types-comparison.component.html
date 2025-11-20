@@ -278,34 +278,44 @@
                       id="openAdditionalBenefitsModalButton" [hidden]="true" data-bs-target="#addMoreBenefits"
                       title="open">
                     </button>
-                    <div class="row">
-                      <p-table [value]="selectedCover?.limitPremium" responsiveLayout="scroll" dataKey="sectionCode"
-                        selectionMode="single" responsiveLayout="scroll" [autoLayout]="true" class='ui-datatable'>
-                        <ng-template pTemplate="header">
-                          <tr>
-                            <th class="flexible-header"></th>
-                            <th class="flexible-header">{{ 'gis.quotation.section' | translate }} </th>
-                            <th class="flexible-header"> {{ 'gis.quotation.limit_amount' | translate }}</th>
-                            <th class="flexible-header"> {{ 'gis.quotation.premium' | translate }}</th>
-                            <th class="flexible-header"></th>
-                          </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-limit let-i="rowIndex">
-                          <tr>
-                            <td>{{ i + 1 }}.</td>
-                            <td>{{ limit.description | sentenceCase }}</td>
-                            <td>{{ limit?.limitAmount | number }}</td>
-                            <td class="fw-semibold">{{ limit.premium | number }}</td>
-                            <td id="action-buttons">
-                              <button type="button" id="icon" class="btn btn-primary" title="Delete"
-                                [disabled]="limit?.isMandatory === 'Y'" (click)="openRiskDeleteModal(limit)">
-                                <i class="fa-solid fa-trash-can"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        </ng-template>
-                      </p-table>
-                    </div>
+                   <div class="row">
+                   <div [style.height]="selectedCover?.limitPremium?.length > 5 ? '300px' : 'auto'" 
+                    style="width: 100%;">
+                    <p-table 
+                    [value]="selectedCover?.limitPremium" 
+                    dataKey="sectionCode" 
+                    [scrollable]="selectedCover?.limitPremium?.length > 5"
+                    [scrollHeight]="selectedCover?.limitPremium?.length > 5 ? '300px' : undefined"
+                    selectionMode="single" 
+                    responsiveLayout="scroll" 
+                    [autoLayout]="false"
+                    class="ui-datatable">
+                    <ng-template pTemplate="header">
+                   <tr>
+                   <th class="flexible-header"></th>
+                    <th class="flexible-header">{{ 'gis.quotation.section' | translate }}</th>
+                   <th class="flexible-header">{{ 'gis.quotation.limit_amount' | translate }}</th>
+                   <th class="flexible-header">{{ 'gis.quotation.premium' | translate }}</th>
+                  <th class="flexible-header"></th>
+                  </tr>
+                 </ng-template>
+                <ng-template pTemplate="body" let-limit let-i="rowIndex">
+                    <tr>
+          <td>{{ i + 1 }}.</td>
+          <td>{{ limit.description | sentenceCase }}</td>
+          <td>{{ limit?.limitAmount | number }}</td>
+          <td class="fw-semibold">{{ limit.premium | number }}</td>
+          <td id="action-buttons">
+            <button type="button" id="icon" class="btn btn-primary" title="Delete"
+              [disabled]="limit?.isMandatory === 'Y'" (click)="openRiskDeleteModal(limit)">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+          </tr>
+          </ng-template>
+          </p-table>
+          </div>
+          </div>
                   </div>
                 </div>
               </div>
