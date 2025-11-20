@@ -1742,8 +1742,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
    * @return {void}
    */
   fetchBranches(organizationId?: number, regionId?: number) {
-    this.branchService
-      .getAllBranches(organizationId, regionId)
+    this.branchService.getBranches(2)
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.branchList = data;

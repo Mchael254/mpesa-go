@@ -171,6 +171,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   selectedGroupUserId!: number;
   private modals: { [key: string]: any } = {};
   groupLeaderName: string = '';
+  quoteType: string;
 
 
 
@@ -795,13 +796,19 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
         const taskName = response?.processFlowResponseDto?.taskName?.trim();
         log.debug('Task name from processFlowResponseDto:', taskName);
-
+        this.quoteType = response.quoteType;
+        log.debug("quoteType", this.quoteType)
         switch (taskName) {
           case 'Quotation Data Entry':
             taskName && sessionStorage.setItem('ticketStatus', taskName);
 
-            this.router.navigate(['/home/gis/quotation/quotation-details']);
-            break;
+            if (this.quoteType === 'QQ') {
+              this.router.navigate(['/home/gis/quotation/quote-summary']);
+            } else if (this.quoteType === 'NQ' || this.quoteType === '' ||
+              this.quoteType === null) {
+              this.router.navigate(['/home/gis/quotation/quotation-details']);
+            }
+            break; break;
 
           case 'Authorize Quotation':
             taskName && sessionStorage.setItem('ticketStatus', taskName);
@@ -1093,7 +1100,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     }
 
     sessionStorage.removeItem('reusedQuotation');
-    sessionStorage.removeItem('revisedQuotation'); 
+    sessionStorage.removeItem('revisedQuotation');
     sessionStorage.removeItem('activeTicket');
 
     this.quotationService
