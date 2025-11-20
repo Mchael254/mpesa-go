@@ -3158,7 +3158,8 @@
       "paymentRequired": "La méthode de paiement est requise",
       "dateTo": "La date de fin est requise",
       "dateFrom": "La date de début est requise",
-      "orDrag": "ou faites glisser le fichier ici"
+      "orDrag": "ou faites glisser le fichier ici",
+      "detach": "Détacher"
     }
   },
   "campaignMngmt": {

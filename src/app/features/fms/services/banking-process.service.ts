@@ -1,4 +1,4 @@
-import { DeAssignDTO, ReAssignUserDTO } from './../data/banking-process-dto';
+import { BatchesDTO, DeAssignDTO, ReAssignUserDTO } from './../data/banking-process-dto';
 import { Params } from './../../gis/components/setups/data/gisDTO';
 import { Injectable, Type } from '@angular/core';
 import {ApiService} from '../../../shared/services/api/api.service';
@@ -73,5 +73,11 @@ export class BankingProcessService {
   }
   reAssignUser(requestBody:ReAssignUserDTO):Observable<any>{
     return this.api.POST<any>(`receipts/re-assign`,requestBody,API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL);
+  }
+  getBatches():Observable<BatchesDTO[]>{
+    return this.api.GET<BatchesDTO[]>(
+      `receipts/batches`,
+      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+    )
   }
 }
