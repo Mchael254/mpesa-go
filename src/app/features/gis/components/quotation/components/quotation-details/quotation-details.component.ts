@@ -1439,7 +1439,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         internalComments: quotationFormValues?.internalComments,
         introducerCode: quotationFormValues?.introducer,
         marketerAgentCode: quotationFormValues?.marketer?.id,
-
+        quoteType: 'NQ',
         quotationProducts: this.productDetails.map((value) => {
           const existingProduct = this.quotationDetails?.quotationProducts?.find(
             (p) => p.productCode == value.productCode.code
