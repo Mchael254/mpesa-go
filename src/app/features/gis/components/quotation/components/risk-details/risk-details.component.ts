@@ -533,12 +533,12 @@ export class RiskDetailsComponent {
     const dynamicFormFields = JSON.parse(sessionStorage.getItem('dynamicSubclassFormField'));
     this.dynamicSubclassFormFields = dynamicFormFields
     log.debug("Date Formart", this.dateFormat)
-    
+
     // Convert dateFormat to PrimeNG format
     this.primeNgDateFormat = this.dateFormat
       .replace('yyyy', 'yy')
       .replace('MM', 'mm');
-    
+
     // this.updateRiskDetailsForm();
     this.createScheduleDetailsForm();
     this.createSectionDetailsForm();
@@ -817,23 +817,73 @@ export class RiskDetailsComponent {
     this.dragging = false;
   }
 
+  // setRiskDetailsColumns(risk: any) {
+  //   const excludedFields = ['riskLimits', 'clauseCodes', 'sectionsDetails', 'sectionsDetails', 'location', 'ncdLevel',
+  //     'subclass',
+  //   ];
+  //   const defaultVisibleRiskDetailsFields = ['wef', 'wet', 'actions', 'propertyId', 'coverTypeDescription', 'binder.binderShortDescription'];
+
+  //   this.riskDetailsColumns = Object.keys(risk)
+  //     .filter((key) => !excludedFields.includes(key))
+  //     .map((key) => ({
+  //       field: key,
+  //       header: this.sentenceCase(key),
+  //       visible: defaultVisibleRiskDetailsFields.includes(key),
+  //       filterable: true
+  //     }));
+
+  //   this.riskDetailsColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false });
+
+  //   // Restore from sessionStorage if exists
+  //   const saved = sessionStorage.getItem('riskDetailsColumns');
+  //   if (saved) {
+  //     const savedVisibility = JSON.parse(saved);
+  //     this.riskDetailsColumns.forEach(col => {
+  //       const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+  //       if (savedCol) col.visible = savedCol.visible;
+  //     });
+  //   }
+  // }
   setRiskDetailsColumns(risk: any) {
-    const excludedFields = ['riskLimits', 'clauseCodes', 'sectionsDetails', 'sectionsDetails', 'location', 'ncdLevel',
-      'subclass',
+    log.debug("riskDetails row sample:", this.riskDetails[0]);
+    // 1️⃣ Flatten nested binder value
+    const flattenedRisk = {
+      ...risk,
+      binderShortDescription: risk.binder?.binderShortDescription || ''
+
+    };
+    log.debug("flattenedRisk", flattenedRisk)
+    const excludedFields = [
+      'riskLimits', 'clauseCodes', 'sectionsDetails',
+      'location', 'ncdLevel', 'subclass', 'binder'
     ];
-    this.riskDetailsColumns = Object.keys(risk)
-      .filter((key) => !excludedFields.includes(key))
-      .map((key) => ({
+
+    const defaultVisibleRiskDetailsFields = [
+      'wef', 'wet', 'actions', 'propertyId',
+      'coverTypeDescription', 'binderShortDescription'
+    ];
+
+    // 2️⃣ Build columns dynamically from flattenedRisk
+    this.riskDetailsColumns = Object.keys(flattenedRisk)
+      .filter(key => !excludedFields.includes(key))
+      .map(key => ({
         field: key,
         header: this.sentenceCase(key),
-        visible: this.defaultVisibleRiskDetailsFields.includes(key),
+        visible: defaultVisibleRiskDetailsFields.includes(key),
         filterable: true
       }));
 
-    this.riskDetailsColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false });
+    // 3️⃣ Add static Actions column
+    this.riskDetailsColumns.push({
+      field: 'actions',
+      header: 'Actions',
+      visible: true,
+      filterable: false
+    });
 
-    // Restore from sessionStorage if exists
+    // 4️⃣ Restore visibility from sessionStorage
     const saved = sessionStorage.getItem('riskDetailsColumns');
+    log.debug("Risk Detail column.", this.riskDetailsColumns)
     if (saved) {
       const savedVisibility = JSON.parse(saved);
       this.riskDetailsColumns.forEach(col => {
@@ -843,7 +893,6 @@ export class RiskDetailsComponent {
     }
   }
 
-  defaultVisibleRiskDetailsFields = ['wef', 'wet', 'actions', 'propertyId', 'coverTypeDescription', 'binderCode'];
 
   openAddRiskModal() {
     log.debug("isNewClientSelected;", this.isNewClientSelected)
@@ -5699,7 +5748,7 @@ export class RiskDetailsComponent {
 
   setCommissionsColumns(commissions: any) {
     const excludedFields = ['actions', 'code', 'quotationRiskCode', 'quotationCode', 'transCode', 'accountCode', 'trntCode',
-      'amount', 'discAmount', 'overrideCommission', 'agentCode'
+      , 'discAmount', 'overrideCommission', 'agentCode'
     ];
 
     this.commissionsColumns = Object.keys(commissions)
@@ -5734,7 +5783,7 @@ export class RiskDetailsComponent {
     log.debug("commissionsColumns", this.commissionsColumns);
   }
 
-  defaultVisibleCommissionsFields = ['agentDto', 'group', 'accountType', 'setupRate', 'usedRate', 'commissionAmount', 'withHoldingTaxRate',
+  defaultVisibleCommissionsFields = ['agentDto', 'group', 'accountType', 'setupRate', 'usedRate', 'amount', 'withHoldingTaxRate',
     'withHoldingTax', 'discountType', 'discountRate'];
 
   /**
@@ -5960,7 +6009,7 @@ export class RiskDetailsComponent {
     }
 
     const sourceDescription = this.quotationDetails.source.description;
-    log.debug('sourceDescription', sourceDescription)
+    // log.debug('sourceDescription', sourceDescription)
     return sourceDescription === 'Agent' ||
       sourceDescription === 'Agent/b' ||
       sourceDescription === 'Broker/agent';
@@ -7091,13 +7140,24 @@ export class RiskDetailsComponent {
     }
 
     const formValues = this.taxForm.value;
+    const taxValue = parseFloat(formValues.taxValue);
 
+    let rate = 0;
+    let taxAmount = 0;
+
+    if (formValues.taxMode === 'Rate') {
+      rate = taxValue;
+      taxAmount = 0;
+    } else if (formValues.taxMode === 'Amount') {
+      rate = 0;
+      taxAmount = taxValue;
+    }
     const payload: TaxPayload = {
       code: 0,
       rateDescription: formValues.rateDescription,
-      rate: parseFloat(formValues.taxValue),
+      rate: rate,
       rateType: formValues.rateType,
-      taxAmount: 0,
+      taxAmount: taxAmount,
       productCode: this.selectedProduct.productCode,
       quotationCode: Number(this.quotationCode),
       transactionCode: formValues.tracTrntCode,
@@ -7107,6 +7167,22 @@ export class RiskDetailsComponent {
       taxType: formValues.taxType,
       riskProductLevel: ''
     };
+
+    // const payload: TaxPayload = {
+    //   code: 0,
+    //   rateDescription: formValues.rateDescription,
+    //   rate: parseFloat(formValues.taxValue),
+    //   rateType: formValues.rateType,
+    //   taxAmount: formValues.taxValue,
+    //   productCode: this.selectedProduct.productCode,
+    //   quotationCode: Number(this.quotationCode),
+    //   transactionCode: formValues.tracTrntCode,
+    //   renewalEndorsement: '',
+    //   taxRateCode: formValues.taxRateCode,
+    //   levelCode: formValues.computationLevel,
+    //   taxType: formValues.taxType,
+    //   riskProductLevel: ''
+    // };
 
     log.debug('Payload to add:', payload);
     log.debug('quotationCode', this.quotationCode)
@@ -7300,13 +7376,25 @@ export class RiskDetailsComponent {
     }
 
     const formValue = this.taxForm.value;
+    const taxValue = parseFloat(formValue.taxValue);
+
+    let rate = 0;
+    let taxAmount = 0;
+
+    if (formValue.taxMode === 'Rate') {
+      rate = taxValue;
+      taxAmount = 0;
+    } else if (formValue.taxMode === 'Amount') {
+      rate = 0;
+      taxAmount = taxValue;
+    }
 
     const payload: TaxPayload = {
-      code: this.selectedTax.code,
+      code: 0,
       rateDescription: formValue.rateDescription,
-      rate: parseFloat(formValue.taxValue),
+      rate: rate,
       rateType: formValue.rateType,
-      taxAmount: 0,
+      taxAmount: taxAmount,
       productCode: this.selectedProduct.productCode,
       quotationCode: Number(this.quotationCode),
       transactionCode: formValue.tracTrntCode,
@@ -7316,7 +7404,6 @@ export class RiskDetailsComponent {
       taxType: formValue.taxType,
       riskProductLevel: ''
     };
-
     console.log('Payload to update:', payload);
 
     this.quotationService.updateTaxes(payload).subscribe({
@@ -8012,7 +8099,7 @@ export class RiskDetailsComponent {
 
   updateRiskCommissions(): void {
     const modified = this.addedCommissions.filter(c => c._dirty);
-
+    log.debug("Modified-comm", modified)
     if (!modified.length) return;
 
     modified.forEach(comm => {
@@ -8035,10 +8122,9 @@ export class RiskDetailsComponent {
         setupRate: comm.setupRate,
         discRate: comm.discRate,
         discType: comm.discType,
-        amount: comm.amount,
+        amount: Number(comm.amount),
         discAmount: comm.discAmount,
         accountType: comm.accountType,
-        commissionAmount: comm.commissionAmount,
         withHoldingRate: comm.withHoldingRate,
         withHoldingTax: comm.withHoldingTax
       };
@@ -8215,15 +8301,15 @@ export class RiskDetailsComponent {
     if (!date) {
       return placeholder;
     }
-    
+
     try {
       const rawDate = new Date(date);
-      
+
       // Check if date is valid
       if (isNaN(rawDate.getTime())) {
         return placeholder;
       }
-      
+
       // Use the date format from session storage
       const formattedDate = this.datePipe.transform(rawDate, this.dateFormat);
       return formattedDate || placeholder;
