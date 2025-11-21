@@ -92,7 +92,8 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     rows: [], // Initially empty array for rows
     totalElements: 0 // Default total count
   };
-  dateFormat: string = 'dd-mm-yy';
+  dateFormat: string = 'dd-MMM-yyyy'; // Default format
+  primeNgDateFormat: string = 'dd-M-yy'; // PrimeNG format
   todaysDate: string;
   minDate: Date | undefined;
   status: Status[] = [
@@ -210,6 +211,20 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     this.initializeCurrency();
     this.getUser();
     this.fetchCurrencies();
+
+    // Load date format from session storage
+    const storedDateFormat = sessionStorage.getItem('dateFormat');
+    if (storedDateFormat) {
+      this.dateFormat = storedDateFormat;
+      log.debug("Loaded date format from session storage:", this.dateFormat);
+    } else {
+      log.debug("Using default date format:", this.dateFormat);
+    }
+
+    // Convert dateFormat to PrimeNG format
+    this.primeNgDateFormat = this.dateFormat
+      .replace('yyyy', 'yy')
+      .replace('MM', 'mm');
   }
 
   ngAfterViewInit() {
@@ -1742,8 +1757,20 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     this.user = this.userDetails.fullName || this.authService.getCurrentUserName();
     this.userCode = this.userDetails.code;
     log.debug('User Code ', this.userCode);
-    this.fetchSystemsAssignedToUser(this.userCode)
 
+    // Set date format from user's organization settings
+    if (this.userDetails?.orgDateFormat) {
+      this.dateFormat = this.userDetails.orgDateFormat;
+      log.debug('Organization Date Format:', this.dateFormat);
+      sessionStorage.setItem('dateFormat', this.dateFormat);
+
+      // Convert dateFormat to PrimeNG format
+      this.primeNgDateFormat = this.dateFormat
+        .replace('yyyy', 'yy')
+        .replace('MM', 'mm');
+    }
+
+    this.fetchSystemsAssignedToUser(this.userCode)
   }
 
   // fetchSystemsAssignedToUser(userId: number) {

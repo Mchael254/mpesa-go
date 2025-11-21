@@ -407,12 +407,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       log.debug("previous selected ", this.previousSelected);
       log.debug("Form array ", parsed.formArray);
       log.debug("product array ", this.selectedProducts);
-      
+
       // Parse the effective date properly
       const savedEffectiveDate = parsed.formArray.effectiveDate;
       const parsedEffectiveDate = this.parseDate(savedEffectiveDate) || new Date();
       log.debug("Saved effective date:", savedEffectiveDate, "Parsed:", parsedEffectiveDate);
-      
+
       // Patch top-level fields
       this.quickQuoteForm.patchValue({
         product: parsed.formArray.product || [],
@@ -1345,14 +1345,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   computationPayload(): PremiumComputationRequest {
     const formValues = this.quickQuoteForm.getRawValue();
-    
+
     // Validate and parse effectiveDate - use user's selected date
     if (!formValues.effectiveDate) {
       // If no date is selected, throw an error - don't default
       this.globalMessagingService.displayErrorMessage('Error', 'Please select an effective date');
       throw new Error('Effective date is required');
     }
-    
+
     const withEffectFrom = this.parseDate(formValues.effectiveDate);
 
     // Validate the parsed date
@@ -1442,7 +1442,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   getProductPayload(formValues: any): Product[] {
     let productPayload: Product[] = []
-    
+
     // Validate effectiveDate
     let effectiveDate: Date;
     if (!formValues.effectiveDate) {
@@ -1621,23 +1621,45 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
+  // getCoverTypePayload(risk): CoverType[] {
+  //   let coverTypes: CoverType[] = []
+  //   for (let coverType of risk.applicableCoverTypes) {
+  //     log.debug("COVERSSS", coverType)
+  //     coverTypes.push({
+  //       subclassCode: coverType?.subClassCode,
+  //       description: coverType?.applicableRates[0].subClassDescription,
+  //       coverTypeCode: coverType?.coverTypeCode,
+  //       minimumAnnualPremium: null,
+  //       minimumPremium: coverType?.minimumPremium,
+  //       coverTypeShortDescription: coverType?.coverTypeShortDescription,
+  //       coverTypeDescription: coverType?.description,
+  //       limits: this.getLimitsPayload(coverType.applicableRates, risk)
+  //     })
+  //   }
+  //   return coverTypes;
+  // }
+
   getCoverTypePayload(risk): CoverType[] {
-    let coverTypes: CoverType[] = []
-    for (let coverType of risk.applicableCoverTypes) {
-      log.debug("COVERSSS", coverType)
+    const coverTypes: CoverType[] = [];
+
+    for (const coverType of risk.applicableCoverTypes) {
+      console.debug("COVERSSS", coverType);
+
       coverTypes.push({
         subclassCode: coverType?.subClassCode,
-        description: coverType?.applicableRates[0].subClassDescription,
+        description: coverType?.applicableRates?.[0]?.subClassDescription || null,
         coverTypeCode: coverType?.coverTypeCode,
         minimumAnnualPremium: null,
         minimumPremium: coverType?.minimumPremium,
         coverTypeShortDescription: coverType?.coverTypeShortDescription,
         coverTypeDescription: coverType?.description,
-        limits: this.getLimitsPayload(coverType.applicableRates, risk)
-      })
+        limits: this.getLimitsPayload(coverType?.applicableRates || [], risk)
+      });
     }
+
     return coverTypes;
   }
+
 
   // getLimitsPayload(applicableLimits: any, risk: any): Limit[] {
   //   log.debug("Processing risk >>.", risk, applicableLimits)
@@ -1795,7 +1817,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     // log.debug('User Branch Id', this.userBranchId);
     this.userCode = this.userDetails.code
     log.debug('User Code ', this.userCode);
-    
+
     // Load date format from sessionStorage first, then from userDetails
     const storedDateFormat = sessionStorage.getItem('dateFormat');
     if (storedDateFormat) {
@@ -1978,7 +2000,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     // Parse the date first
     const parsedDate = this.parseDate(date);
-    
+
     if (!parsedDate) {
       log.error('formatDate: Invalid date format', date);
       return '';
@@ -2625,13 +2647,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     const totalPremium = coverTypes.reduce((sum, coverType) => sum + coverType.computedPremium, 0);
 
     log.debug("Quotation details map1 >>>", coverTypes, totalPremium)
-    
+
     // Parse and format the effective date properly
     const effectiveDateParsed = this.parseDate(formModel.effectiveDate);
     const wefDate = effectiveDateParsed ? this.formatDate(effectiveDateParsed) : '';
-    
+
     log.debug("Parsed effective date:", effectiveDateParsed, "Formatted wefDate:", wefDate);
-    
+
     return {
       quotationProducts: this.getQuotationProductPayload(),
       quotationNumber: this.quotationNo || null,
@@ -2657,14 +2679,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     const quotationProducts: QuotationProduct[] = []
     const products = this.quickQuoteForm.getRawValue().products
     log.debug("User selected products>>>", products)
-    
+
     // Parse and format the effective date properly
     const effectiveDateValue = this.quickQuoteForm.get('effectiveDate').value;
     const effectiveDateParsed = this.parseDate(effectiveDateValue);
     let coverFrom = effectiveDateParsed ? this.formatDate(effectiveDateParsed) : '';
-    
+
     log.debug("Effective date value:", effectiveDateValue, "Parsed:", effectiveDateParsed, "Formatted coverFrom:", coverFrom);
-    
+
     for (let product of products) {
       let selectedProductPremium = this.selectedProductCovers
         .find(value => value.code === product.code)
@@ -3362,10 +3384,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         // --- WHATSAPP MODE ---
         else if (selectedMethod === 'whatsapp') {
           // Ensure WhatsApp number is in E.164 format (with + prefix)
-          const formattedWhatsappNumber = whatsappNumber.startsWith('+') 
-            ? whatsappNumber 
+          const formattedWhatsappNumber = whatsappNumber.startsWith('+')
+            ? whatsappNumber
             : `+${whatsappNumber}`;
-          
+
           const whatsappPayload: WhatsappDto = {
             recipientPhone: formattedWhatsappNumber,
             message: `Dear ${clientName}, please find your quotation report attached.`,

@@ -343,7 +343,7 @@
 
               <!-- date filters -->
               <td style="background-color: #ffffff;">
-                <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
+                <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="primeNgDateFormat"
                   [showIcon]="true" [showButtonBar]="true" [minDate]="minDate"
                   (onSelect)="onDateFromInputChange($event)" (onClear)="onDateFromInputChange(null)" appendTo="body"
                   (keyup.enter)="fetchGISQuotations()" styleClass="calendar-input w-100">
@@ -351,7 +351,7 @@
 
               </td>
               <td style="background-color: #ffffff;">
-                <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat" [showIcon]="true"
+                <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="primeNgDateFormat" [showIcon]="true"
                   [showButtonBar]="true" [minDate]="minToDate" (onSelect)="onDateToInputChange($event)"
                   (onClear)="onDateToInputChange(null)" appendTo="body" (keyup.enter)="fetchGISQuotations()"
                   styleClass="calendar-input w-100">
@@ -373,8 +373,8 @@
               <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">
                 {{quotation.agentShortDescription |sentenceCase}}</td>
               <td class="text-end">{{quotation.currency}} {{quotation.premium || 0}}</td>
-              <td>{{quotation.fromDate}}</td>
-              <td>{{quotation.toDate}}</td>
+              <td>{{quotation.fromDate | date: dateFormat}}</td>
+              <td>{{quotation.toDate | date: dateFormat}}</td>
 
               <td class="text-end" style="padding-top: 0; padding-bottom: 0;">
                 <!-- DEBUG: Direct test button (remove after testing) -->
