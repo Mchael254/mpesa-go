@@ -115,7 +115,7 @@
           </td>
           <td>{{ quote.riskId |sentenceCase }}</td>
           <td>{{ quote.coverType |sentenceCase }}</td>
-          <td>{{ quote.wef }}</td>
+          <td>{{ formatDateDisplay(quote.wef) }}</td>
           <td class="text-end">{{ quote.sumInsured | currency: currencyObj?.prefix :
             'symbol' : '1.2-2'}}</td>
           <td class="text-end">{{ quote.premium | currency: currencyObj?.prefix :

@@ -186,7 +186,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   user: any;
   userDetails: any;
   userBranchId: any;
-  dateFormat: any;
+  dateFormat: string = 'dd-MMM-yyyy'; // Default format
+  primeNgDateFormat: string = 'dd-M-yy'; // PrimeNG format
   branchList: OrganizationBranchDto[];
   branchDescriptionArray: any = [];
 
@@ -406,11 +407,17 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       log.debug("previous selected ", this.previousSelected);
       log.debug("Form array ", parsed.formArray);
       log.debug("product array ", this.selectedProducts);
+      
+      // Parse the effective date properly
+      const savedEffectiveDate = parsed.formArray.effectiveDate;
+      const parsedEffectiveDate = this.parseDate(savedEffectiveDate) || new Date();
+      log.debug("Saved effective date:", savedEffectiveDate, "Parsed:", parsedEffectiveDate);
+      
       // Patch top-level fields
       this.quickQuoteForm.patchValue({
         product: parsed.formArray.product || [],
         quotComment: parsed.formArray.quotComment || '',
-        effectiveDate: new Date(parsed.formArray.effectiveDate) || new Date()
+        effectiveDate: parsedEffectiveDate
       });
 
 
@@ -1338,7 +1345,24 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   computationPayload(): PremiumComputationRequest {
     const formValues = this.quickQuoteForm.getRawValue();
-    const withEffectFrom = new Date(formValues.effectiveDate);
+    
+    // Validate and parse effectiveDate - use user's selected date
+    if (!formValues.effectiveDate) {
+      // If no date is selected, throw an error - don't default
+      this.globalMessagingService.displayErrorMessage('Error', 'Please select an effective date');
+      throw new Error('Effective date is required');
+    }
+    
+    const withEffectFrom = this.parseDate(formValues.effectiveDate);
+
+    // Validate the parsed date
+    if (!withEffectFrom || isNaN(withEffectFrom.getTime())) {
+      log.error('Failed to parse effective date:', formValues.effectiveDate);
+      this.globalMessagingService.displayErrorMessage('Error', 'Invalid effective date format. Please select a valid date.');
+      throw new Error('Invalid effective date');
+    }
+
+    log.debug('Effective date for computation:', withEffectFrom);
 
     const previousProducts = this.premiumComputationResponse?.productLevelPremiums || [];
     const formProducts = formValues.products;
@@ -1411,20 +1435,56 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     };
 
     this.currentComputationPayload = payload;
+    log.debug('Computation payload:', payload);
     return payload;
   }
 
 
   getProductPayload(formValues: any): Product[] {
     let productPayload: Product[] = []
+    
+    // Validate effectiveDate
+    let effectiveDate: Date;
+    if (!formValues.effectiveDate) {
+      log.warn('No effective date in formValues, using current date');
+      effectiveDate = new Date();
+    } else if (formValues.effectiveDate instanceof Date) {
+      effectiveDate = formValues.effectiveDate;
+    } else {
+      effectiveDate = new Date(formValues.effectiveDate);
+    }
+
+    // Validate the parsed date
+    if (isNaN(effectiveDate.getTime())) {
+      log.error('Invalid effective date in getProductPayload, using current date');
+      effectiveDate = new Date();
+    }
+
     for (let product of formValues.products) {
+      // Validate product effectiveTo
+      let effectiveTo: Date;
+      if (!product.effectiveTo) {
+        log.warn(`No effectiveTo for product ${product.code}, using current date`);
+        effectiveTo = new Date();
+      } else if (product.effectiveTo instanceof Date) {
+        effectiveTo = product.effectiveTo;
+      } else {
+        effectiveTo = new Date(product.effectiveTo);
+      }
+
+      // Validate the parsed date
+      if (isNaN(effectiveTo.getTime())) {
+        log.error(`Invalid effectiveTo for product ${product.code}, using current date`);
+        effectiveTo = new Date();
+      }
+
       productPayload.push({
         code: product.code,
         description: product.description,
         expiryPeriod: product.expiry,
-        withEffectFrom: this.formatDate(new Date(formValues.effectiveDate)),
-        withEffectTo: this.formatDate(new Date(product.effectiveTo)),
-        risks: this.getRiskPayload(product, formValues.effectiveDate)
+        withEffectFrom: this.formatDate(effectiveDate),
+        withEffectTo: this.formatDate(effectiveTo),
+        risks: this.getRiskPayload(product, effectiveDate)
       })
     }
     return productPayload
@@ -1474,6 +1534,38 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   getRiskPayload(product: any, effectiveDate): Risk[] {
     let riskPayload: Risk[] = [];
 
+    // Validate effectiveDate parameter
+    let validEffectiveDate: Date;
+    if (!effectiveDate) {
+      log.warn('No effectiveDate passed to getRiskPayload, using current date');
+      validEffectiveDate = new Date();
+    } else if (effectiveDate instanceof Date) {
+      validEffectiveDate = effectiveDate;
+    } else {
+      validEffectiveDate = new Date(effectiveDate);
+    }
+
+    if (isNaN(validEffectiveDate.getTime())) {
+      log.error('Invalid effectiveDate in getRiskPayload, using current date');
+      validEffectiveDate = new Date();
+    }
+
+    // Validate product.effectiveTo
+    let validEffectiveTo: Date;
+    if (!product.effectiveTo) {
+      log.warn(`No effectiveTo for product in getRiskPayload, using current date`);
+      validEffectiveTo = new Date();
+    } else if (product.effectiveTo instanceof Date) {
+      validEffectiveTo = product.effectiveTo;
+    } else {
+      validEffectiveTo = new Date(product.effectiveTo);
+    }
+
+    if (isNaN(validEffectiveTo.getTime())) {
+      log.error(`Invalid effectiveTo in getRiskPayload, using current date`);
+      validEffectiveTo = new Date();
+    }
+
     // Find previous product from computation response (if any)
     const previousProduct = this.premiumComputationResponse?.productLevelPremiums?.find(
       (prev) => prev.code === product.code
@@ -1494,8 +1586,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         binderCode: risk?.applicableBinder?.code,
         sumInsured: risk?.selfDeclaredValue || risk?.value,
         useOfProperty: risk?.useOfProperty?.description,
-        withEffectFrom: this.formatDate(new Date(effectiveDate)),
-        withEffectTo: this.formatDate(new Date(product.effectiveTo)),
+        withEffectFrom: this.formatDate(validEffectiveDate),
+        withEffectTo: this.formatDate(validEffectiveTo),
         propertyId,
         prorata: "F",
         subclassSection: {
@@ -1703,8 +1795,26 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     // log.debug('User Branch Id', this.userBranchId);
     this.userCode = this.userDetails.code
     log.debug('User Code ', this.userCode);
+    
+    // Load date format from sessionStorage first, then from userDetails
+    const storedDateFormat = sessionStorage.getItem('dateFormat');
+    if (storedDateFormat) {
+      this.dateFormat = storedDateFormat;
+      log.debug("Loaded date format from session storage:", this.dateFormat);
+    } else {
+      log.debug("Using default date format:", this.dateFormat);
+    }
+
+    // Update dateFormat from organization settings
     this.dateFormat = this.userDetails?.orgDateFormat;
     log.debug('Organization Date Format:', this.dateFormat);
+    sessionStorage.setItem('dateFormat', this.dateFormat);
+
+    // Convert dateFormat to PrimeNG format
+    this.primeNgDateFormat = this.dateFormat
+      .replace('yyyy', 'yy')
+      .replace('MM', 'm');
+
     // Get today's date in yyyy-MM-dd format
     const today = new Date();
     this.coverFromDate = today;
@@ -1805,11 +1915,80 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-  formatDate(date: Date): string {
-    log.debug('Date (formatDate method):', date);
-    const year = date?.getFullYear();
-    const month = String(date?.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(date?.getDate()).padStart(2, '0');
+  /**
+   * Parse date string or Date object into a valid Date object
+   * Handles organization date formats (dd-MM-yyyy, dd-MMM-yyyy, etc.)
+   * @param date - Date to parse (can be Date object or string)
+   * @returns Parsed Date object or null if invalid
+   */
+  parseDate(date: string | Date): Date | null {
+    if (!date) {
+      return null;
+    }
+
+    // If already a Date object, validate and return
+    if (date instanceof Date) {
+      return isNaN(date.getTime()) ? null : date;
+    }
+
+    // Handle string dates
+    const dateStr = date.toString();
+
+    // Check if it's in dd-MM-yyyy or dd-MMM-yyyy format (organization format)
+    if (dateStr.includes('-') && dateStr.split('-').length === 3) {
+      const parts = dateStr.split('-');
+      // Check if it looks like dd-MM-yyyy or dd-MMM-yyyy format (day is first)
+      if (parts[0].length <= 2) {
+        const day = parseInt(parts[0], 10);
+        const monthPart = parts[1];
+        const year = parseInt(parts[2], 10);
+
+        // Try to parse month (could be number or month name)
+        let month: number;
+        if (isNaN(parseInt(monthPart, 10))) {
+          // Month name - convert to month number
+          const monthNames = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+          month = monthNames.findIndex(m => monthPart.toLowerCase().startsWith(m));
+        } else {
+          month = parseInt(monthPart, 10) - 1; // Month is 0-indexed
+        }
+
+        const parsedDate = new Date(year, month, day);
+        return isNaN(parsedDate.getTime()) ? null : parsedDate;
+      }
+    }
+
+    // Try standard Date parsing as fallback
+    const parsedDate = new Date(dateStr);
+    return isNaN(parsedDate.getTime()) ? null : parsedDate;
+  }
+
+  /**
+   * Format date for backend API (ISO format: YYYY-MM-DD)
+   * Handles both Date objects and various string formats
+   * @param date - Date to format (can be Date object or string)
+   * @returns Formatted date string in YYYY-MM-DD format
+   */
+  formatDate(date: string | Date): string {
+    if (!date) {
+      log.debug('formatDate: No date provided');
+      return '';
+    }
+
+    log.debug('formatDate input:', date);
+
+    // Parse the date first
+    const parsedDate = this.parseDate(date);
+    
+    if (!parsedDate) {
+      log.error('formatDate: Invalid date format', date);
+      return '';
+    }
+
+    // Format as YYYY-MM-DD
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(parsedDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
 
@@ -2447,6 +2626,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     const totalPremium = coverTypes.reduce((sum, coverType) => sum + coverType.computedPremium, 0);
 
     log.debug("Quotation details map1 >>>", coverTypes, totalPremium)
+    
+    // Parse and format the effective date properly
+    const effectiveDateParsed = this.parseDate(formModel.effectiveDate);
+    const wefDate = effectiveDateParsed ? this.formatDate(effectiveDateParsed) : '';
+    
+    log.debug("Parsed effective date:", effectiveDateParsed, "Formatted wefDate:", wefDate);
+    
     return {
       quotationProducts: this.getQuotationProductPayload(),
       quotationNumber: this.quotationNo || null,
@@ -2457,7 +2643,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       currencyRate: this.exchangeRate,
       agentCode: 0,
       agentShortDescription: "DIRECT",
-      wefDate: this.formatDate(new Date(formModel.effectiveDate)),
+      wefDate: wefDate,
       wetDate: formModel.products[0]?.effectiveTo,
       premium: totalPremium,
       branchCode: this.userBranchId || null,
@@ -2472,7 +2658,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     const quotationProducts: QuotationProduct[] = []
     const products = this.quickQuoteForm.getRawValue().products
     log.debug("User selected products>>>", products)
-    let coverFrom = this.formatDate(new Date(this.quickQuoteForm.get('effectiveDate').value));
+    
+    // Parse and format the effective date properly
+    const effectiveDateValue = this.quickQuoteForm.get('effectiveDate').value;
+    const effectiveDateParsed = this.parseDate(effectiveDateValue);
+    let coverFrom = effectiveDateParsed ? this.formatDate(effectiveDateParsed) : '';
+    
+    log.debug("Effective date value:", effectiveDateValue, "Parsed:", effectiveDateParsed, "Formatted coverFrom:", coverFrom);
+    
     for (let product of products) {
       let selectedProductPremium = this.selectedProductCovers
         .find(value => value.code === product.code)
@@ -3169,8 +3362,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         // --- WHATSAPP MODE ---
         else if (selectedMethod === 'whatsapp') {
+          // Ensure WhatsApp number is in E.164 format (with + prefix)
+          const formattedWhatsappNumber = whatsappNumber.startsWith('+') 
+            ? whatsappNumber 
+            : `+${whatsappNumber}`;
+          
           const whatsappPayload: WhatsappDto = {
-            recipientPhone: whatsappNumber,
+            recipientPhone: formattedWhatsappNumber,
             message: `Dear ${clientName}, please find your quotation report attached.`,
             templateName: 'report_sharing_template_v1',
             templateParams: [clientName],
