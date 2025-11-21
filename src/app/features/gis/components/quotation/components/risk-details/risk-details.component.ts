@@ -853,14 +853,21 @@ export class RiskDetailsComponent {
 
     };
     log.debug("flattenedRisk", flattenedRisk)
+    if (Array.isArray(this.riskDetails) && this.riskDetails.length > 0) {
+      this.riskDetails = this.riskDetails.map(r => ({
+        ...r,
+        binderShortDescription: (r as any)?.binder?.binderShortDescription || ''
+      }));
+    }
     const excludedFields = [
       'riskLimits', 'clauseCodes', 'sectionsDetails',
       'location', 'ncdLevel', 'subclass', 'binder'
     ];
 
+    // Include both flattened and nested binder keys to be safe
     const defaultVisibleRiskDetailsFields = [
       'wef', 'wet', 'actions', 'propertyId',
-      'coverTypeDescription', 'binderShortDescription'
+      'coverTypeDescription', 'binderShortDescription', 'binder.binderShortDescription'
     ];
 
     // 2️⃣ Build columns dynamically from flattenedRisk
@@ -4991,8 +4998,10 @@ export class RiskDetailsComponent {
   }
 
 
-  cleanCurrencyValue(value: string): string {
-    return value?.replace(/[^\d.]/g, '');
+  cleanCurrencyValue(value: string | number): string {
+    if (value === null || value === undefined) return '';
+    const stringValue = String(value);
+    return stringValue.replace(/[^\d.]/g, '');
   }
 
 
@@ -5206,8 +5215,8 @@ export class RiskDetailsComponent {
     if (!this.selectedExcess || !this.originalExcessBeforeEdit) return false;
     const newNarration = this.selectedExcess.narration?.trim() ?? '';
     const oldNarration = this.originalExcessBeforeEdit.narration?.trim() ?? '';
-    const newValue = this.selectedExcess.value;
-    const oldValue = this.originalExcessBeforeEdit.value;
+    const newValue = this.cleanCurrencyValue(String(this.selectedExcess.value));
+    const oldValue = this.cleanCurrencyValue(String(this.originalExcessBeforeEdit.value));
 
     return (newNarration !== oldNarration && newNarration.length > 0) || newValue !== oldValue;
   }
@@ -5223,6 +5232,8 @@ export class RiskDetailsComponent {
       type: 'E'
     }];
 
+    log.debug("edit excess", payload)
+
     this.quotationService.editExcesses(this.quoteProductCode, payload).subscribe({
       next: (res) => {
         res && this.globalMessagingService.displaySuccessMessage('Success', 'Excess updated successfully');
@@ -5234,13 +5245,21 @@ export class RiskDetailsComponent {
 
               this.selectedExcess = null;
               this.originalExcessBeforeEdit = null;
+
+              // Close modal programmatically
+              const modalElement = document.getElementById('editExcess');
+              if (modalElement) {
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) {
+                  modalInstance.hide();
+                }
+              }
             },
             error: (err) => log.debug('Error refreshing added excesses', err)
           });
       },
       error: (err) => this.globalMessagingService.displayErrorMessage('Error', 'Error updating excess')
     });
-
   }
 
   prepareDeleteExcess(excess: any): void {
@@ -6457,6 +6476,7 @@ export class RiskDetailsComponent {
                 },
                 minimumPremium: limit.minimumPremium,
                 multiplierRate: 1,
+                limitPeriod: 0,
                 multiplierDivisionFactor: limit.multiplierDivisionFactor,
                 dualBasis: limit.dualBasis,
                 shortDescription: limit.sectionShortDescription
