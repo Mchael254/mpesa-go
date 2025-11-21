@@ -3159,8 +3159,9 @@
       "dateTo": "La date de fin est requise",
       "dateFrom": "La date de début est requise",
       "orDrag": "ou faites glisser le fichier ici",
-      "detach": "Détacher"
-    }
+      "detach": "Détacher",
+      "availableBatches": "Lots disponibles"
+ }
   },
   "campaignMngmt": {
     "campaigns": "Campagnes",

@@ -2621,8 +2621,9 @@
       "dateTo": "Tarehe ya mwisho inahitajika",
       "dateFrom": "Tarehe ya kuanza inahitajika",
       "orDrag": "au buruta faili hapa",
-      "detach": "Tenganisha"
-    }
+      "detach": "Tenganisha",
+      "availableBatches": "Makundi Yanayopatikana"
+ }
   },
   "campaignMngmt": {
     "campaigns": "Kampeni",

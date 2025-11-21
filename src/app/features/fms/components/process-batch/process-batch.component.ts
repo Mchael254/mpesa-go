@@ -24,66 +24,88 @@ import { AuthService } from 'src/app/shared/services/auth.service';
   styleUrls: ['./process-batch.component.css'],
 })
 export class ProcessBatchComponent {
+  /** Static data for the stepper component, indicating the current stage of the process. */
   steps = fmsStepsData.bankingSteps;
-  //selectedBatch!:batch;
+  /** Stores the original, unfiltered list of batches fetched from the API. */
   batches: BatchesDTO[] = [];
+  /** Stores the filtered list of batches to be displayed in the table. */
   filteredBatches: BatchesDTO[] = [];
+  /** Controls the visibility of the PrimeNG dialog for column selection. */
   visible: boolean = false;
+  /** Stores the configuration for all available columns in the table. */
   columns: any[];
-  allColumns:any[]=[];
+  /** A copy of all column configurations, used to render the table headers. */
+  allColumns: any[] = [];
+  /** Manages the form controls for the deposit details modal. */
   depositForm!: FormGroup;
+  /** An array of bank accounts used to populate the deposit modal dropdown. */
   bankAccounts: BanksDto[] = [];
   /** Holds the user object selected from the second dialog to display in the first dialog's input. */
-    selectedUserForAssignment: StaffDto | null = null;
-  
-    /** Temporarily holds the user selected in the user table before confirmation. */
-    tempSelectedUser: StaffDto | null = null;
-    /** Manages the form controls for assigning receipts to a user (user selection, comment). */
-     /** Controls visibility of the main assignment dialog. */
+  selectedUserForAssignment: StaffDto | null = null;
+  /** Temporarily holds the user selected in the user table before confirmation. */
+  tempSelectedUser: StaffDto | null = null;
+  /** Manages the form controls for assigning/re-assigning a batch to a user. */
+  usersForm!: FormGroup;
+  /** Controls visibility of the main assignment dialog. */
   assignDialogVisible: boolean = false;
   /** Controls visibility of the user selection dialog. */
   userSelectDialogVisible: boolean = false;
-  /** An array of receipts that the user has selected in the table via checkboxes. */
-    selectedReceipts: BatchesDTO[] = [];
-     /** A list of users available for task assignment, populating the user selection modal. */
+  /** An array of batches that the user has selected in the table via checkboxes. */
+  selectedReceipts: BatchesDTO[] = [];
+  /** A list of users available for task assignment, populating the user selection modal. */
   users: StaffDto[] = [];
+  /** A filtered list of users for the user selection modal. */
   filteredUsers: StaffDto[] = [];
-   /**controls the visibility of assign buttons */
+  /** A flag to determine if the assignment dialog is in 're-assign' mode. */
   reAssign: boolean = false;
-  selectedBatchObj:BatchesDTO;
-    usersForm!: FormGroup;
-    staffPageSize = 5;
-     /** Stores the list of files selected by the user. */
+  /** Stores the batch object currently being acted upon (e.g., for re-assignment or deposit). */
+  selectedBatchObj: BatchesDTO;
+  /** The page size for fetching staff members. */
+  staffPageSize = 5;
+  /** Stores the single file selected by the user for upload. */
   uploadedFile: File | null = null;
-  /** A flag to disable the file input after one file is selected. */
+  /** A flag to disable the file input after one file is selected to enforce a single-file upload limit. */
   maximumFiles: boolean = false;
-  /** A flag to indicate when a file is being dragged over the dropzone for styling. */
+  /** A flag to indicate when a file is being dragged over the dropzone for styling purposes. */
   isDragging: boolean = false;
-  //  max file size in bytes (5MB = 5 * 1024 * 1024 bytes)
-  private readonly max_file_size = 5 * 1024 * 1024;
-    /** Information about the currently logged-in user. */
+  /** The maximum allowed file size for uploads, in bytes. */
+  private readonly max_file_size = 5 * 1024 * 1024; // 5MB
+  /** Information about the currently logged-in user. */
   loggedInUser: any;
+  /** The currently selected branch, retrieved from session storage. */
   selectedBranch: BranchDTO;
-     /**
-        * @property {BranchDTO} defaultBranch - The default branch.
-        */
-       defaultBranch: BranchDTO;
-       /** The default organization for the logged-in user, retrieved from session storage. */
-         defaultOrg: OrganizationDTO;
-         /** The currently selected organization, retrieved from session storage. */
-         selectedOrg: OrganizationDTO;
+  /** The default branch for the logged-in user, retrieved from session storage. */
+  defaultBranch: BranchDTO;
+  /** The default organization for the logged-in user, retrieved from session storage. */
+  defaultOrg: OrganizationDTO;
+  /** The currently selected organization, retrieved from session storage. */
+  selectedOrg: OrganizationDTO;
+  /**
+   * @constructor
+   * @param translate Service for handling internationalization.
+   * @param router Service for programmatic navigation.
+   * @param bankingService Service for handling banking-related API calls.
+   * @param commonMethodsService Service for common utility methods like error handling.
+   * @param fb Service for building reactive forms.
+   * @param globalMessagingService Service for displaying global notifications.
+   * @param staffService Service for fetching staff/user data.
+   * @param dmsService Service for document management system interactions.
+   * @param paymentsService Service for fetching payment-related data like bank accounts.
+   * @param authService Service for retrieving authentication and user information.
+   * @param sessionStorage Service for interacting with browser session storage.
+   */
   constructor(
     public translate: TranslateService,
     private router: Router,
     private bankingService: BankingProcessService,
     private commonMethodsService: CommonMethodsService,
-    private fb:FormBuilder,
-    private globalMessagingService:GlobalMessagingService,
-    private staffService:StaffService,
-    private dmsService:DmsService,
-    private paymentsService:PaymentsService,
-    private authService:AuthService,
-    private sessionStorage:SessionStorageService
+    private fb: FormBuilder,
+    private globalMessagingService: GlobalMessagingService,
+    private staffService: StaffService,
+    private dmsService: DmsService,
+    private paymentsService: PaymentsService,
+    private authService: AuthService,
+    private sessionStorage: SessionStorageService
   ) {}
 
   ngOnInit() {
@@ -120,15 +142,18 @@ export class ProcessBatchComponent {
     this.fetchBankAccounts();
   }
   /**
-     * @description Initializes the `usersForm` with required controls.
-     */
-    initializeUsersForm(): void {
-      this.usersForm = this.fb.group({
-        user: ['', Validators.required],
-        comment: [''],
-      });
-    }
-    initializeDepositForm(): void {
+   * @description Initializes the `usersForm` with required controls.
+   */
+  initializeUsersForm(): void {
+    this.usersForm = this.fb.group({
+      user: ['', Validators.required],
+      comment: [''],
+    });
+  }
+  /**
+   * @description Initializes the `depositForm` with required controls.
+   */
+  initializeDepositForm(): void {
     this.depositForm = this.fb.group({
       bankAccount: ['', Validators.required],
       slipNumber: ['', Validators.required],
@@ -136,9 +161,16 @@ export class ProcessBatchComponent {
       remarks: [''],
     });
   }
+  /**
+   * @description Sets the visibility flag to true to show the column selection dialog.
+   */
   showColumns(): void {
     this.visible = true;
   }
+  /**
+   * @description Defines the structure for all possible columns in the batches table.
+   * @returns An array of column definition objects.
+   */
   getColumns(): any {
     return (this.columns = [
       {
@@ -163,9 +195,16 @@ export class ProcessBatchComponent {
       },
     ]);
   }
+  /**
+   * @description A getter that provides a translated string for the PrimeNG table's paginator report.
+   * @returns The translated report template string.
+   */
   get currentReportTemplate(): string {
     return this.translate.instant('fms.receipt-management.pageReport');
   }
+  /**
+   * @description Fetches the list of all available batches from the API and populates the table data.
+   */
   fetchBatches(): void {
     this.bankingService.getBatches().subscribe({
       next: (response) => {
@@ -191,40 +230,43 @@ export class ProcessBatchComponent {
         const formattedDateField = fieldValue.toISOString().split('T')[0];
 
         return formattedDateField.includes(inputValue);
-      }  else if (typeof fieldValue === 'string') {
+      } else if (typeof fieldValue === 'string') {
         fieldValue = fieldValue.toString();
         return fieldValue.toLowerCase().includes(inputValue.toLowerCase());
       }
       return false;
     });
   }
-  clearFilters():void{
-this.filteredBatches = this.batches;
+  /**
+   * @description Resets the table data to its original, unfiltered state.
+   */
+  clearFilters(): void {
+    this.filteredBatches = this.batches;
   }
   /**
-     * @description Opens the main assignment dialog.
-     * it sets reAssign flag to true so as to call reAssignUser() once the Assign button is clicked
-     * rather than calling  onAssignSubmit() to does assigning
-     */
-    openReAssignModal(batch: any) {
-      this.selectedBatchObj = batch;
-      this.assignDialogVisible = true;
-      this.reAssign = true;
-    }
+   * @description Opens the main assignment dialog.
+   * it sets reAssign flag to true so as to call reAssignUser() once the Assign button is clicked
+   * rather than calling  onAssignSubmit() to does assigning
+   */
+  openReAssignModal(batch: any) {
+    this.selectedBatchObj = batch;
+    this.assignDialogVisible = true;
+    this.reAssign = true;
+  }
   /**
-     * @description Opens the second dialog for selecting a user from a table.
-     */
-    openUserSelectDialog(): void {
-      this.tempSelectedUser = null; // Clear previous temporary selection
-      this.userSelectDialogVisible = true;
-    }
-    /**
-     * @description Closes the user selection dialog without saving the choice.
-     */
-    closeUserSelectDialog(): void {
-      this.userSelectDialogVisible = false;
-    }
-    /**
+   * @description Opens the second dialog for selecting a user from a table.
+   */
+  openUserSelectDialog(): void {
+    this.tempSelectedUser = null; // Clear previous temporary selection
+    this.userSelectDialogVisible = true;
+  }
+  /**
+   * @description Closes the user selection dialog without saving the choice.
+   */
+  closeUserSelectDialog(): void {
+    this.userSelectDialogVisible = false;
+  }
+  /**
    * @description Closes the main assignment dialog and resets the form and selections.
    */
   closeAssignModal(): void {
@@ -232,78 +274,83 @@ this.filteredBatches = this.batches;
     this.usersForm.reset();
     this.selectedUserForAssignment = null;
   }
-    /**
-     * @description Called when the "save" button in the second dialog is clicked.
-     * It transfers the selected user to the main form and closes the selection dialog.
-     */
-    confirmUserSelection(): void {
-      if (this.tempSelectedUser) {
-        this.selectedUserForAssignment = this.tempSelectedUser;
-        // Patch the form with the selected user's ID
-        this.usersForm.patchValue({
-          user: this.selectedUserForAssignment.id,
-        });
-        this.closeUserSelectDialog();
-      }
-    }
   /**
-     * @description Fetches a list of users that the current user can assign tasks to.
-     *
-     */
-    fetchActiveUsers(
-      pageIndex: number,
-      pageSize: number,
-      sortList: any = 'dateCreated',
-      order: string = 'desc'
-    ): void {
-      this.staffService
-        .getStaff(
-          pageIndex,
-          pageSize,
-  
-          'U',
-          sortList,
-          order,
-          null,
-          'A'
-        )
-        .subscribe({
-          next: (response) => {
-            this.users = response.content;
-            this.filteredUsers = this.users;
-          },
-          error: (err) => {
-           this.commonMethodsService.handleApiError(err);
-          },
-        });
+   * @description Called when the "save" button in the second dialog is clicked.
+   * It transfers the selected user to the main form and closes the selection dialog.
+   */
+  confirmUserSelection(): void {
+    if (this.tempSelectedUser) {
+      this.selectedUserForAssignment = this.tempSelectedUser;
+      // Patch the form with the selected user's ID
+      this.usersForm.patchValue({
+        user: this.selectedUserForAssignment.id,
+      });
+      this.closeUserSelectDialog();
     }
-    /**
-     *
-     * @description it calls the reAssign() to post the request body,if successfull we recall fetchReceipts()
-     * to show the newly re-assigned receipts
-     */
-    reAssignUser(): void {
-      this.usersForm.markAllAsTouched();
-      if (this.usersForm.invalid) {
-        return;
-      }
-      const formData = this.usersForm.value;
-      const requestBody = {
-        fromUserId: this.selectedBatchObj.user_id,
-        toUserId: formData.user,
-        receiptNumbers: [this.selectedBatchObj.batch_number],
-      };
-      this.bankingService.reAssignUser(requestBody).subscribe({
+  }
+  /**
+   * @description Fetches a list of users that the current user can assign tasks to.
+   *
+   */
+  fetchActiveUsers(
+    pageIndex: number,
+    pageSize: number,
+    sortList: any = 'dateCreated',
+    order: string = 'desc'
+  ): void {
+    this.staffService
+      .getStaff(
+        pageIndex,
+        pageSize,
+
+        'U',
+        sortList,
+        order,
+        null,
+        'A'
+      )
+      .subscribe({
         next: (response) => {
-          this.globalMessagingService.displaySuccessMessage('', response.msg);
-          this.fetchBatches();
+          this.users = response.content;
+          this.filteredUsers = this.users;
         },
         error: (err) => {
-         this.commonMethodsService.handleApiError(err);
+          this.commonMethodsService.handleApiError(err);
         },
       });
-      this.closeAssignModal();
+  }
+  /**
+   *
+   * @description it calls the reAssign() to post the request body,if successfull we recall fetchReceipts()
+   * to show the newly re-assigned receipts
+   */
+  reAssignUser(): void {
+    this.usersForm.markAllAsTouched();
+    if (this.usersForm.invalid) {
+      return;
     }
+    const formData = this.usersForm.value;
+    const requestBody = {
+      fromUserId: this.selectedBatchObj.user_id,
+      toUserId: formData.user,
+      receiptNumbers: [this.selectedBatchObj.batch_number],
+    };
+    // this.bankingService.reAssignUser(requestBody).subscribe({
+    //   next: (response) => {
+    //     this.globalMessagingService.displaySuccessMessage('', response.msg);
+    //     this.fetchBatches();
+    //   },
+    //   error: (err) => {
+    //    this.commonMethodsService.handleApiError(err);
+    //   },
+    // });
+    this.closeAssignModal();
+  }
+  /**
+   * @description Filters the `filteredUsers` array based on user input.
+   * @param event The input event from the filter field.
+   * @param field The user property to filter on ('username' or 'name').
+   */
   filterUsers(event: any, field: string) {
     const inputValue = (event.target as HTMLInputElement).value;
     switch (field) {
@@ -320,37 +367,67 @@ this.filteredBatches = this.batches;
     }
   }
   /**
- * @description a function to retrieve list of banks accounts for banking
- */
-  fetchBankAccounts():void{
-    this.paymentsService.getPaymentsBankActs(this.loggedInUser.code,this.selectedOrg?.id || this.defaultOrg?.id,this.defaultBranch?.id || this.selectedBranch?.id).subscribe({
-      next:(response)=>{
-        this.bankAccounts = response.data;
-      },
-      error:(err)=>{
-         this.commonMethodsService.handleApiError(err);
-      }
-    })
-  }
-   openDepositModal(batch: any): void {
-      const modalEl = new bootstrap.Modal(
-        document.getElementById('depositModal')
-      );
-      if (modalEl) {
-        modalEl.show();
-      }
-      this.selectedBatchObj = batch;
-      this.uploadedFile = null; // Clear previous files when opening
-      this.depositForm.patchValue({ amount: this.selectedBatchObj.total_amount});
-      }
-  /**
-   * Triggered when files are selected via the hidden input.
-   * @param event The file input change event.
+   * @description a function to retrieve list of banks accounts for banking
    */
-  onFileSelected(event: any): void {
-    if (event.target.files && event.target.files.length > 0) {
-      this.processFile(event.target.files[0]);
+  fetchBankAccounts(): void {
+    this.paymentsService
+      .getPaymentsBankActs(
+        this.loggedInUser.code,
+        this.selectedOrg?.id || this.defaultOrg?.id,
+        this.defaultBranch?.id || this.selectedBranch?.id
+      )
+      .subscribe({
+        next: (response) => {
+          this.bankAccounts = response.data;
+        },
+        error: (err) => {
+          this.commonMethodsService.handleApiError(err);
+        },
+      });
+  }
+  /**
+   * @description Opens the deposit modal for a specific batch and pre-fills the amount.
+   * @param batch The batch object to be deposited.
+   */
+  openDepositModal(batch: any): void {
+    const modalEl = new bootstrap.Modal(
+      document.getElementById('depositModal')
+    );
+    if (modalEl) {
+      modalEl.show();
     }
+    this.selectedBatchObj = batch;
+    this.uploadedFile = null; // Clear previous files when opening
+    this.depositForm.patchValue({ amount: this.selectedBatchObj.total_amount });
+  }
+  /**
+   * @description Closes the deposit modal.
+   */
+  closeDepositModal() {
+    const modal = document.getElementById('depositModal');
+    if (modal) {
+      const modalEl = bootstrap.Modal.getInstance(modal);
+      if (modalEl) {
+        modalEl.hide();
+      }
+    }
+  }
+  /**
+   * Central method to process and validate a selected file.
+   * @param file The File object to process.
+   */
+  private processFile(file: File): void {
+    if (file.size > this.max_file_size) {
+      this.globalMessagingService.displayErrorMessage(
+        'File Too Large',
+        `The selected file exceeds the 5MB size limit.`
+      );
+      return;
+    }
+
+    // If validation passes, update the component state
+    this.uploadedFile = file;
+    this.maximumFiles = true;
   }
   /**
    * Handles the dragover event.
@@ -395,94 +472,81 @@ this.filteredBatches = this.batches;
     }
   }
   /**
+   * Triggered when files are selected via the hidden input.
+   * @param event The file input change event.
+   */
+  onFileSelected(event: any): void {
+    if (event.target.files && event.target.files.length > 0) {
+      this.processFile(event.target.files[0]);
+    }
+  }
+
+  /**
    * Removes the currently selected file.
    */
- /**
-   * Central method to process and validate a selected file.
-   * @param file The File object to process.
-   */
-  private processFile(file: File): void {
-    if (file.size > this.max_file_size) {
-      this.globalMessagingService.displayErrorMessage(
-        'File Too Large',
-        `The selected file exceeds the 5MB size limit.`
-      );
-      return;
-    }
 
-    // If validation passes, update the component state
-    this.uploadedFile = file;
-    this.maximumFiles = true;
-  }
   removeFile(): void {
     this.uploadedFile = null;
     this.maximumFiles = false; // Re-enable the input
   }
   /**
-     * Reads the selected file as a Base64 string and then calls the service to post it.
-     */
-    postFile(): void {
-      if (!this.uploadedFile) {
-        return;
-      }
-      const formValue = this.depositForm.value;
-      if (!formValue.slipNumber) {
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          'please enter the slip Number first!'
-        );
-        return;
-      }
-      const fileReader = new FileReader();
-      // this event happens AFTER the file is read
-      fileReader.onloadend = () => {
-        // The result includes the "data:[mime/type];base64," prefix
-        const base64String = fileReader.result as string;
-        //  pure Base64 data by removing the prefix
-        const pureBase64 = base64String.split(',')[1];
-        //preparing the payload
-        const payload: ReceiptUploadRequest[] = [
-          {
-            docData: pureBase64,
-            docType: this.uploadedFile.type,
-            originalFileName: this.uploadedFile.name,
-            module: 'CB-RECEIPTS',
-            filename: this.uploadedFile.name,
-            referenceNo: formValue.slipNumber,
-            docDescription: '',
-            amount: formValue.amount,
-            paymentMethod: null,
-            policyNumber: null,
-          },
-        ];
-        //The service call is called inside the onloadend callback
-        this.dmsService.uploadFiles(payload).subscribe({
-          next: (response) => {
-            this.globalMessagingService.displaySuccessMessage(
-              '',
-              response[0].uploadStatus
-            );
-            this.uploadedFile = null;
-            this.maximumFiles = false;
-          },
-          error: (err) => {
-           this.commonMethodsService.handleApiError(err);
-          },
-        });
-      };
-      // Start the asynchronous file reading process
-      fileReader.readAsDataURL(this.uploadedFile);
+   * Reads the selected file as a Base64 string and then calls the service to post it.
+   */
+  postFile(): void {
+    if (!this.uploadedFile) {
+      return;
     }
-  closeDepositModal() {
-      const modal = document.getElementById('depositModal');
-      if (modal) {
-        const modalEl = bootstrap.Modal.getInstance(modal);
-        if (modalEl) {
-          modalEl.hide();
-        }
-      }
+    const formValue = this.depositForm.value;
+    if (!formValue.slipNumber) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'please enter the slip Number first!'
+      );
+      return;
     }
-
+    const fileReader = new FileReader();
+    // this event happens AFTER the file is read
+    fileReader.onloadend = () => {
+      // The result includes the "data:[mime/type];base64," prefix
+      const base64String = fileReader.result as string;
+      //  pure Base64 data by removing the prefix
+      const pureBase64 = base64String.split(',')[1];
+      //preparing the payload
+      const payload: ReceiptUploadRequest[] = [
+        {
+          docData: pureBase64,
+          docType: this.uploadedFile.type,
+          originalFileName: this.uploadedFile.name,
+          module: 'CB-RECEIPTS',
+          filename: this.uploadedFile.name,
+          referenceNo: formValue.slipNumber,
+          docDescription: '',
+          amount: formValue.amount,
+          paymentMethod: null,
+          policyNumber: null,
+        },
+      ];
+      //The service call is called inside the onloadend callback
+      this.dmsService.uploadFiles(payload).subscribe({
+        next: (response) => {
+          this.globalMessagingService.displaySuccessMessage(
+            '',
+            response[0].uploadStatus
+          );
+          this.uploadedFile = null;
+          this.maximumFiles = false;
+        },
+        error: (err) => {
+          this.commonMethodsService.handleApiError(err);
+        },
+      });
+    };
+    // Start the asynchronous file reading process
+    fileReader.readAsDataURL(this.uploadedFile);
+  }
+  /**
+   * @description Navigates the user back to the main banking dashboard.
+   */
   navigateToDashboard(): void {
     this.router.navigate(['/home/fms/banking-dashboard']);
   }

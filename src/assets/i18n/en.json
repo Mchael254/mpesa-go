@@ -3325,7 +3325,8 @@
       "dateTo":"Date to is required",
       "dateFrom":"Date From is required",
       "orDrag":"or drag file here",
-      "detach":"Detach"
+      "detach":"Detach",
+      "availableBatches":"Available Batches"
     },
     "receipt_authorization": {
       "title": "Receipt Authorization",
