@@ -470,7 +470,6 @@ export class ListClientComponent implements OnInit {
     this.accountService.getClientCategories().subscribe({
       next: (data) => {
         this.clientCategories = data;
-        log.info('clientCategories', this.clientCategories);
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage('Error', err.error?.message || 'Failed to fetch client categories');
