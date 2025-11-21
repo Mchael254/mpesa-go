@@ -1,4 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { PremiumPayloadDto, QuotationDetails, QuotationReportDto, ShareQuoteDTO } from '../../data/quotationsDTO';
 
 import { QuotationsService } from "../../services/quotations/quotations.service";
@@ -77,6 +78,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   comment: boolean = false
   noUserChosen: boolean = false
   ticketStatus: string;
+  dateFormat: string = 'dd-MMM-yyyy'; // Default format
+  primeNgDateFormat: string = 'dd-M-yy'; // PrimeNG format
 
   constructor(
     private quotationService: QuotationsService,
@@ -88,7 +91,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     public cdr: ChangeDetectorRef,
     private session_storage: SessionStorageService,
     private sessionStorageService: SessionStorageService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private datePipe: DatePipe
 
   ) {
     this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
@@ -117,6 +121,20 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   ngOnInit(): void {
+
+    // Load date format from sessionStorage first, then from userDetails
+    const storedDateFormat = sessionStorage.getItem('dateFormat');
+    if (storedDateFormat) {
+      this.dateFormat = storedDateFormat;
+      log.debug("Loaded date format from session storage:", this.dateFormat);
+    } else {
+      log.debug("Using default date format:", this.dateFormat);
+    }
+
+    // Convert dateFormat to PrimeNG format
+    this.primeNgDateFormat = this.dateFormat
+      .replace('yyyy', 'yy')
+      .replace('MM', 'm');
 
     log.debug('these are quotation details', this.quotationDetails)
     const stored = sessionStorage.getItem('selectedCovers');
@@ -919,6 +937,75 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   openClientSearchModal() {
     this.isClientSearchModalVisible = true;
+  }
+
+  /**
+   * Format date for backend API (ISO format: YYYY-MM-DD)
+   * @param date - Date to format
+   * @returns Formatted date string in YYYY-MM-DD format
+   */
+  formatDate(date: string | Date | null): string {
+    if (!date) return '';
+
+    try {
+      // Ensure the date is a Date object
+      const parsedDate = typeof date === 'string' ? new Date(date) : date;
+
+      if (isNaN(parsedDate.getTime())) {
+        log.error('Invalid date:', date);
+        return '';
+      }
+
+      // Always use ISO format (YYYY-MM-DD) for backend API
+      const formattedDate = this.datePipe.transform(parsedDate, 'yyyy-MM-dd');
+      return formattedDate || '';
+    } catch (error) {
+      log.error('Error formatting date:', error);
+      return '';
+    }
+  }
+
+  /**
+   * Format date for display in templates
+   * Returns formatted date string or placeholder if date is null/invalid
+   */
+  formatDateDisplay(date: any, placeholder: string = '—'): string {
+    if (!date) {
+      return placeholder;
+    }
+
+    try {
+      const rawDate = new Date(date);
+
+      // Check if date is valid
+      if (isNaN(rawDate.getTime())) {
+        return placeholder;
+      }
+
+      // Use the date format from session storage
+      const formattedDate = this.datePipe.transform(rawDate, this.dateFormat);
+      return formattedDate || placeholder;
+    } catch (error) {
+      log.error('Error formatting date for display:', error);
+      return placeholder;
+    }
+  }
+
+  /**
+   * Check if a field name represents a date field
+   * Used to determine if formatting should be applied
+   */
+  isDateField(fieldName: string): boolean {
+    const dateFieldPatterns = [
+      'date', 'Date', 'DATE',
+      'wef', 'wet',
+      'created', 'updated', 'modified',
+      'timestamp', 'time'
+    ];
+
+    return dateFieldPatterns.some(pattern =>
+      fieldName.toLowerCase().includes(pattern.toLowerCase())
+    );
   }
 
 }

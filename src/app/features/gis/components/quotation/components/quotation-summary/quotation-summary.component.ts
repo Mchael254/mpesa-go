@@ -51,6 +51,7 @@ import { riskClauses } from '../../../setups/data/gisDTO';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotificationService } from '../../services/notification/notification.service';
 import { NgxCurrencyConfig } from 'ngx-currency';
+import { CountryISO, SearchCountryField, PhoneNumberFormat } from 'ngx-intl-tel-input';
 
 import { Modal } from 'bootstrap';
 import { left } from '@popperjs/core';
@@ -300,6 +301,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   zoomRiskDocLevel = 1;
   showRiskDocColumnModal = false;
   showRiskDoc: boolean = true;
+  // Phone input properties
+  CountryISO = CountryISO;
+  SearchCountryField = SearchCountryField;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [CountryISO.Kenya];
 
   riskDocColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
   selectedFile: File | null = null;
@@ -537,7 +543,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       bcc: ['', this.multipleEmailValidator.bind(this)],
       subject: [''],
       wording: [''],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      phone: ['', Validators.required],
       smsMessage: ['', [Validators.required, Validators.minLength(1)]]
     });
     const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
@@ -3814,20 +3820,20 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
    * Send reports via SMS
    */
   async sendReportViaSMS() {
-    const phoneNumberControl = this.viewDocForm.get('phoneNumber');
+    const phoneControl = this.viewDocForm.get('phone');
 
-    if (!phoneNumberControl) {
+    if (!phoneControl) {
       this.globalMessagingService.displayErrorMessage('Error', 'Form controls not initialized');
       return;
     }
 
-    // Validate phone number (exactly 10 digits)
-    if (phoneNumberControl.invalid) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Please enter a valid 10-digit phone number');
+    // Validate phone number
+    if (phoneControl.invalid) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please enter a valid phone number');
       return;
     }
 
-    const rawPhoneNumber = phoneNumberControl.value;
+    const rawPhoneNumber = phoneControl.value;
 
     // Generate SMS message template automatically
     const message = this.getSMSMessageTemplate();
@@ -4769,19 +4775,45 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   /**
    * Format phone number to international format (254XXXXXXXXX)
-   * @param phoneNumber - The phone number to format
+   * @param phoneNumber - The phone number object or string from ngx-intl-tel-input
    * @returns Formatted phone number with 254 prefix
    */
-  formatPhoneNumber(phoneNumber: string): string {
-    const cleaned = phoneNumber.replace(/\D/g, '');
+  formatPhoneNumber(phoneNumber: any): string {
+    let phoneStr = '';
+
+    // Handle phone object from ngx-intl-tel-input
+    if (phoneNumber && typeof phoneNumber === 'object') {
+      // The component returns an object with various properties
+      // Try to extract the E.164 format (international format)
+      if (phoneNumber.e164) {
+        phoneStr = phoneNumber.e164;
+      } else if (phoneNumber.nationalNumber) {
+        // If we have national number, construct with dial code
+        phoneStr = (phoneNumber.dialCode || '') + phoneNumber.nationalNumber;
+      } else if (phoneNumber.number) {
+        phoneStr = phoneNumber.number;
+      } else {
+        // Fallback to toString
+        phoneStr = phoneNumber.toString();
+      }
+    } else if (typeof phoneNumber === 'string') {
+      phoneStr = phoneNumber;
+    }
+
+    const cleaned = phoneStr.replace(/\D/g, '');
 
     // If already starts with 254, return as is
     if (cleaned.startsWith('254')) {
       return cleaned;
     }
 
+    // Check if it starts with +254 (international) or 0 or 7 (Kenya numbers)
+    if (cleaned.match(/^254/)) {
+      return cleaned;
+    }
+
     if (!cleaned.match(/^(01|07)/)) {
-      throw new Error("Invalid phone number format");
+      throw new Error("Invalid phone number format. Expected format: 0712345678 or 0112345678");
     }
 
     // Convert to 254 format by removing leading 0 and adding 254
@@ -4793,17 +4825,17 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.viewDocForm.markAllAsTouched();
 
     // Check if the SMS form fields are valid
-    const phoneNumberControl = this.viewDocForm.get('phoneNumber');
+    const phoneControl = this.viewDocForm.get('phone');
     const smsMessageControl = this.viewDocForm.get('smsMessage');
 
-    if (!phoneNumberControl || !smsMessageControl) {
+    if (!phoneControl || !smsMessageControl) {
       this.globalMessagingService.displayErrorMessage('Error', 'Form controls not initialized');
       return;
     }
 
-    // Validate phone number (exactly 10 digits)
-    if (phoneNumberControl.invalid) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Please enter a valid 10-digit phone number');
+    // Validate phone number
+    if (phoneControl.invalid) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please enter a valid phone number');
       return;
     }
 
@@ -4813,15 +4845,21 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const rawPhoneNumber = phoneNumberControl.value;
+    const rawPhoneNumber = phoneControl.value;
     const message = smsMessageControl.value;
+
+    log.debug('Raw phone number object:', rawPhoneNumber);
+    log.debug('Phone object type:', typeof rawPhoneNumber);
+    log.debug('Phone object keys:', Object.keys(rawPhoneNumber || {}));
 
     // Format phone number to 254 format
     let formattedPhoneNumber: string;
     try {
       formattedPhoneNumber = this.formatPhoneNumber(rawPhoneNumber);
+      log.debug('Formatted phone number:', formattedPhoneNumber)
     } catch (error) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Invalid phone number format');
+      log.error('Phone formatting error:', error);
+      this.globalMessagingService.displayErrorMessage('Error', (error as Error).message || 'Invalid phone number format');
       return;
     }
 

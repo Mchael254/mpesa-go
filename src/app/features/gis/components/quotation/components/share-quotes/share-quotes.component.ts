@@ -6,6 +6,7 @@ import { EmailDto } from 'src/app/shared/data/common/email-dto';
 import { NotificationService } from '../../services/notification/notification.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
@@ -54,6 +55,12 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
     clientName: ''
   };
 
+  // Phone input properties
+  CountryISO = CountryISO;
+  SearchCountryField = SearchCountryField;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [CountryISO.Kenya];
+
 
 
 
@@ -64,10 +71,8 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
     this.shareForm = this.fb.group({
       clientName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]]
-
+      phone: ['', Validators.required]
     });
-
   }
 
   onDownload() {
@@ -110,13 +115,25 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
     if (method === 'email') {
       this.shareQuoteData.email = this.shareForm.value.email;
     } else if (method === 'whatsapp') {
-      this.shareQuoteData.whatsappNumber = this.shareForm.value.phone;
+      const phoneValue = this.shareForm.value.phone;
+ 
+      this.shareQuoteData.whatsappNumber = phoneValue?.e164Number || this.formatPhoneNumber(phoneValue?.number || '');
     } else if (method === 'sms') {
-      this.shareQuoteData.smsNumber = this.shareForm.value.phone;
+      const phoneValue = this.shareForm.value.phone;
+
+      this.shareQuoteData.smsNumber = phoneValue?.e164Number || this.formatPhoneNumber(phoneValue?.number || '');
     }
 
-    // Emit the event for the parent to handle (your listenToSendEvent)
+
     this.sendEvent.emit({ mode: this.shareQuoteData });
+
+    // Clear the form inputs after successful send
+    this.shareForm.reset();
+    this.shareForm.patchValue({
+      clientName: '',
+      email: '',
+      phone: ''
+    });
 
     // Close the modal
     this.closeButton.nativeElement.click();
@@ -167,7 +184,8 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
       phoneControl?.reset(); // Clear phone value when switching to email
     } else {
       // Phone required (for both WhatsApp and SMS), email not required
-      phoneControl?.setValidators([Validators.required, Validators.pattern(/^[0-9]{10}$/)]);
+      // ngx-intl-tel-input has built-in validation, so we only need required
+      phoneControl?.setValidators([Validators.required]);
       emailControl?.clearValidators();
       emailControl?.reset(); // Clear email value when switching to phone
     }
