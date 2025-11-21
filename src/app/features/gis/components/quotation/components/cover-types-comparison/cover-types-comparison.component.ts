@@ -870,5 +870,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
     this.additionalBenefitsRemovedEvent.emit({ risk: this.riskLevelPremium, premiumItems: limitToDelete })
   }
 
+  
 }
 
