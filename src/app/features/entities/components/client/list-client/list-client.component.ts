@@ -21,6 +21,7 @@ import {
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {DynamicColumns} from "../../../../../shared/data/dynamic-columns";
 import {Observable} from "rxjs";
+import {AccountsEnum} from "../../../data/enums/accounts-enum";
 
 const log = new Logger('ListClientComponent');
 
@@ -86,6 +87,8 @@ export class ListClientComponent implements OnInit {
     'records_corporate_pin_no': 'pinNumber',
     'records_corporate_tel': 'phoneNumber',
   };
+  clientCategories: AccountsEnum[];
+
   constructor(
     private router: Router,
     private fb: FormBuilder,
@@ -116,6 +119,7 @@ export class ListClientComponent implements OnInit {
    */
   ngOnInit(): void {
     this.fetchDynamicScreenSetup();
+    this.fetchClientCategories();
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
     });
@@ -355,7 +359,7 @@ export class ListClientComponent implements OnInit {
           visible: field.visible !== false,
         }));
 
-      if ($event?.target?.value === 'Corporate') {
+      if ($event?.target?.value === 'C') {
         this.columns = this.dynamicSetupData.fields.filter(field => field.formId.includes('corporate'))
           .map(field => ({
             field: field.fieldId,
@@ -460,5 +464,17 @@ export class ListClientComponent implements OnInit {
     const searchInputs = document.querySelectorAll<HTMLInputElement>('.search-input');
     searchInputs.forEach(input => input.value = '');
     this.dt2.reset();
+  }
+
+  fetchClientCategories() {
+    this.accountService.getClientCategories().subscribe({
+      next: (data) => {
+        this.clientCategories = data;
+        log.info('clientCategories', this.clientCategories);
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error?.message || 'Failed to fetch client categories');
+      }
+    });
   }
 }

@@ -574,12 +574,14 @@
                 <div *ngIf="(subGroup.presentationType || group.presentationType) === PresentationType.fields_and_table_columns">
                   <app-dynamic-setup-table
                     [tableTitle]="group?.subGroup?.length == 1 ? '' : subGroup.label?.[language]"
+                    [modalTitle]="subGroup.label?.[language]"
                     [addButtonText]="subGroup.addButtonTextLabel?.[language]"
                     [formFields]="subGroup.fields"
                     [subGroupId]="subGroup.subGroupId"
                     (saveDetailsData)="fetchSavedDetails($event)"
                     [selectedAddressCountry]="selectedAddressCountry"
                     [isPreviewMode]="isPreviewMode"
+                    [emptyTableMessage]="'crm.noRecordsFound' | translate"
                   ></app-dynamic-setup-table>
                 </div>
 
@@ -612,13 +614,14 @@
               <div *ngIf="(group.presentationType || 'fields') === PresentationType.fields_and_table_columns">
                 <app-dynamic-setup-table
                   [tableTitle]="group.label?.[language]"
+                  [modalTitle]="group.label?.[language]"
                   [addButtonText]="group.addButtonTextLabel?.[language]"
                   [formFields]="group.fields"
                   [subGroupId]="group.groupId"
                   (saveDetailsData)="fetchSavedDetails($event)"
                   [selectedAddressCountry]="selectedAddressCountry"
                   [isPreviewMode]="isPreviewMode"
-                  [emptyTableMessage]="'No record found!'"
+                  [emptyTableMessage]="'crm.noRecordsFound' | translate"
                 ></app-dynamic-setup-table>
               </div>
             </ng-template>
