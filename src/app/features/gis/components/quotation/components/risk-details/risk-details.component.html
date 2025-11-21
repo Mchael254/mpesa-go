@@ -2408,11 +2408,11 @@
                                     <!-- Third Row -->
                                     <div class="col-md-6">
                                         <label>Person limit</label>
-                                        <input type="number" class="form-control" formControlName="personLimit" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="personLimit" />
                                     </div>
                                     <div class="col-md-6">
                                         <label>Limit amount</label>
-                                        <input type="number" class="form-control" formControlName="excess" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="excess" />
                                     </div>
                                 </div>
 
@@ -2420,7 +2420,7 @@
                                     <!-- Fourth Row -->
                                     <div class="col-md-6">
                                         <label>Claim limit</label>
-                                        <input type="number" class="form-control" formControlName="claimLimit" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="claimLimit" />
                                     </div>
                                     <div class="col-md-6">
                                         <label>Excess type</label>
@@ -2434,11 +2434,11 @@
                                     <!-- Fifth Row -->
                                     <div class="col-md-6">
                                         <label>Excess</label>
-                                        <input type="number" class="form-control" formControlName="excess" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="excess" />
                                     </div>
                                     <div class="col-md-6">
                                         <label>Excess minimum</label>
-                                        <input type="number" class="form-control" formControlName="excessMin" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="excessMin" />
                                     </div>
                                 </div>
 
@@ -2446,7 +2446,7 @@
                                     <!-- Sixth Row -->
                                     <div class="col-md-6">
                                         <label>Excess maximum</label>
-                                        <input type="number" class="form-control" formControlName="excessMax" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="excessMax" />
                                     </div>
                                     <div class="col-md-6">
 
@@ -3090,8 +3090,12 @@
 
                                     <div class="col-md-6 mb-3">
                                         <label>Tax value</label>
-                                        <input formControlName="taxValue" type="text"
-                                            class="form-control form-control-sm" />
+                                        <ng-container *ngIf="taxForm.get('taxMode')?.value === 'Amount'; else rateInput">
+                                          <input formControlName="taxValue" class="form-control form-control-sm" currencyMask [options]="currencyObj" />
+                                        </ng-container>
+                                        <ng-template #rateInput>
+                                          <input formControlName="taxValue" type="text" class="form-control form-control-sm" />
+                                        </ng-template>
                                         <div *ngIf="taxForm.get('taxValue')?.touched && taxForm.get('taxValue')?.errors"
                                             class="text-danger small">
                                             <div *ngIf="taxForm.get('taxValue')?.errors['required']">Tax value is
@@ -3408,7 +3412,11 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>{{ excess.value }}</td>
+                                            <td>
+                                                <div>
+                                                    {{ sanitizeCurrency(excess.value) | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                                                </div>
+                                            </td>
                                         </tr>
                                     </ng-template>
 
@@ -3458,14 +3466,15 @@
                             </button>
                         </div>
 
-                        <div class="d-flex justify-content-between text-black">
+                        <div class="d-flex justify-content-between text-black" *ngIf="selectedExcess">
                             <div class="d-flex flex-column bg-gray-300 w-25">
                                 <label for="id">Value</label>
-                                <input pInputText type="text" [(ngModel)]="selectedExcess.value">
+                                <input pInputText type="text" currencyMask [options]="currencyObj" ngModel [(ngModel)]="selectedExcess.value" class="text-end">
+
                             </div>
                         </div>
 
-                        <div class="d-flex flex-column mt-5">
+                        <div class="d-flex flex-column mt-5" *ngIf="selectedExcess">
                             <label class="text-dark mt-0" for="comment">Narration</label>
                             <textarea rows="5" cols="30" pTextarea [(ngModel)]="selectedExcess.narration"></textarea>
                         </div>
@@ -3473,7 +3482,7 @@
                         <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
                             <button #closeReassignButton type="button" data-bs-dismiss="modal"
                                 style="display: none;"></button>
-                            <button type="button" class="btn" data-bs-dismiss="modal"
+                            <button type="button" class="btn"
                                 style="background-color: #00529B;color:white;text-decoration: none;"
                                 (click)="editExcess()" [disabled]="!wasExcessModified()">
                                 {{ 'gis.quotation.save_changes' | translate }}
