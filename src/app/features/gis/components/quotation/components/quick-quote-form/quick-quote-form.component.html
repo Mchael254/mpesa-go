@@ -75,7 +75,7 @@
                     <ng-container *ngSwitchCase="'date'">
                       <ng-container *ngIf="field.name === 'effectiveDate'">
 
-                        <p-calendar [formControlName]="field.name" [name]="field.name" [dateFormat]="dateFormat"
+                        <p-calendar [formControlName]="field.name" [name]="field.name" [dateFormat]="primeNgDateFormat"
                           inputStyleClass="form-control-sm" [showButtonBar]="true" [minDate]="selectedEffectiveDate"
                           [dataType]="'string'" [style]="{ width: '100%' }" [showIcon]="true">
                         </p-calendar>
@@ -275,7 +275,7 @@
                             [formControlName]="field.name" currencyMask [options]="currencyObj">
 
                           <!-- Date picker -->
-                          <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="dateFormat"
+                          <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="primeNgDateFormat"
                             inputStyleClass="form-control" [showButtonBar]="true" [dataType]="'string'"></p-calendar>
 
                           <!-- Years -->
