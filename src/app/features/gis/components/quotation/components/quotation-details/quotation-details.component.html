@@ -46,7 +46,7 @@
                         <div class="position-relative" style="cursor: pointer;">
                           <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
                             [(ngModel)]="selectedClientName" [ngModelOptions]="{standalone: true}"
-                            [readonly]="isRevisionMode" autocomplete="off"
+                            [readonly]="isRevisionMode" autocomplete="off" [disabled]="isRevisionMode"
                             (click)="!isRevisionMode && (showClientSearchModal = true)" style="cursor: pointer;" />
                           <input type="hidden" formControlName="client" />
                           <i class="pi pi-search position-absolute"
@@ -147,7 +147,7 @@
                       <div class="position-relative" style="cursor: pointer;">
 
                         <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
-                          [value]="displayAgentName || ''" [readonly]="isRevisionMode"
+                          [value]="displayAgentName || ''" [readonly]="isRevisionMode" [disabled]="isRevisionMode"
                           (click)="!isRevisionMode && (showAgentSearchModal = true)" style="cursor: pointer;" />
                         <i class="pi pi-search position-absolute"
                           style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
