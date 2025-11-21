@@ -2576,11 +2576,16 @@
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label class="quote-label">Phone Number <span class="text-danger">*</span></label>
-                    <input pInputText type="tel" class="form-control" formControlName="phoneNumber"
-                      placeholder="e.g., 0712345678" maxlength="10" />
-                    <div *ngIf="viewDocForm.get('phoneNumber')?.invalid && viewDocForm.get('phoneNumber')?.touched"
+                    <ngx-intl-tel-input id="phoneNumber" [cssClass]="'form-control form-control-sm mb-1'"
+                      [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
+                      [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                      [selectFirstCountry]="false" [style]="{ width: '100%' }" [selectedCountryISO]="CountryISO.Kenya"
+                      [phoneValidation]="true" [separateDialCode]="true" [numberFormat]="PhoneNumberFormat.National"
+                      formControlName="phone">
+                    </ngx-intl-tel-input>
+                    <div *ngIf="viewDocForm.get('phone')?.invalid && viewDocForm.get('phone')?.touched"
                       class="text-danger small">
-                      Please enter exactly 10 digits (e.g., 0712345678)
+                      Please enter a valid phone number
                     </div>
                   </div>
                 </div>
@@ -2666,7 +2671,7 @@
                 Cancel
               </button>
               <button type="button" class="btn btn-primary btn-sm" (click)="sendReportViaEmail()"
-                [disabled]="activeIndex === 0 ? viewDocForm.get('phoneNumber')?.invalid : viewDocForm.get('to')?.invalid">
+                [disabled]="activeIndex === 0 ? viewDocForm.get('phone')?.invalid : viewDocForm.get('to')?.invalid">
                 {{ activeIndex === 0 ? 'Send SMS' : 'Send Email' }}
               </button>
             </div>
