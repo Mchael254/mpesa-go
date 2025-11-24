@@ -93,7 +93,8 @@
                     </div>
 
                     <div class="offcanvas-body p-0">
-                        <app-import-risks [selectedProduct]="selectedProduct"></app-import-risks>
+                        <app-import-risks [selectedProduct]="selectedProduct"
+                            (onSaveCompleted)="closeImportRisks()"></app-import-risks>
                     </div>
                 </div>
             </div>
