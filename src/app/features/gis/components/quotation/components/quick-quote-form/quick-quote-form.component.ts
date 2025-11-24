@@ -1697,26 +1697,95 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   //   return limitsPayload
   // }
 
+  // getLimitsPayload(applicableLimits: any, risk: any): Limit[] {
+  //   log.debug("Processing risk >>.", risk, applicableLimits);
+  //   let limitsPayload: Limit[] = [];
+
+  //   for (let limit of applicableLimits) {
+  //     // Normalize the description to lowercase for case-insensitive comparison
+  //     const description = limit?.sectionDescription?.toString().toLowerCase() || '';
+
+  //     // Determine the limitAmount based on the conditions
+  //     let limitAmount;
+
+  //     if ((limit?.freeLimit || 0) === 0) {
+  //       // If freeLimit is 0, use selfDeclaredValue
+  //       limitAmount = risk?.selfDeclaredValue || risk?.value;
+  //     } else {
+  //       // Otherwise, use the freeLimit
+  //       limitAmount = limit?.freeLimit;
+  //     }
+
+
+  //     limitsPayload.push({
+  //       calculationGroup: 1,
+  //       declarationSection: "N",
+  //       rowNumber: 1,
+  //       limitPeriod: limit?.limitPeriod || 0,
+  //       rateDivisionFactor: limit?.divisionFactor,
+  //       premiumRate: limit?.rate,
+  //       rateType: limit?.rateType,
+  //       minimumPremium: limit.premiumMinimumAmount,
+  //       annualPremium: 0,
+  //       multiplierRate: limit?.multiplierRate || 1,
+  //       section: {
+  //         limitAmount: limitAmount,
+  //         description: limit?.sectionDescription,
+  //         code: limit?.sectionCode,
+  //         isMandatory: "Y"
+  //       },
+  //       sectionType: limit?.sectionType,
+  //       multiplierDivisionFactor: limit?.multiplierDivisionFactor,
+  //       riskCode: null,
+  //       limitAmount: limitAmount,
+  //       description: limit?.sectionDescription,
+  //       shortDescription: limit?.sectionShortDescription,
+  //       sumInsuredRate: limit?.sumInsuredRate,
+  //       freeLimit: limit?.freeLimit || 0,
+  //       compute: "Y",
+  //       dualBasis: "N",
+  //     });
+  //   }
+
+  //   return limitsPayload;
+  // }
   getLimitsPayload(applicableLimits: any, risk: any): Limit[] {
     log.debug("Processing risk >>.", risk, applicableLimits);
+
     let limitsPayload: Limit[] = [];
 
-    for (let limit of applicableLimits) {
-      // Normalize the description to lowercase for case-insensitive comparison
-      const description = limit?.sectionDescription?.toString().toLowerCase() || '';
+    // 1️⃣ Filter only relevant limits
+    const filteredLimits = applicableLimits.filter((limit: any) => {
+      const isMandatory =
+        limit?.isMandatory?.toString().toUpperCase() === "Y" ||
+        limit?.sectionMandatory?.toString().toUpperCase() === "Y";
 
-      // Determine the limitAmount based on the conditions
+      const hasFreeLimit = (limit?.freeLimit || 0) > 0;
+
+      return isMandatory || hasFreeLimit;
+    });
+
+    // 2️⃣ Process each filtered limit
+    for (let limit of filteredLimits) {
+      // Determine limitAmount based on new rules
       let limitAmount;
 
-      if ((limit?.freeLimit || 0) === 0) {
-        // If freeLimit is 0, use selfDeclaredValue
+      const isMandatory =
+        limit?.isMandatory?.toString().toUpperCase() === "Y" ||
+        limit?.sectionMandatory?.toString().toUpperCase() === "Y";
+
+      if (isMandatory) {
+        // ✅ Mandatory → use selfDeclaredValue
         limitAmount = risk?.selfDeclaredValue || risk?.value;
-      } else {
-        // Otherwise, use the freeLimit
+      } else if ((limit?.freeLimit || 0) > 0) {
+        // ✅ Has free limit → use freeLimit
         limitAmount = limit?.freeLimit;
+      } else {
+        // Should not happen because of filter, but fallback
+        continue;
       }
 
-
+      // Build payload
       limitsPayload.push({
         calculationGroup: 1,
         declarationSection: "N",
@@ -1725,14 +1794,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         rateDivisionFactor: limit?.divisionFactor,
         premiumRate: limit?.rate,
         rateType: limit?.rateType,
-        minimumPremium: limit.premiumMinimumAmount,
+        minimumPremium: limit?.premiumMinimumAmount,
         annualPremium: 0,
         multiplierRate: limit?.multiplierRate || 1,
         section: {
           limitAmount: limitAmount,
           description: limit?.sectionDescription,
           code: limit?.sectionCode,
-          isMandatory: "Y"
+          isMandatory: "Y",
         },
         sectionType: limit?.sectionType,
         multiplierDivisionFactor: limit?.multiplierDivisionFactor,
@@ -1749,6 +1818,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     return limitsPayload;
   }
+
+
   /**
    * Loads all currencies and selects based on the currency code.
    * - Subscribes to 'getAllCurrencies' from CurrencyService.
