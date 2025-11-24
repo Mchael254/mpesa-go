@@ -1078,38 +1078,13 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       this.gisQuotationList = [...this.originalQuotationList];
     }
   }
-  // reviseQuote(selectedQuotation: any) {
-  //   log.debug("Selected Quote to be revised:", selectedQuotation)
-  //   const quotationCode = selectedQuotation.quotationCode
-  //   if (quotationCode) {
-  //     this.quotationService
-  //       .reviseQuote(quotationCode)
-  //       .pipe(untilDestroyed(this))
-  //       .subscribe({
-  //         next: (response: any) => {
-  //           const revisedQuoteNumber = response._embedded.quotationNumber
-  //           log.debug("Revised Quotation number ", revisedQuoteNumber);
-  //           sessionStorage.setItem('revisedQuotationNo', revisedQuoteNumber);
-  //           if (revisedQuoteNumber) {
-
-  //             this.router.navigate(['/home/gis/quotation/quotation-summary']);
-  //           }
-
-  //         },
-  //         error: (error) => {
-  //           this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-  //         }
-  //       });
-  //   }
-
-  // }
 
 
   reviseQuotation(selectedQuotation: any, createNew: 'Y' | 'N' = 'N') {
     log.debug("Selected Quote to be revised:", selectedQuotation);
 
-    const quotationCode = selectedQuotation?.quotationCode;
-    if (!quotationCode) {
+    const originalQuotationCode = selectedQuotation?.quotationCode;
+    if (!originalQuotationCode) {
       console.warn("Invalid quotation data:", selectedQuotation);
       return;
     }
@@ -1119,7 +1094,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     sessionStorage.removeItem('activeTicket');
 
     this.quotationService
-      .reviseQuote(quotationCode, createNew)
+      .reviseQuote(originalQuotationCode, createNew)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
@@ -1133,9 +1108,23 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
           const ticketStatus = response._embedded.processFlowResponseDto.taskName
           sessionStorage.setItem('ticketStatus', ticketStatus);
+          this.quotationService.getQuotationDetails(quotationCode).subscribe({
+            next: (response: any) => {
+              const quotationDetails = response
+              const quotationProductList = quotationDetails.quotationProducts
+              log.debug('Quotation details response:', response);
+              sessionStorage.setItem('productFormDetails', JSON.stringify(quotationProductList))
+              sessionStorage.setItem('passedQuotationDetails', JSON.stringify(quotationDetails))
+              // Navigate to quotation summary
+              this.router.navigate(['/home/gis/quotation/quotation-details']);
 
-          // Navigate to quotation summary
-          this.router.navigate(['/home/gis/quotation/quotation-details']);
+            },
+            error: (err) => {
+              console.error('Failed to fetch quotation details:', err);
+            }
+          });
+
+
 
         },
         error: (error) => {

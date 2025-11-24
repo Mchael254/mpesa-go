@@ -118,7 +118,13 @@ export class RiskCentreComponent {
       this.offcanvas.show();
     }
   }
+  closeImportRisks() {
+    this.quotationCode = sessionStorage.getItem('quotationCode')
+    log.debug("QuotationCode-import risks closed", this.quotationCode)
+    this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
+    this.closeDrawer()
 
+  }
   closeDrawer() {
     if (this.offcanvas) {
       this.offcanvas.hide();
@@ -126,6 +132,7 @@ export class RiskCentreComponent {
 
     // Step 3: Wait for Bootstrap animation to complete before removing from DOM
     setTimeout(() => (this.showImportRiskDrawer = false), 300);
+
   }
   toggleSection() {
     this.isCollapsed = !this.isCollapsed;
