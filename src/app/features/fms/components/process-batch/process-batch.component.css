@@ -1,0 +1,39 @@
+.custom{
+    margin-top:30px !important;
+}
+
+.file-dropzone {
+  border: 2px dashed #ced4da; 
+  background-color: transparent;
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer; 
+}
+
+.file-dropzone:hover {
+  background-color: #e9ecef; 
+}
+.file-dropzone.drag-over {
+  border-color: #0d6efd; 
+  background-color: #e7f1ff; 
+}
+/* Style for the 'Click to upload' text */
+.cursor-pointer {
+    cursor: pointer;
+}
+/* Style for the uploaded file rows */
+.uploaded-files-list .file-name {
+  font-weight: 500;
+  color: #495057;
+}
+.uploaded-files-list .btn-link {
+    text-decoration: none;
+}
+.btn-icon {
+  border: none;
+  background: transparent;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}

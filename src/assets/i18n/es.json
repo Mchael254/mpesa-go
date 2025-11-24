@@ -3159,8 +3159,10 @@
       "assign": "Asignar",
       "goToDashboard": "Ir al panel",
       "createBatches": "Crear lotes",
-      "orDrag": "o arrastre el archivo aquí"
-    }
+      "orDrag": "o arrastre el archivo aquí",
+      "detach": "Desvincular",
+      "availableBatches": "Lotes disponibles"
+}
   },
   "campaignMngmt": {
     "campaigns": "Campañas",

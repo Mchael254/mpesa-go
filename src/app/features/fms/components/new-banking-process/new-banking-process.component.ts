@@ -683,7 +683,7 @@ export class NewBankingProcessComponent implements OnInit {
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage(
             '',
-            response.uploadStatus
+            response[0].uploadStatus
           );
           this.uploadedFile = null;
           this.maximumFiles = false;

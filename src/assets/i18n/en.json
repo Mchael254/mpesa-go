@@ -3290,7 +3290,7 @@
     "banking": {
       "bankingProcess": "Banking Process",
       "newBankingProcess": "New Banking Process",
-      "processBatch": "Process Batch",
+      "processBatch": "Process Batches",
       "deposit": "Deposit",
       "reAssign": "Re-assign",
       "deAssign": "De-assign",
@@ -3324,7 +3324,9 @@
       "paymentRequired":"Payment Method is required",
       "dateTo":"Date to is required",
       "dateFrom":"Date From is required",
-      "orDrag":"or drag file here"
+      "orDrag":"or drag file here",
+      "detach":"Detach",
+      "availableBatches":"Available Batches"
     },
     "receipt_authorization": {
       "title": "Receipt Authorization",
