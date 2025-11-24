@@ -1549,10 +1549,10 @@ export class QuotationsService {
     );
   }
 
-  saveRiskDetails(quotationCode: string | number, user: string) {
+  saveRiskDetails(quotationCode: string | number, user: string, payload: any) {
     return this.api.POST<any>(
       `/v1/load-details?quotationCode=${quotationCode}&user=${user}`,
-      null, API_CONFIG.GIS_COMMONS_SERVICE
+      JSON.stringify(payload), API_CONFIG.GIS_COMMONS_SERVICE
     );
   }
 
