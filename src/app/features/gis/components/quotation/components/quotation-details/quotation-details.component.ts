@@ -903,7 +903,19 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   defaultVisibleProductClauseFields = ['shortDescription', 'heading', 'wording'];
 
   getProductClause(product: any) {
-    const productCode = product.code || this.productCode;
+      log.debug("🔎 getProductClause CALLED WITH:", product);
+
+  
+
+  
+    
+  const productCode =
+    (typeof product === "number" || typeof product === "string")
+      ? product
+      : product.code || this.productCode;
+
+  log.debug("✅ FINAL productCode:", productCode);
+
     this.productCode = productCode;
     sessionStorage.setItem("selectedProductCode", productCode);
 
@@ -2500,8 +2512,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   onRowSelect(product: any) {
+    console.log("ROW SELECTED:", product);
     this.selectedRow = product;
-    this.getProductClause(product.productCode);
+    const code =
+    product.productCode ||   
+    product.code ||          
+    null;
+    log.debug("Code to call clauses", code)
+    this.getProductClause(code);
   }
 
   onProductSelected(selectedProduct: any) {
@@ -3504,11 +3522,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
       log.debug("Product quoations", this.quotationProducts)
       log.debug("Product desc array", this.ProductDescriptionArray)
+
+      this.quotationProducts = data.quotationProducts || [];
       // ✅ Patch product details
       if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
         this.productDetails = [];
 
-        this.quotationProducts?.forEach((payloadProduct: any) => {
+        this.quotationProducts?.forEach((payloadProduct: any,index: number) => {
 
           this.productDetails.push({
             productCode: payloadProduct.productCode?.toString(),
@@ -3516,6 +3536,28 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             coverFrom: payloadProduct.wef,
             coverTo: payloadProduct.wet || null
           });
+           this.cd.detectChanges();
+
+          if (index === 0) {
+          const firstProduct = this.productDetails[0];
+          if (firstProduct) {
+          this.selectedRow = firstProduct;
+
+           setTimeout(() => {
+           const code = firstProduct.productCode || firstProduct.code;
+           if (code) {
+          log.debug("Fetching clauses for first product automatically:", code);
+          this.getProductClause(code);
+        }
+      }, 0);
+    }
+  }
+          
+
+          
+          
+
+          
 
 
         });
@@ -3752,7 +3794,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
         this.productDetails = [];
 
-        this.quotationProducts?.forEach((payloadProduct: any) => {
+        this.quotationProducts?.forEach((payloadProduct: any, index: number) => {
 
           this.productDetails.push({
             productCode: payloadProduct.productCode?.toString(),
@@ -3760,6 +3802,25 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             coverFrom: payloadProduct.wef,
             coverTo: payloadProduct.wet || null
           });
+
+            this.cd.detectChanges();
+
+  
+          if (index === 0) {
+          const firstProduct = this.productDetails[0];
+          if (firstProduct) {
+          this.selectedRow = firstProduct;
+
+           setTimeout(() => {
+           const code = firstProduct.productCode || firstProduct.code;
+           if (code) {
+          log.debug("Fetching clauses for first product automatically:", code);
+          this.getProductClause(code);
+        }
+      }, 0);
+    }
+  }
+          
 
 
         });
@@ -3776,6 +3837,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         // ✅ Patch clauses
         const firstProduct = this.products[0];
         log.debug("first product", firstProduct);
+
+        
 
         this.sessionClauses = firstProduct?.productClauses || [];
         if (this.sessionClauses.length > 0) {
