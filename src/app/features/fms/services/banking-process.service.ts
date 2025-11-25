@@ -74,10 +74,16 @@ export class BankingProcessService {
   reAssignUser(requestBody:ReAssignUserDTO):Observable<any>{
     return this.api.POST<any>(`receipts/re-assign`,requestBody,API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL);
   }
+  reAssignBatch(requestBody):Observable<any>{
+    return this.api.PUT<any>(`receipts/batches/re-assign`,requestBody,API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL)
+  }
   getBatches():Observable<BatchesDTO[]>{
     return this.api.GET<BatchesDTO[]>(
       `receipts/batches`,
       API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
     )
+  }
+  detach(requestBody):Observable<any>{
+return this.api.POST<any>(`receipts/batches/detach`,requestBody,API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL)
   }
 }

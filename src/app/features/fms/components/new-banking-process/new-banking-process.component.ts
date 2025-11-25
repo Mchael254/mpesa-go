@@ -40,12 +40,8 @@ const log = new Logger('NewBankingProcessComponent');
   styleUrls: ['./new-banking-process.component.css'],
 })
 export class NewBankingProcessComponent implements OnInit {
-  // --- Form Groups ---
   /** Manages the form controls for retrieving receipts (date range, payment method). */
   rctsRetrievalForm!: FormGroup;
-  /** Manages the form controls for assigning receipts to a user (user selection, comment). */
-  usersForm!: FormGroup;
-  depositForm!: FormGroup;
   // --- UI State and Data ---
   /** Static data for the stepper component, indicating the current stage of the process. */
   steps = fmsStepsData.bankingSteps;
@@ -66,22 +62,12 @@ export class NewBankingProcessComponent implements OnInit {
   filteredUsers: StaffDto[] = [];
   /** Flag to control whether the receipts table is rendered in the DOM. */
   displayTable: boolean = false;
-  /** Controls visibility of the main assignment dialog. */
-  assignDialogVisible: boolean = false;
   /** Controls visibility of the user selection dialog. */
   userSelectDialogVisible: boolean = false;
   /**controls visibility of create batches btn,it should be hidden if payment mode selected is cheque */
   isCashSelected: boolean = false;
-  /**controls the visibility of assign buttons */
-  reAssign: boolean = false;
   /**it controls the visibility of deposit button which should only be visible if the payment mode is cheque */
   paymentMode: string;
-  /** Holds the user object selected from the second dialog to display in the first dialog's input. */
-  selectedUserForAssignment: StaffDto | null = null;
-
-  /** Temporarily holds the user selected in the user table before confirmation. */
-  tempSelectedUser: StaffDto | null = null;
-
   // --- Table Column Configuration ---
   /** Stores the configuration for all available columns in the receipts table. */
   columns: any[];
@@ -94,26 +80,11 @@ export class NewBankingProcessComponent implements OnInit {
   selectedOrg: OrganizationDTO;
   /** Information about the currently logged-in user. */
   loggedInUser: any;
-  staffPageSize = 5;
-  selectedRctObj: ReceiptDTO;
-  page: number = 0;
-  size: number = 50;
-  sortBy: string = 'accNumber';
-  direction: string = 'asc';
-  glAccounts: BanksDto[] = [];
-  /** Stores the list of files selected by the user. */
-  uploadedFile: File | null = null;
-  /** A flag to disable the file input after one file is selected. */
-  maximumFiles: boolean = false;
-  /** A flag to indicate when a file is being dragged over the dropzone for styling. */
-  isDragging: boolean = false;
-  //  max file size in bytes (5MB = 5 * 1024 * 1024 bytes)
-  private readonly max_file_size = 5 * 1024 * 1024;
-   selectedBranch: BranchDTO;
-   /**
-      * @property {BranchDTO} defaultBranch - The default branch.
-      */
-     defaultBranch: BranchDTO;
+  selectedBranch: BranchDTO;
+  /**
+   * @property {BranchDTO} defaultBranch - The default branch.
+   */
+  defaultBranch: BranchDTO;
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -134,10 +105,9 @@ export class NewBankingProcessComponent implements OnInit {
     private authService: AuthService,
     private staffService: StaffService,
     private receiptManagementService: ReceiptManagementService,
-    private dmsService:DmsService,
-    private commonMethodsService :CommonMethodsService,
-    private paymentsService:PaymentsService
-
+    private dmsService: DmsService,
+    private commonMethodsService: CommonMethodsService,
+    private paymentsService: PaymentsService
   ) {}
   /**
    * @description Angular lifecycle hook that runs on component initialization.
@@ -146,11 +116,8 @@ export class NewBankingProcessComponent implements OnInit {
    */
   ngOnInit() {
     this.initiateRctsForm();
-    this.initializeUsersForm();
-    this.initializeDepositForm();
     this.initiateColumns();
     this.allColumns = this.initiateColumns();
-    this.fetchActiveUsers(0, this.staffPageSize);
     this.fetchPaymentsModes();
     let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
     let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
@@ -177,7 +144,6 @@ export class NewBankingProcessComponent implements OnInit {
       this.selectedBranch = null;
     }
     this.loggedInUser = this.authService.getCurrentUser();
-    this.fetchBankAccounts();
   }
   /**
    * @description Initializes the `rctsRetrievalForm` with required controls and validators.
@@ -189,23 +155,7 @@ export class NewBankingProcessComponent implements OnInit {
       paymentMethod: ['', Validators.required],
     });
   }
-  /**
-   * @description Initializes the `usersForm` with required controls.
-   */
-  initializeUsersForm(): void {
-    this.usersForm = this.fb.group({
-      user: ['', Validators.required],
-      comment: [''],
-    });
-  }
-  initializeDepositForm(): void {
-    this.depositForm = this.fb.group({
-      bankAccount: ['', Validators.required],
-      slipNumber: ['', Validators.required],
-      amount: ['', Validators.required],
-      remarks: [''],
-    });
-  }
+
   /**
    * @description A getter that provides a translated string for the PrimeNG table's paginator report.
    * @returns The translated report template string.
@@ -220,7 +170,7 @@ export class NewBankingProcessComponent implements OnInit {
   initiateColumns(): any {
     return (this.columns = [
       {
-        field: 'branchReceiptCode',
+        field: 'receiptNo',
         header: this.translate.instant('fms.banking.receiptId'),
       },
       {
@@ -317,11 +267,6 @@ export class NewBankingProcessComponent implements OnInit {
       return;
     }
     if (formData?.paymentMethod === 'CASH') {
-      // If CASH is selected, filter out the 'actions' column
-      //this.selectedColumns = this.allColumns.filter(
-      //   (col) => col.field !== 'actions'
-      // );
-
       this.isCashSelected = true;
     } else {
       this.isCashSelected = false;
@@ -351,67 +296,9 @@ export class NewBankingProcessComponent implements OnInit {
         this.paymentMode = this.rctsRetrievalForm.get('paymentMethod')?.value;
       },
       error: (err) => {
-       this.commonMethodsService.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
       },
     });
-  }
-  /**
-   * @description Opens the main assignment dialog.
-   * Checks if receipts have been selected first.
-   */
-  openAssignModal(): void {
-    this.assignDialogVisible = true;
-    this.reAssign = false;
-  }
-  /**
-   * @description Closes the main assignment dialog and resets the form and selections.
-   */
-  closeAssignModal(): void {
-    this.assignDialogVisible = false;
-    this.usersForm.reset();
-    this.selectedUserForAssignment = null;
-  }
-  filterUsers(event: any, field: string) {
-    const inputValue = (event.target as HTMLInputElement).value;
-    switch (field) {
-      case 'username':
-        this.filteredUsers = this.users.filter((user) => {
-          return user.username.toLowerCase().includes(inputValue.toLowerCase());
-        });
-        break;
-      case 'name':
-        this.filteredUsers = this.users.filter((user) => {
-          return user.name.toLowerCase().includes(inputValue.toLowerCase());
-        });
-        break;
-    }
-  }
-  /**
-   * @description Opens the second dialog for selecting a user from a table.
-   */
-  openUserSelectDialog(): void {
-    this.tempSelectedUser = null; // Clear previous temporary selection
-    this.userSelectDialogVisible = true;
-  }
-  /**
-   * @description Closes the user selection dialog without saving the choice.
-   */
-  closeUserSelectDialog(): void {
-    this.userSelectDialogVisible = false;
-  }
-  /**
-   * @description Called when the "save" button in the second dialog is clicked.
-   * It transfers the selected user to the main form and closes the selection dialog.
-   */
-  confirmUserSelection(): void {
-    if (this.tempSelectedUser) {
-      this.selectedUserForAssignment = this.tempSelectedUser;
-      // Patch the form with the selected user's ID
-      this.usersForm.patchValue({
-        user: this.selectedUserForAssignment.id,
-      });
-      this.closeUserSelectDialog();
-    }
   }
   /**
    * @description this method prepares the request body for assignUser method and calls it
@@ -421,15 +308,10 @@ export class NewBankingProcessComponent implements OnInit {
    * otherwise we display the error
    * @returns if the usersForm is invalid we stop the execution others continue
    */
-  onAssignSubmit(): void {
-    this.usersForm.markAllAsTouched();
-    if (this.usersForm.invalid) {
-      return;
-    }
-    const formData = this.usersForm.value;
-    const rctsRetrievalForm = this.rctsRetrievalForm.value;
+  handleAssignment(event: any): void {
+    const userId = event.userId;
     const requestBody = {
-      userId: formData.user,
+      userId: userId,
       receiptNumbers: this.selectedReceipts.map((rct) => {
         return rct.receiptNo;
       }),
@@ -441,42 +323,9 @@ export class NewBankingProcessComponent implements OnInit {
         this.globalMessagingService.displaySuccessMessage('', response.msg);
       },
       error: (err) => {
-       this.commonMethodsService.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
       },
     });
-    this.closeAssignModal();
-  }
-
-  /**
-   * @description Fetches a list of users that the current user can assign tasks to.
-   *
-   */
-  fetchActiveUsers(
-    pageIndex: number,
-    pageSize: number,
-    sortList: any = 'dateCreated',
-    order: string = 'desc'
-  ): void {
-    this.staffService
-      .getStaff(
-        pageIndex,
-        pageSize,
-
-        'U',
-        sortList,
-        order,
-        null,
-        'A'
-      )
-      .subscribe({
-        next: (response) => {
-          this.users = response.content;
-          this.filteredUsers = this.users;
-        },
-        error: (err) => {
-         this.commonMethodsService.handleApiError(err);
-        },
-      });
   }
   /**
    * @description this method takes one argument once the de-assign button is clicked per row and
@@ -507,208 +356,65 @@ export class NewBankingProcessComponent implements OnInit {
     });
   }
   /**
-   * @description Opens the main assignment dialog.
-   * it sers reAssign flag to true so as to call reAssignUser() once the Assign button is clicked
-   * rather than calling  onAssignSubmit() to does assigning
+   * Handles the re-assignment event emitted from the child component for a RECEIPT.
+   * It builds the specific payload required for the `reAssignUser` endpoint.
    */
-  openReAssignModal(receipt: any) {
-    this.selectedRctObj = receipt;
-    this.assignDialogVisible = true;
-    this.reAssign = true;
-  }
-  /**
-   *
-   * @description it calls the reAssign() to post the request body,if successfull we recall fetchReceipts()
-   * to show the newly re-assigned receipts
-   */
-  reAssignUser(): void {
-    this.usersForm.markAllAsTouched();
-    if (this.usersForm.invalid) {
-      return;
-    }
-    const formData = this.usersForm.value;
+  handleReassignment(event: any): void {
+    const receiptToReassign = event.item;
+    const newUserId = event.toUserId;
     const requestBody = {
-      fromUserId: this.selectedRctObj.batchAssignmentUserId,
-      toUserId: formData.user,
-      receiptNumbers: [this.selectedRctObj.receiptNo],
+      fromUserId: receiptToReassign.batchAssignmentUserId,
+      toUserId: newUserId,
+      receiptNumbers: [receiptToReassign.receiptNo],
     };
     this.bankingService.reAssignUser(requestBody).subscribe({
       next: (response) => {
         this.globalMessagingService.displaySuccessMessage('', response.msg);
-        this.fetchReceipts();
+        this.fetchReceipts(); // Refresh this parent's data
       },
-      error: (err) => {
-       this.commonMethodsService.handleApiError(err);
-      },
+      error: (err) => this.commonMethodsService.handleApiError(err),
     });
-    this.closeAssignModal();
-  }
-  openDepositModal(receipt: any): void {
-    const modalEl = new bootstrap.Modal(
-      document.getElementById('depositModal')
-    );
-    if (modalEl) {
-      modalEl.show();
-    }
-    this.selectedRctObj = receipt;
-    this.uploadedFile = null; // Clear previous files when opening
-    this.depositForm.patchValue({ amount: this.selectedRctObj.receiptAmount });
-    }
-
-  closeDepositModal() {
-    const modal = document.getElementById('depositModal');
-    if (modal) {
-      const modalEl = bootstrap.Modal.getInstance(modal);
-      if (modalEl) {
-        modalEl.hide();
-      }
-    }
-  }
-  /**
-   * Central method to process and validate a selected file.
-   * @param file The File object to process.
-   */
-  private processFile(file: File): void {
-    if (file.size > this.max_file_size) {
-      this.globalMessagingService.displayErrorMessage(
-        'File Too Large',
-        `The selected file exceeds the 5MB size limit.`
-      );
-      return;
-    }
-
-    // If validation passes, update the component state
-    this.uploadedFile = file;
-    this.maximumFiles = true;
-  }
-  /**
-   * Triggered when files are selected via the hidden input.
-   * @param event The file input change event.
-   */
-  onFileSelected(event: any): void {
-    if (event.target.files && event.target.files.length > 0) {
-      this.processFile(event.target.files[0]);
-    }
   }
 
   /**
-   * Handles the dragover event.
-   * Prevents the browser's default behavior to allow a drop.
-   * @param event The DragEvent.
+   * Handles the file post event emitted from the child component.
    */
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragging = true;
-  }
-
-  /**
-   * Handles the dragleave event.
-   * Resets the dragging state.
-   * @param event The DragEvent.
-   */
-  onDragLeave(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragging = false;
-  }
-
-  /**
-   * Handles the drop event.
-   * Prevents default browser action and processes the dropped file.
-   * @param event The DragEvent.
-   */
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragging = false;
-
-    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
-      // Only proceed if a file is not already selected
-      if (!this.maximumFiles) {
-        this.processFile(event.dataTransfer.files[0]);
-      }
-
-      // Clear the dataTransfer
-      event.dataTransfer.clearData();
-    }
-  }
-  /**
-   * Removes the currently selected file.
-   */
-
-  removeFile(): void {
-    this.uploadedFile = null;
-    this.maximumFiles = false; // Re-enable the input
-  }
-  /**
-   * Reads the selected file as a Base64 string and then calls the service to post it.
-   */
-  postFile(): void {
-    if (!this.uploadedFile) {
-      return;
-    }
-    const formValue = this.depositForm.value;
-    if (!formValue.slipNumber) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'please enter the slip Number first!'
-      );
-      return;
-    }
+  handleFilePost(event: {
+    file: File;
+    slipNumber: string;
+    amount: number;
+  }): void {
     const fileReader = new FileReader();
-    // this event happens AFTER the file is read
     fileReader.onloadend = () => {
-      // The result includes the "data:[mime/type];base64," prefix
       const base64String = fileReader.result as string;
-      //  pure Base64 data by removing the prefix
       const pureBase64 = base64String.split(',')[1];
-      //preparing the payload
       const payload: ReceiptUploadRequest[] = [
         {
           docData: pureBase64,
-          docType: this.uploadedFile.type,
-          originalFileName: this.uploadedFile.name,
+          docType: event.file.type,
+          originalFileName: event.file.name,
           module: 'CB-RECEIPTS',
-          filename: this.uploadedFile.name,
-          referenceNo: formValue.slipNumber,
+          filename: event.file.name,
+          referenceNo: event.slipNumber,
           docDescription: '',
-          amount: formValue.amount,
+          amount: event.amount,
           paymentMethod: null,
           policyNumber: null,
         },
       ];
-      //The service call is called inside the onloadend callback
       this.dmsService.uploadFiles(payload).subscribe({
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage(
             '',
             response[0].uploadStatus
           );
-          this.uploadedFile = null;
-          this.maximumFiles = false;
         },
-        error: (err) => {
-         this.commonMethodsService.handleApiError(err);
-        },
+        error: (err) => this.commonMethodsService.handleApiError(err),
       });
     };
-    // Start the asynchronous file reading process
-    fileReader.readAsDataURL(this.uploadedFile);
+    fileReader.readAsDataURL(event.file);
   }
-/**
- * @description a function to retrieve list of banks accounts for banking
- */
-  fetchBankAccounts():void{
-    this.paymentsService.getPaymentsBankActs(this.loggedInUser.code,this.selectedOrg?.id || this.defaultOrg?.id,this.defaultBranch?.id || this.selectedBranch?.id).subscribe({
-      next:(response)=>{
-        this.glAccounts = response.data;
-      },
-      error:(err)=>{
-         this.commonMethodsService.handleApiError(err);
-      }
-    })
-  }
+
   /**
    * @description Navigates the user to the next step in the banking process (Create Batches).
    */
@@ -719,5 +425,4 @@ export class NewBankingProcessComponent implements OnInit {
   navigateToDashboard(): void {
     this.router.navigate(['/home/fms/banking-dashboard']);
   }
-
 }
