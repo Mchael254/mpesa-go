@@ -2891,7 +2891,7 @@ export class RiskDetailsComponent {
         // Define preferred columns for Level 1
         const level1PreferredColumns = [
           { field: 'registrationNumber', header: 'Registration Number' },
-          { field: 'make', header: 'Make' },
+          { field: 'vehicleMake', header: 'Make' },
           { field: 'cubicCapacity', header: 'Cubic Capacity' },
           { field: 'yearOfManufacture', header: 'Year Of Manufacture' },
           { field: 'seatingCapacity', header: 'Seating Capacity' },
@@ -4440,7 +4440,7 @@ export class RiskDetailsComponent {
               // Define preferred columns for Level 1
               const level1PreferredColumns = [
                 { field: 'registrationNumber', header: 'Registration Number' },
-                { field: 'make', header: 'Make' },
+                { field: 'vehicleMake', header: 'Make' },
                 { field: 'cubicCapacity', header: 'Cubic Capacity' },
                 { field: 'yearOfManufacture', header: 'Year Of Manufacture' },
                 { field: 'seatingCapacity', header: 'Seating Capacity' },
