@@ -44,3 +44,10 @@ export interface ReAssignUserDTO{
   toUserId: number;
   receiptNumbers: number[]
 }
+export interface BatchesDTO{
+    batch_number: number;
+        user_id: number;
+        assignee: string;
+        batch_date: Date;
+        total_amount: number;
+}

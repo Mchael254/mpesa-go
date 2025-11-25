@@ -168,4 +168,9 @@ export class DefaultSubMenuComponent implements OnInit {
     this.utilService.clearNormalQuoteSessionStorage()
     this.navLink('/home/gis/quotation/quotation-details')
   }
+  viewQuotations() {
+    this.utilService.clearSessionStorageData()
+    this.utilService.clearNormalQuoteSessionStorage()
+    this.navLink('/home/lms/quotation/list')
+  }
 }

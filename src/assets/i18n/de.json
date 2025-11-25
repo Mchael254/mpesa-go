@@ -2626,8 +2626,10 @@
       "paymentRequired": "Zahlungsmethode ist erforderlich",
       "dateTo": "Enddatum ist erforderlich",
       "dateFrom": "Anfangsdatum ist erforderlich",
-      "orDrag": "oder Datei hierher ziehen"
-    }
+      "orDrag": "oder Datei hierher ziehen",
+      "detach": "Trennen",
+      "availableBatches": "Verfügbare Chargen"
+}
   },
   "campaignMngmt": {
     "campaigns": "Kampagnen",

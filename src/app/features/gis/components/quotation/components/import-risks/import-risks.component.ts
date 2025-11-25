@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { Router } from '@angular/router';
@@ -24,6 +24,7 @@ import { TerritoriesService } from '../../../setups/services/perils-territories/
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
 import { PolicyService } from '../../../policy/services/policy.service';
+import { RiskCentreComponent } from '../risk-centre/risk-centre.component';
 
 const log = new Logger('ImportRiskComponent');
 interface ColumnMapping {
@@ -43,7 +44,7 @@ interface SystemField {
 export class ImportRisksComponent {
   @Input() selectedProduct!: any;
   @ViewChild('addRiskModal') addRiskModalRef!: ElementRef;
-
+  @Output() onSaveCompleted = new EventEmitter<void>();
 
 
 
@@ -2316,22 +2317,26 @@ export class ImportRisksComponent {
     log.debug('Patched form:', this.riskDetailsForm.value);
   }
 
-  saveRiskDetail() {
+  saveRiskDetail(selectedValidRisks: any) {
+    log.debug("Selcted valid risk", selectedValidRisks)
     // Validate quotation code exists
     if (!this.quotationCode) {
       this.globalMessagingService.displayErrorMessage('Error', 'Quotation code is required.');
       log.error('Cannot save risk details: quotationCode is missing');
       return;
     }
-
+    log.debug('selected risks', this.selectedValid)
     log.debug('Saving risk details for quotation code:', this.quotationCode);
+    const validatedRiskIds = selectedValidRisks.map(risk => risk.id);
+    log.debug('validated risk ids risks', validatedRiskIds)
 
-    this.quotationService.saveRiskDetails(this.quotationCode, this.loggedInUser).subscribe({
+    this.quotationService.saveRiskDetails(this.quotationCode, this.loggedInUser, validatedRiskIds).subscribe({
       next: (response) => {
         log.debug('Risk details saved successfully:', response);
         this.globalMessagingService.displaySuccessMessage('Success', 'Risk details saved successfully!');
-
-        // Optionally refresh the uploaded risks after saving
+        if (response) {
+          this.onSaveCompleted.emit();
+        }
         this.fetchUploadedRisks();
       },
       error: (err) => {
