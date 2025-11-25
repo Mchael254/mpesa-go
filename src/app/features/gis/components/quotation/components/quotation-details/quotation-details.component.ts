@@ -288,6 +288,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("Client Code- session storage", this.clientId)
     this.existingQuotationDetails = JSON.parse(sessionStorage.getItem('passedQuotationDetails'))
     this.productDetails = JSON.parse(sessionStorage.getItem('productFormDetails'));
+    log.debug("Existing product details constructor before >>>", this.productDetails)
+    console.log("Is array? => ", Array.isArray(this.productDetails));
+    console.log("Raw:", this.productDetails);
+
     this.productDetails?.forEach(product => {
       product.coverFrom = new Date(product.coverFrom);
       product.coverTo = new Date(product.coverTo);
@@ -303,6 +307,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       })
       log.debug("Existing product details >>>", this.productDetails)
     }
+    log.debug("Existing product details constructor>>>", this.productDetails)
+
     this.paymentFrequencies = [
       { label: 'Annually', value: 'A' },
       { label: 'Semi annually', value: 'S' },
@@ -319,11 +325,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       { label: 'Campaign', value: 'C' }
     ]
     this.selectedClient = JSON.parse(sessionStorage.getItem('client'))
+    this.productDetails = this.productDetails?.filter(p =>
+      p && Object.values(p).some(v => v !== undefined && v !== null && v !== '')
+    );
+
     log.debug("product Form details", this.productDetails)
 
     const reusedQuotation = sessionStorage.getItem('reusedQuotation');
     log.debug("🔍 Constructor - reusedQuotation exists?", !!reusedQuotation)
     if (reusedQuotation) {
+      this.quickQuoteFlag = true
+      this.productDetails = this.productDetails?.filter(p => p.productCode !== undefined);
+
       const data = JSON.parse(reusedQuotation);
       const quotationCode = data._embedded.newQuotationCode;
       if (quotationCode) {
@@ -337,6 +350,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("🔍 Constructor - revisedQuotation exists?", !!revisedQuotation)
     log.debug("Revised", revisedQuotation)
     if (revisedQuotation) {
+      this.quickQuoteFlag = true
+
+      this.productDetails = this.productDetails?.filter(p => p.productCode !== undefined);
+
       const data = JSON.parse(revisedQuotation);
       const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
       if (quotationCode) {
@@ -467,6 +484,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
     this.modals['reassignProduct'] = new bootstrap.Modal(this.reassignProductModalElement.nativeElement);
     this.modals['createClient'] = new bootstrap.Modal(this.createClientModalElement.nativeElement);
+
+    console.log("After view init:", this.productDetails);
   }
 
   openModals(modalName: string) {
@@ -578,6 +597,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         log.debug(this.detailedQuotationFormData, 'Quotation formData is defined here');
         this.fetchQuotationRelatedData();
 
+        if (this.quotationCode) {
+          this.fetchQuotationDetails(this.quotationCode);
+        }
+
         this.detailedQuotationFormData.forEach((field) => {
           const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
 
@@ -682,10 +705,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         // log.debug(`Clearing quotation source flag (${this.quotationSourceFlag}) after patching.`);
         // this.quotationSourceFlag = null;
         // }
-
-        if (this.quotationCode) {
-          this.fetchQuotationDetails(this.quotationCode);
-        }
 
 
 
@@ -873,7 +892,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       const savedVisibility = JSON.parse(saved);
       this.productClauseColumns.forEach(col => {
         if (col.field === 'actions') return;
-        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        const savedCol = savedVisibility?.find((s: any) => s.field === col.field);
         if (savedCol) col.visible = savedCol.visible;
       });
     }
@@ -884,7 +903,19 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   defaultVisibleProductClauseFields = ['shortDescription', 'heading', 'wording'];
 
   getProductClause(product: any) {
-    const productCode = product.code || this.productCode;
+      log.debug("🔎 getProductClause CALLED WITH:", product);
+
+  
+
+  
+    
+  const productCode =
+    (typeof product === "number" || typeof product === "string")
+      ? product
+      : product.code || this.productCode;
+
+  log.debug("✅ FINAL productCode:", productCode);
+
     this.productCode = productCode;
     sessionStorage.setItem("selectedProductCode", productCode);
 
@@ -1187,7 +1218,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         // Set product code
         const productCode = this.quickQuotationDetails.quotationProducts[0].productCode;
         this.productService.getProductDetailsByCode(productCode).subscribe(res => {
-          const selectedProduct = this.ProductDescriptionArray.find((product: {
+          const selectedProduct = this.ProductDescriptionArray?.find((product: {
             code: number;
           }) => product.code === res?.code);
           if (selectedProduct) {
@@ -1301,6 +1332,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
          })
        ])*/
     })
+    this.productDetails = this.productDetails?.filter(p =>
+      p && Object.values(p).some(v => v !== undefined && v !== null && v !== '')
+    );
+
   }
 
 
@@ -1874,7 +1909,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   checkMotorClass() {
     const productCode = this.quotationProductForm.value.productCode.code
-    const selectedProductDetails = this.products.find(product => product.code === productCode)
+    const selectedProductDetails = this.products?.find(product => product.code === productCode)
     this.motorClassAllowed = selectedProductDetails.allowMotorClass
     sessionStorage.setItem('motorClassAllowed', (this.motorClassAllowed));
     log.debug("Is motor class:", this.motorClassAllowed)
@@ -1991,6 +2026,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   fetchQuotationRelatedData() {
+    log.debug("fetch quotation related data")
     forkJoin([
       this.bankService.getCurrencies(),
       this.quotationService.getAllQuotationSources(),
@@ -2008,7 +2044,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
         log.info(this.currency, 'this is a currency list');
 
-        const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
+        const defaultCurrency = this.currency?.find(currency => currency.currencyDefault === 'Y');
         if (defaultCurrency) {
           log.debug('DEFAULT CURRENCY', defaultCurrency);
           this.defaultCurrency = defaultCurrency;
@@ -2022,7 +2058,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           this.fetchUserOrgId();
         }
         if (this.storedQuotationFormDetails?.currency) {
-          const selectedCurrency = this.currency.find(currency => currency.id === this.storedQuotationFormDetails?.currency.id);
+          const selectedCurrency = this.currency?.find(currency => currency.id === this.storedQuotationFormDetails?.currency.id);
           if (selectedCurrency) {
             this.quotationForm.patchValue({ currency: selectedCurrency });
           }
@@ -2065,7 +2101,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             const firstUserBranchId = userBranches[0].branchId;
 
             //Match it against the full branch list
-            const matchedBranch = this.branch.find(b => b.id === firstUserBranchId);
+            const matchedBranch = this.branch?.find(b => b.id === firstUserBranchId);
 
             if (matchedBranch) {
               this.quotationForm.patchValue({
@@ -2086,7 +2122,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.introducers = introducers;
         log.debug('introducers:', this.introducers)
         if (this.storedQuotationFormDetails?.introducer) {
-          const selectedIntroducer = this.introducers.find(introducer => introducer.code === this.storedQuotationFormDetails?.introducer);
+          const selectedIntroducer = this.introducers?.find(introducer => introducer.code === this.storedQuotationFormDetails?.introducer);
           if (selectedIntroducer) {
             this.quotationForm.patchValue({ introducer: selectedIntroducer.code });
             sessionStorage.setItem('introducer', JSON.stringify({
@@ -2098,15 +2134,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
         // PRODUCTS
         this.products = products;
-
-        const storedProducts = sessionStorage.getItem('availableProducts');
+        log.debug("products from the endpoint", this.products)
+        const storedProducts = JSON.parse(sessionStorage.getItem('availableProducts'));
         log.debug("StoredProducts:", storedProducts);
 
-        if (storedProducts) {
+        if (storedProducts?.length > 0) {
           // Use saved products if they exist
-          this.ProductDescriptionArray = JSON.parse(storedProducts);
+          this.ProductDescriptionArray = storedProducts;
+          log.debug('products from session storage', this.ProductDescriptionArray)
+
         } else {
           // Fallback to API products
+          log.debug("product list inside else statement", this.products)
           this.ProductDescriptionArray = this.products?.map(product => {
             const description = this.capitalizeWord(product.description);
             return {
@@ -2115,7 +2154,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
               filterText: `${product.code} ${description}`.toLowerCase()
             };
           });
-
+          log.debug('products from api', this.ProductDescriptionArray)
           // Save initial list to sessionStorage
           sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
         }
@@ -2250,7 +2289,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.productDetails = [];
 
     quickQuotePayload.products.forEach((payloadProduct: any) => {
-      const matchedDesc = this.ProductDescriptionArray.find((desc: any) =>
+      const matchedDesc = this.ProductDescriptionArray?.find((desc: any) =>
         desc.code?.toString() === payloadProduct.code?.toString()
       );
 
@@ -2388,7 +2427,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
     if (!selectedProduct) return;
     const selectedProductCode = selectedProduct.code;
-    log.debug('Selected product CODE', selectedProductCode);
+    log.debug('Selected product CODE', selectedProduct);
+    log.debug('Selected product objrct', selectedProductCode);
+    log.debug('Product details', this.productDetails);
 
     // Initialize productDetails array if null
     if (!this.productDetails) {
@@ -2414,9 +2455,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         coverTo: coverToDate
       }
     ];
-
+    log.debug("PRODUCT DETAILS AFTER PUSHING SELECTED PRODUCT", this.productDetails)
     // Ensure productName exists and dates are correct
-    this.productDetails = this.productDetails.filter(p => p?.productCode?.description);
+    this.productDetails = this.productDetails.filter(p => p?.productCode?.code || p?.productCode);
     this.productDetails.forEach(product => {
       product.coverFrom = new Date(product.coverFrom);
       product.coverTo = new Date(product.coverTo);
@@ -2445,7 +2486,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.getProductClause({ code: selectedProductCode });
     this.setColumnsFromProductDetails(this.productDetails[0]);
     this.checkProducts();
-    this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
+    // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
 
     const closeBtn = document.querySelector('.btn-close') as HTMLElement;
     closeBtn?.click();
@@ -2471,8 +2512,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   onRowSelect(product: any) {
+    console.log("ROW SELECTED:", product);
     this.selectedRow = product;
-    this.getProductClause(product.productCode);
+    const code =
+    product.productCode ||   
+    product.code ||          
+    null;
+    log.debug("Code to call clauses", code)
+    this.getProductClause(code);
   }
 
   onProductSelected(selectedProduct: any) {
@@ -2584,7 +2631,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           log.debug("Quotation details", this.quotationDetails);
 
           // Find matching product
-          const matchingProduct = this.quotationDetails.quotationProducts.find(
+          const matchingProduct = this.quotationDetails.quotationProducts?.find(
             (qp: any) => Number(qp.productCode) === Number(deleteCode)
           );
 
@@ -2860,7 +2907,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.editIndex = index;
 
     const productFormDetails = JSON.parse(sessionStorage.getItem('productFormDetails') || '[]');
-    const selectedProduct = productFormDetails.find(
+    const selectedProduct = productFormDetails?.find(
       (p: any) => String(p.productCode.code) === String(product.productCode.code)
     )?.productCode;
 
@@ -2909,7 +2956,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   onProductChanges(event: any, rowIndex: number, product: any) {
-    const selectedProduct = this.ProductDescriptionArray.find(p => p.code === event.code);
+    const selectedProduct = this.ProductDescriptionArray?.find(p => p.code === event.code);
     if (selectedProduct) {
       product.productCode = selectedProduct;
       log.debug("Updated product after dropdown change:", product);
@@ -3266,7 +3313,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           this.groupUsers = res;
 
           // Find the team leader
-          const groupLeader = res.find(user => user.isTeamLeader === "Y");
+          const groupLeader = res?.find(user => user.isTeamLeader === "Y");
           if (groupLeader) {
             this.selectedGroupUserId = groupLeader.id; // auto-select in dropdown
             this.groupLeaderName = groupLeader.userDetails.name;
@@ -3351,7 +3398,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
 
-      const currencyOption = this.currency.find(
+      const currencyOption = this.currency?.find(
         c => c.id === data.currencyCode || c.name === data.currency
       );
 
@@ -3473,56 +3520,77 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       this.selectedIntroducerName = data.introducerCode || '';
       this.selectedAgentName = data.agentName || '';
 
+      log.debug("Product quoations", this.quotationProducts)
+      log.debug("Product desc array", this.ProductDescriptionArray)
 
-      // ✅ Patch product details + clauses + taxes
+      this.quotationProducts = data.quotationProducts || [];
+      // ✅ Patch product details
       if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
-        this.quotationProducts = data.quotationProducts;
-        // this.products = data.quotationProducts;
-        this.productDetails = data.quotationProducts;
+        this.productDetails = [];
 
-        log.debug('[QuotationDetailsComponent] Patched product details:', this.productDetails);
+        this.quotationProducts?.forEach((payloadProduct: any,index: number) => {
 
+          this.productDetails.push({
+            productCode: payloadProduct.productCode?.toString(),
+            productName: payloadProduct.productName,
+            coverFrom: payloadProduct.wef,
+            coverTo: payloadProduct.wet || null
+          });
+           this.cd.detectChanges();
+
+          if (index === 0) {
+          const firstProduct = this.productDetails[0];
+          if (firstProduct) {
+          this.selectedRow = firstProduct;
+
+           setTimeout(() => {
+           const code = firstProduct.productCode || firstProduct.code;
+           if (code) {
+          log.debug("Fetching clauses for first product automatically:", code);
+          this.getProductClause(code);
+        }
+      }, 0);
+    }
+  }
+          
+
+          
+          
+
+          
+
+
+        });
+
+
+
+        // set product columns
         if (this.productDetails?.length > 0) {
-
-
-          this.productDetails = this.productDetails.map((p: any) => ({
-            ...p,
-            coverFrom: p.wef,
-            coverTo: p.wet,
-          }));
-
           this.setColumnsFromProductDetails(this.productDetails[0]);
         }
 
-        // ✅ Handle the first product’s clauses 
+        log.debug("productDetails for revise", this.productDetails);
+
+        // ✅ Patch clauses
         const firstProduct = this.products[0];
-        if (firstProduct) {
-          this.activeProductTab = firstProduct.productCode || '';
-          this.selectedProduct = firstProduct.productName || '';
+        log.debug("first product", firstProduct);
 
-          // ✅ Patch product clauses
-          this.sessionClauses = firstProduct.productClauses || [];
-          if (this.sessionClauses.length > 0) {
-            this.sessionClauses = this.sessionClauses.map((c: any) => ({
-              ...c,
-              shortDescription: c.clauseShortDescription,
-              heading: c.clauseHeading,
-              wording: c.clause,
-              isEditable: c.clauseIsEditable
-            }));
-
-            this.setProductClauseColumns(this.sessionClauses[0]);
-          }
-
-
+        this.sessionClauses = firstProduct?.productClauses || [];
+        if (this.sessionClauses.length > 0) {
+          this.sessionClauses = this.sessionClauses.map((c: any) => ({
+            ...c,
+            shortDescription: c.clauseShortDescription,
+            heading: c.clauseHeading,
+            wording: c.clause,
+            isEditable: c.clauseIsEditable
+          }));
+          this.setProductClauseColumns(this.sessionClauses[0]);
         }
       } else {
-        log.debug('[QuotationDetailsComponent] No product details found in reused quotation.');
+        log.debug('[QuotationDetailsComponent] No product details found in revised quotation.');
         this.quotationProducts = [];
         this.products = [];
         this.productDetails = [];
-        this.productClauses = [];
-
       }
 
 
@@ -3539,14 +3607,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     // if (!isRevision) return;
 
     this.isRevisionMode = true;
-
-
+    this.productDetails = this.productDetails?.filter(p =>
+      p && Object.values(p).some(v => v !== undefined && v !== null && v !== '')
+    );
+    log.debug('The status of product Details', this.productDetails)
 
     if (this.quotationDetails) {
       const data = this.quotationDetails;
 
       log.debug('[QuotationDetailsComponent] Retrieved revised quotation data =>', data);
-
+      this.quotationProducts = this.quotationDetails.quotationProducts
       const agentObject = data.agentCode
         ? {
           code: data.agentCode,
@@ -3602,7 +3672,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
 
-      const currencyOption = this.currency.find(
+      const currencyOption = this.currency?.find(
         c => c.id === data.currencyCode || c.name === data.currency
       );
 
@@ -3717,18 +3787,45 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
       this.quotationForm.get('client')?.disable({ emitEvent: false });
       this.quotationForm.get('agent')?.disable({ emitEvent: false });
-
+      // this.productDetails = this.productDetails.filter(p => p?.productCode !== undefined);
+      log.debug("Product quoations", this.quotationProducts)
+      log.debug("Product desc array", this.ProductDescriptionArray)
       // ✅ Patch product details
       if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
-        this.quotationProducts = data.quotationProducts;
-        this.productDetails = data.quotationProducts;
+        this.productDetails = [];
 
-        // map coverFrom / coverTo values
-        this.productDetails = this.productDetails.map((p: any) => ({
-          ...p,
-          coverFrom: p.wef,
-          coverTo: p.wet,
-        }));
+        this.quotationProducts?.forEach((payloadProduct: any, index: number) => {
+
+          this.productDetails.push({
+            productCode: payloadProduct.productCode?.toString(),
+            productName: payloadProduct.productName,
+            coverFrom: payloadProduct.wef,
+            coverTo: payloadProduct.wet || null
+          });
+
+            this.cd.detectChanges();
+
+  
+          if (index === 0) {
+          const firstProduct = this.productDetails[0];
+          if (firstProduct) {
+          this.selectedRow = firstProduct;
+
+           setTimeout(() => {
+           const code = firstProduct.productCode || firstProduct.code;
+           if (code) {
+          log.debug("Fetching clauses for first product automatically:", code);
+          this.getProductClause(code);
+        }
+      }, 0);
+    }
+  }
+          
+
+
+        });
+
+
 
         // set product columns
         if (this.productDetails?.length > 0) {
@@ -3740,6 +3837,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         // ✅ Patch clauses
         const firstProduct = this.products[0];
         log.debug("first product", firstProduct);
+
+        
 
         this.sessionClauses = firstProduct?.productClauses || [];
         if (this.sessionClauses.length > 0) {
