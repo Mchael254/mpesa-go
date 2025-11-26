@@ -1,7 +1,12 @@
-.custom{
-    margin-top:30px !important;
+.btn-icon {
+  border: none;
+  background: transparent;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
 }
-
 .file-dropzone {
   border: 2px dashed #ced4da; 
   background-color: transparent;
@@ -27,4 +32,10 @@
 }
 .uploaded-files-list .btn-link {
     text-decoration: none;
+}
+:host ::ng-deep .p-dialog-header-icon{
+  color:#EE3945;
+}
+:host ::ng-deep .p-dialog-title{
+  color:#00529B;
 }
