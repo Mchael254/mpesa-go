@@ -7,7 +7,7 @@ import { LazyLoadEvent } from 'primeng/api';
 import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
 import {Subscription, tap} from 'rxjs';
 import { EntityService } from '../../../services/entity/entity.service';
-import { Logger } from '../../../../../shared/services/logger/logger.service';
+import { Logger } from '../../../../../shared/services';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -18,7 +18,7 @@ import {UtilService} from "../../../../../shared/services";
 
 const log = new Logger('ListEntityComponent');
 
-type CustomLazyLoadEvent = LazyLoadEvent & { sortField: string | string[] };
+// type CustomLazyLoadEvent = LazyLoadEvent & { sortField: string | string[] };
 
 @Component({
   selector: 'app-list-entity',
@@ -35,7 +35,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
 
   isSearching = false;
   searchTerm = '';
-  private subscription: Subscription;
+  // private subscription: Subscription;
   columns: TableFieldConfig[];
   actionLabel: {};
   columnLabel: {};
@@ -63,7 +63,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     name:'', identityNumber:'', modeOfIdentity: {name: ''}, pinNumber:'', categoryName:''
   };
 
-  language: string
+  language: string;
 
   constructor(
     private entityService: EntityService,
@@ -106,7 +106,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
   }
 
   fetchTableConfig(): void {
-    this.http.get<any>('assets/data/clientTable.json').subscribe({
+    this.http.get<any>('assets/data/clientTableConfig.json').subscribe({
       next: (data) => {
         this.columns = data.individualTable.columns;
         this.actionLabel = data.individualTable.actionLabel;
@@ -192,6 +192,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
  * pagination, sorting field, and sorting order.
  * @param {number} pageIndex - The pageIndex parameter is a number that represents the index of the
  * page to retrieve. It is used to determine which page of entities to fetch from the entity service.
+ * @param pageSize
  * @param {string} [sortField=effectiveDateFrom] - The `sortField` parameter is used to specify the
  * field by which the entities should be sorted. It is a string that represents the name of the field.
  * By default, it is set to 'effectiveDateFrom'.
@@ -200,13 +201,15 @@ export class ListEntityComponent implements OnInit, OnDestroy {
  * descending order. By default, the sortOrder is set to "desc".
  * @returns The `getEntities` function is returning an Observable.
  */
-  getEntities(pageIndex: number,
-              pageSize: number,
-              sortField: any = 'effectiveDateFrom',
-              sortOrder: string = 'desc') {
+  getEntities(
+    pageIndex: number,
+    pageSize: number,
+    sortField: any = 'effectiveDateFrom',
+    sortOrder: string = 'desc'
+  ) {
     return this.entityService
-              .getEntities(pageIndex, pageSize, sortField, sortOrder)
-              .pipe(untilDestroyed(this));
+      .getEntities(pageIndex, pageSize, sortField, sortOrder)
+      .pipe(untilDestroyed(this));
   }
 
 /**
@@ -227,10 +230,11 @@ export class ListEntityComponent implements OnInit, OnDestroy {
   filter(event, pageIndex: number = 0, pageSize: number = event.rows, keyData: string) {
     this.entities = null; // Initialize with an empty array or appropriate structure
 
-    this.subscription = this.entityService.searchTerm$
+    /*this.subscription = */
+    this.entityService.searchTerm$
       .subscribe(searchTerm => {
         this.searchTerm = searchTerm.toString();
-      })
+      });
     // const searchTerm = localStorage.getItem('searchTerm');
     /*const value = (event.target as HTMLInputElement).value.toLowerCase() || this.searchTerm;
 
@@ -239,50 +243,44 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     this.searchTerm = value;*/
 
     let data = this.filterObject[keyData];
-    console.log('datalog>>',data, keyData)
+    // console.log('datalog>>',data, keyData, this.searchTerm);
 
     this.isSearching = true;
     this.spinner.show();
 
     if (data.trim().length > 0 || data === undefined || data === null) {
-      this.entityService
-        .searchEntities(
-          pageIndex, pageSize,
-          keyData, data)
-        .subscribe((data) => {
-            this.entities = data;
-            this.spinner.hide();
-          },
-          error => {
-            this.spinner.hide();
-          });
+
+      this.entityService.searchEntities(pageIndex, pageSize, keyData, data).subscribe({
+        next: (data: Pagination<EntityDto>) => {
+          this.entities = data;
+          this.spinner.hide();
+        },
+        error: (err) => {
+          this.spinner.hide();
+        }
+      });
+
     }
     else {
-      this.getEntities(pageIndex, pageSize)
-        .pipe(
+      this.getEntities(pageIndex, pageSize).pipe(
           untilDestroyed(this),
           tap((data) => log.info(`Fetching entities>>>`, data))
-        )
-        .subscribe(
-          (data: Pagination<EntityDto>) => {
-            // if (searchTerm === null) {
-            data.content.forEach(entity => {
-              entity.modeOfIdentityName = entity.modeOfIdentity.name
-            });
-            this.entities = data;
-            this.tableDetails.rows = this.entities?.content;
-            this.tableDetails.totalElements = this.entities?.totalElements;
-            this.cdr.detectChanges();
-            this.spinner.hide();
-
-          },
-          error => {
-            this.spinner.hide();
-          }
-
-        );
+        ).subscribe({
+        next: (data: Pagination<EntityDto>) => {
+          data.content.forEach(entity => {
+            entity.modeOfIdentityName = entity.modeOfIdentity.name
+          });
+          this.entities = data;
+          this.tableDetails.rows = this.entities?.content;
+          this.tableDetails.totalElements = this.entities?.totalElements;
+          this.cdr.detectChanges();
+          this.spinner.hide();
+        },
+        error: (err) => {
+          this.spinner.hide();
+        }
+      });
     }
-
   }
 
   /**
@@ -291,6 +289,10 @@ export class ListEntityComponent implements OnInit, OnDestroy {
    * @param field
    */
   processInput(event: Event, field: string) {
+    this.filterObject[field] = (event.target as HTMLInputElement).value;
+  }
+
+  /*processInput(event: Event, field: string) {
     switch (field) {
       case 'name':
         this.inputName(event);
@@ -311,10 +313,10 @@ export class ListEntityComponent implements OnInit, OnDestroy {
         // do nothing
 
     }
-  }
+  }*/
 
 
-  inputName(event) {
+  /*inputName(event) {
 
     const value = (event.target as HTMLInputElement).value;
     this.filterObject['name'] = value;
@@ -340,6 +342,6 @@ export class ListEntityComponent implements OnInit, OnDestroy {
 
     const value = (event.target as HTMLInputElement).value;
     this.filterObject['categoryName'] = value;
-  }
+  }*/
 
 }
