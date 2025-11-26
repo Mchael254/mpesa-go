@@ -60,7 +60,7 @@
                                     <!-- Delete -->
                                     <span type="button" class="fw-bold text-primary" style="cursor: pointer"
                                         tooltipPosition="top" data-bs-toggle="modal" data-bs-target="#deleteRisk"
-                                        (click)="$event.stopPropagation()">
+                                        (click)="$event.stopPropagation(); selectedRisk=risk">
                                         {{ 'gis.quotation.delete' | translate }}
                                     </span>
                                 </div>
@@ -825,7 +825,7 @@
                                     <tr style="height: 40px; padding: 10px; margin-bottom: 10px;">
                                         <td>
                                             <input type="checkbox" id="check_section_{{ section.sectionCode }}"
-                                                [(ngModel)]="section.isChecked">
+                                                [(ngModel)]="section.isChecked" (click)="onKeyUp($event, section)">
                                         </td>
                                         <td class="flexible-header">{{ section.sectionDescription |sentenceCase }}</td>
                                         <td class="flexible-header">
@@ -2403,11 +2403,13 @@
                                     <!-- Third Row -->
                                     <div class="col-md-6">
                                         <label>Person limit</label>
-                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="personLimit" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj"
+                                            formControlName="personLimit" />
                                     </div>
                                     <div class="col-md-6">
                                         <label>Limit amount</label>
-                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="excess" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj"
+                                            formControlName="excess" />
                                     </div>
                                 </div>
 
@@ -2415,7 +2417,8 @@
                                     <!-- Fourth Row -->
                                     <div class="col-md-6">
                                         <label>Claim limit</label>
-                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="claimLimit" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj"
+                                            formControlName="claimLimit" />
                                     </div>
                                     <div class="col-md-6">
                                         <label>Excess type</label>
@@ -2429,11 +2432,13 @@
                                     <!-- Fifth Row -->
                                     <div class="col-md-6">
                                         <label>Excess</label>
-                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="excess" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj"
+                                            formControlName="excess" />
                                     </div>
                                     <div class="col-md-6">
                                         <label>Excess minimum</label>
-                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="excessMin" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj"
+                                            formControlName="excessMin" />
                                     </div>
                                 </div>
 
@@ -2441,7 +2446,8 @@
                                     <!-- Sixth Row -->
                                     <div class="col-md-6">
                                         <label>Excess maximum</label>
-                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj" formControlName="excessMax" />
+                                        <input class="form-control form-control-sm" currencyMask [options]="currencyObj"
+                                            formControlName="excessMax" />
                                     </div>
                                     <div class="col-md-6">
 
@@ -3085,11 +3091,14 @@
 
                                     <div class="col-md-6 mb-3">
                                         <label>Tax value</label>
-                                        <ng-container *ngIf="taxForm.get('taxMode')?.value === 'Amount'; else rateInput">
-                                          <input formControlName="taxValue" class="form-control form-control-sm" currencyMask [options]="currencyObj" />
+                                        <ng-container
+                                            *ngIf="taxForm.get('taxMode')?.value === 'Amount'; else rateInput">
+                                            <input formControlName="taxValue" class="form-control form-control-sm"
+                                                currencyMask [options]="currencyObj" />
                                         </ng-container>
                                         <ng-template #rateInput>
-                                          <input formControlName="taxValue" type="text" class="form-control form-control-sm" />
+                                            <input formControlName="taxValue" type="text"
+                                                class="form-control form-control-sm" />
                                         </ng-template>
                                         <div *ngIf="taxForm.get('taxValue')?.touched && taxForm.get('taxValue')?.errors"
                                             class="text-danger small">
@@ -3409,7 +3418,8 @@
                                             </td>
                                             <td>
                                                 <div>
-                                                    {{ sanitizeCurrency(excess.value) | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                                                    {{ sanitizeCurrency(excess.value) | currency: currencyObj?.prefix :
+                                                    'symbol' : '1.2-2' }}
                                                 </div>
                                             </td>
                                         </tr>
@@ -3464,7 +3474,8 @@
                         <div class="d-flex justify-content-between text-black" *ngIf="selectedExcess">
                             <div class="d-flex flex-column bg-gray-300 w-25">
                                 <label for="id">Value</label>
-                                <input pInputText type="text" currencyMask [options]="currencyObj" ngModel [(ngModel)]="selectedExcess.value" class="text-end">
+                                <input pInputText type="text" currencyMask [options]="currencyObj" ngModel
+                                    [(ngModel)]="selectedExcess.value" class="text-end">
 
                             </div>
                         </div>

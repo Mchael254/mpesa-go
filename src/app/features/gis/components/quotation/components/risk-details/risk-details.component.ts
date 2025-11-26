@@ -928,6 +928,7 @@ export class RiskDetailsComponent {
     this.modalInstance?.show();
 
     log.debug("Selected risk:", risk)
+    this.selectedRisk = risk
     log.debug("Risk form Values:", this.riskDetailsForm.value)
     this.riskDetailsForm.patchValue(risk);
     this.riskDetailsForm.patchValue({ subclass: risk.subclass.code });
