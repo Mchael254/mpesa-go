@@ -2721,7 +2721,7 @@ export class RiskDetailsComponent {
 
   //   return schedule;
   // }
-  
+
   prepareSchedulePayload() {
     log.debug("Dynamic fields for schedules", this.allSubclassFormData);
 
@@ -2747,12 +2747,7 @@ export class RiskDetailsComponent {
         this.scheduleDetailsForm.get(fieldName)?.value ??
         null;
 
-      if (fieldName === 'vehicleMake' && fieldValue) {
-        const selectedMake = this.vehicleMakeList?.find(make => make.code === fieldValue);
-        level1['make'] = selectedMake?.name || fieldValue;
-      } else {
-        level1[fieldName] = fieldValue;
-      }
+      level1[fieldName] = fieldValue;
     });
 
     schedule.details.level1 = {
@@ -7651,15 +7646,15 @@ export class RiskDetailsComponent {
       this.createScheduleL2()
     }
   }
+
   normalizeOtherDetailsData(levelData: any[]): any[] {
     return levelData.map(row => ({
       ...row,
       limitationsUse: row.limitationUse,
-      deductibleDescription: row.deductibleDesc,
-      // Normalize Make field - handle both 'Make' (capital) and 'make' (lowercase) casing
-      make: row.make || row.Make || ''
+      deductibleDescription: row.deductibleDesc
     }));
   }
+
   onLogBookSelected(selectedFile: any) {
     const file = selectedFile
     const reader = new FileReader();
