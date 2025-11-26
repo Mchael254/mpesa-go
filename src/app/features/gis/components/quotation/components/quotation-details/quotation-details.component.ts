@@ -903,18 +903,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   defaultVisibleProductClauseFields = ['shortDescription', 'heading', 'wording'];
 
   getProductClause(product: any) {
-      log.debug("🔎 getProductClause CALLED WITH:", product);
+    log.debug("🔎 getProductClause CALLED WITH:", product);
 
-  
 
-  
-    
-  const productCode =
-    (typeof product === "number" || typeof product === "string")
-      ? product
-      : product.code || this.productCode;
 
-  log.debug("✅ FINAL productCode:", productCode);
+
+
+    const productCode =
+      (typeof product === "number" || typeof product === "string")
+        ? product
+        : product.code || this.productCode;
+
+    log.debug("✅ FINAL productCode:", productCode);
 
     this.productCode = productCode;
     sessionStorage.setItem("selectedProductCode", productCode);
@@ -1948,7 +1948,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.info('SELECTED VALUE:', value)
     this.showIntermediaryField = value === 'I';
     if (!this.showIntermediaryField) {
-      this.quotationForm?.get('agentCode').reset();
+      this.quotationForm?.get('agentCode')?.reset();
     }
     this.getAgents()
   }
@@ -2515,9 +2515,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     console.log("ROW SELECTED:", product);
     this.selectedRow = product;
     const code =
-    product.productCode ||   
-    product.code ||          
-    null;
+      product.productCode ||
+      product.code ||
+      null;
     log.debug("Code to call clauses", code)
     this.getProductClause(code);
   }
@@ -3528,7 +3528,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
         this.productDetails = [];
 
-        this.quotationProducts?.forEach((payloadProduct: any,index: number) => {
+        this.quotationProducts?.forEach((payloadProduct: any, index: number) => {
 
           this.productDetails.push({
             productCode: payloadProduct.productCode?.toString(),
@@ -3536,28 +3536,28 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             coverFrom: payloadProduct.wef,
             coverTo: payloadProduct.wet || null
           });
-           this.cd.detectChanges();
+          this.cd.detectChanges();
 
           if (index === 0) {
-          const firstProduct = this.productDetails[0];
-          if (firstProduct) {
-          this.selectedRow = firstProduct;
+            const firstProduct = this.productDetails[0];
+            if (firstProduct) {
+              this.selectedRow = firstProduct;
 
-           setTimeout(() => {
-           const code = firstProduct.productCode || firstProduct.code;
-           if (code) {
-          log.debug("Fetching clauses for first product automatically:", code);
-          this.getProductClause(code);
-        }
-      }, 0);
-    }
-  }
-          
+              setTimeout(() => {
+                const code = firstProduct.productCode || firstProduct.code;
+                if (code) {
+                  log.debug("Fetching clauses for first product automatically:", code);
+                  this.getProductClause(code);
+                }
+              }, 0);
+            }
+          }
 
-          
-          
 
-          
+
+
+
+
 
 
         });
@@ -3803,24 +3803,24 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             coverTo: payloadProduct.wet || null
           });
 
-            this.cd.detectChanges();
+          this.cd.detectChanges();
 
-  
+
           if (index === 0) {
-          const firstProduct = this.productDetails[0];
-          if (firstProduct) {
-          this.selectedRow = firstProduct;
+            const firstProduct = this.productDetails[0];
+            if (firstProduct) {
+              this.selectedRow = firstProduct;
 
-           setTimeout(() => {
-           const code = firstProduct.productCode || firstProduct.code;
-           if (code) {
-          log.debug("Fetching clauses for first product automatically:", code);
-          this.getProductClause(code);
-        }
-      }, 0);
-    }
-  }
-          
+              setTimeout(() => {
+                const code = firstProduct.productCode || firstProduct.code;
+                if (code) {
+                  log.debug("Fetching clauses for first product automatically:", code);
+                  this.getProductClause(code);
+                }
+              }, 0);
+            }
+          }
+
 
 
         });
@@ -3838,7 +3838,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         const firstProduct = this.products[0];
         log.debug("first product", firstProduct);
 
-        
+
 
         this.sessionClauses = firstProduct?.productClauses || [];
         if (this.sessionClauses.length > 0) {
