@@ -6029,15 +6029,7 @@ export class RiskDetailsComponent {
 
   //guard commissions if agent not selected
   isAgentSourceSelected(): boolean {
-    if (!this.quotationDetails?.source?.description) {
-      return false;
-    }
-
-    const sourceDescription = this.quotationDetails.source.description;
-    // log.debug('sourceDescription', sourceDescription)
-    return sourceDescription === 'Agent' ||
-      sourceDescription === 'Agent/b' ||
-      sourceDescription === 'Broker/agent';
+    return !!this.quotationDetails?.agentCode;
   }
 
   get isCommissionsButtonDisabled(): boolean {
