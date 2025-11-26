@@ -49,6 +49,11 @@ body {
   color: #fff;
 }
 
+.border-primary-caret {
+  border: 1px solid #00529b;
+  border-radius: 4px;
+}
+
 .btn-link,
 a {
   text-decoration: none;
