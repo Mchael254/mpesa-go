@@ -20,7 +20,7 @@ import {
   PartyAccountsDetails,
   WealthDetailsUpdateDTO,
 } from '../../data/accountDTO';
-import { UtilService } from '../../../../shared/services/util/util.service';
+import { UtilService } from '../../../../shared/services';
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { Bank } from '../../data/BankDto';
 import { ApiService } from '../../../../shared/services/api/api.service';
@@ -50,7 +50,7 @@ export class EntityService {
     pinNumber: '',
     profileImage: '',
   });
-  currentEntity$ = this.entity$.asObservable();
+  // currentEntity$ = this.entity$.asObservable();
 
   private accountDetails$ = new BehaviorSubject<AccountReqPartyId>({
     accountCode: 0,
@@ -78,7 +78,7 @@ export class EntityService {
     organizationId: 0,
     organizationGroupId: 0,
   });
-  currentAccount$ = this.accountDetails$.asObservable();
+  // currentAccount$ = this.accountDetails$.asObservable();
 
   private entityAccounts$ = new BehaviorSubject<AccountReqPartyId[]>([]);
   private partyAccounts$ = new BehaviorSubject<PartyAccountsDetails[]>([]);
@@ -89,33 +89,33 @@ export class EntityService {
   searchTerm$ = this.searchTermSource.asObservable();
 
   private entitiesSource = new Subject<Pagination<EntityDto>>();
-  entities$ = this.entitiesSource.asObservable();
+  // entities$ = this.entitiesSource.asObservable();
 
   public searchTermObject = signal({});
 
   constructor(
-    private http: HttpClient,
+    // private http: HttpClient,
     private appConfig: AppConfigService,
     private utilService: UtilService,
     private api: ApiService,
-    private session_storage: SessionStorageService
+    // private session_storage: SessionStorageService
   ) {}
 
-  setSearchTerm(searchTerm: string) {
+  /*setSearchTerm(searchTerm: string) {
     this.searchTermSource.next(searchTerm);
   }
 
   setEntities(entities: Pagination<EntityDto>) {
     this.entitiesSource.next(entities);
-  }
+  }*/
 
   setCurrentEntity(entity: EntityDto) {
     this.entity$.next(entity);
   }
 
-  setCurrentAccount(accountDetails: AccountReqPartyId) {
+  /*setCurrentAccount(accountDetails: AccountReqPartyId) {
     this.accountDetails$.next(accountDetails);
-  }
+  }*/
 
   setCurrentEntityAccounts(entityAccountsDetails: AccountReqPartyId[]) {
     this.entityAccounts$.next(entityAccountsDetails);
@@ -267,13 +267,6 @@ export class EntityService {
     );
   }
 
-  fetchBankDetailsByBranchId(id: number): Observable<Bank> {
-    return this.api.GET<Bank>(
-      `bank-branches/${id}`,
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
-    );
-  }
-
   updateBankDetails(
     partyAccountId: number,
     bankDetails: BankDetailsUpdateDTO
@@ -351,7 +344,7 @@ export class EntityService {
   return this.api.GET<Quotation>(
     `v2/quotation/${user}?pageNo=${pageNo}&pageSize=${pageSize}`,
     API_CONFIG.GIS_QUOTATIONS_BASE_URL,
-    
+
   );
 }
 
