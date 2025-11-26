@@ -543,8 +543,6 @@
                                         {{ row[col.field] }}
                                     </ng-template>
 
-
-
                                     <!-- Actions -->
                                     <ng-container *ngSwitchCase="'actions'">
                                         <div class="text-center">
@@ -592,7 +590,6 @@
                 <div class="modal-content mx-4 " style=" max-width:700px;">
                     <form [formGroup]="scheduleOtherDetailsForm">
 
-
                         <div class="modal-body">
                             <div *ngIf="!isEditScheduleMode">
                                 <h5 class="modal-title mt-2 mb-4 ">{{ 'gis.quotation.add' | translate }} {{
@@ -612,7 +609,6 @@
                                         aria-label="Close"></button>
                                 </h5>
                             </div>
-
 
                             <div class="row">
                                 <ng-container *ngFor="let field of activeFormFields; let i = index">
@@ -640,7 +636,6 @@
                                                     [showClear]="true">
                                                 </p-dropdown>
                                             </ng-container>
-
 
 
                                             <!-- Date -->
