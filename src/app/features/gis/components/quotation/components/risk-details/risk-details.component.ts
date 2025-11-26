@@ -1551,31 +1551,39 @@ export class RiskDetailsComponent {
       log.debug('this is the vehicle make list >>>', this.vehicleMakeList)
 
       // Inject into the subclass formData
-      this.safePopulateSelectOptions(this.subclassFormData, 'vehicleMake', this.vehicleMakeList, 'name', 'code');
+      this.safePopulateSelectOptions(this.subclassFormData, 'vehicleMake', this.vehicleMakeList, 'name', 'name');
+      const selectedVehicleMake = this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.vehicleMake
+      log.debug("selected vehicle make on edit;", selectedVehicleMake)
+      const selectedVehicleMakeObj = this.vehicleMakeList?.find(make => make.name === selectedVehicleMake)
 
 
       log.debug("VehicleMake list", this.vehicleMakeList)
-      if (this.storedRiskFormDetails) {
-        const selectedVehicleMake = this.vehicleMakeList.find(make => make.code === this.storedRiskFormDetails?.vehicleMake);
-        if (selectedVehicleMake) {
-          log.debug("selected vehicle make:", selectedVehicleMake)
-          this.riskDetailsForm.patchValue({ vehicleMake: selectedVehicleMake });
-          this.getVehicleModel(selectedVehicleMake.code)
+      // if (this.storedRiskFormDetails) {
+      //   const selectedVehicleMake = this.vehicleMakeList.find(make => make.code === this.storedRiskFormDetails?.vehicleMake);
+      //   if (selectedVehicleMake) {
+      //     log.debug("selected vehicle make:", selectedVehicleMake)
+      //     this.riskDetailsForm.patchValue({ vehicleMake: selectedVehicleMake });
+      //     this.getVehicleModel(selectedVehicleMake.code)
 
-        }
+      //   }
+      // }
+
+      if (selectedVehicleMakeObj) {
+        const selectedMakeCode = Number(selectedVehicleMakeObj.code)
+        log.debug("selectedMakeCode:", selectedMakeCode)
+        this.getVehicleModel(selectedMakeCode);
       }
-
-
     })
   }
 
 
   onVehicleMakeSelected(event: any) {
-    const selectedMakeCode = event.value;
-    log.debug("Selected Vehicle Make Code:", selectedMakeCode);
-    const selectedObject = this.vehicleMakeList.find(vehicleMake => vehicleMake.code === selectedMakeCode);
+    const selectedMakeName = event.value;
+    log.debug("Selected Vehicle Make Code:", selectedMakeName);
+    const selectedObject = this.vehicleMakeList.find(vehicleMake => vehicleMake.name === selectedMakeName);
     this.selectedVehicleMakeName = selectedObject.name
-    if (selectedMakeCode) {
+    const selectedMakeCode = selectedObject.code
+    if (selectedMakeName) {
       this.getVehicleModel(selectedMakeCode);
     }
   }
@@ -1602,7 +1610,7 @@ export class RiskDetailsComponent {
           log.debug("Vehicle Model Details", this.vehicleModelDetails);
           sessionStorage.setItem('vehicleModelList', JSON.stringify(this.vehicleModelDetails));
 
-          this.safePopulateSelectOptions(this.subclassFormData, 'vehicleModel', this.vehicleModelDetails, 'name', 'code');
+          this.safePopulateSelectOptions(this.subclassFormData, 'vehicleModel', this.vehicleModelDetails, 'name', 'name');
 
           if (this.storedRiskFormDetails) {
             const selectedVehicleModel = this.vehicleModelDetails.find(
@@ -1623,13 +1631,15 @@ export class RiskDetailsComponent {
 
 
   onVehicleModelSelected(event: any) {
-    const selectedValue = event.value.code;
+    const selectedValue = event.value;
+    log.debug("SELECTED VALUE MODEL:", selectedValue)
     const vehicleModel = this.riskDetailsForm.value.vehicleModel || selectedValue
-    // Convert selectedValue to the appropriate type (e.g., number)
+    log.debug("SELECTED VALUE MODEL:", vehicleModel)
+
     const typedSelectedValue = this.convertToCorrectType(vehicleModel);
 
     // Find the selected object using the converted value
-    const selectedObject = this.vehicleModelDetails.find(vehicleModel => vehicleModel.code === typedSelectedValue);
+    const selectedObject = this.vehicleModelDetails.find(vehicleModel => vehicleModel.name === selectedValue);
 
     // Check if the object is found
     if (selectedObject) {
@@ -1742,7 +1752,8 @@ export class RiskDetailsComponent {
     if (this.selectedSubclassCode) {
       try {
         await this.loadSelectedSubclassRiskFields(this.selectedSubclassCode);
-        const selectedVehicleMake = Number(this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.vehicleMake)
+        // const selectedVehicleMake = this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.vehicleMake
+        // log.debug("selected vehicle make on edit;", selectedVehicleMake)
         this.fetchTaxes();
         this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
         this.loadAllBinders();
@@ -1753,7 +1764,7 @@ export class RiskDetailsComponent {
           this.getVehicleMake();
           this.fetchScheduleRelatedData();
         }
-        selectedVehicleMake && this.getVehicleModel(selectedVehicleMake);
+        // selectedVehicleMake && this.getVehicleModel(selectedVehicleMake);
 
         this.fetchYearOfManufacture();
       } catch (err) {
@@ -4565,7 +4576,7 @@ export class RiskDetailsComponent {
       .subscribe({
         next: (response) => {
 
-          log.debug("Response after adding Risk Clause:", response);
+          log.debug("Response after adding product Clause:", response);
         },
         error: (error: HttpErrorResponse) => {
           log.debug("Error log", error.error.message);

@@ -245,6 +245,7 @@ export class ImportRisksComponent {
   isRiskValidated: boolean = false;
   loggedInUser: string;
   primeNgDateFormat: string;
+  insuredName: any;
 
   constructor(
     public subclassService: SubclassesService,
@@ -380,33 +381,16 @@ export class ImportRisksComponent {
     this.addRisk();
   }
 
+
   // exportTemplate(): void {
-  //   const data = [{
-  //     BinderCode: '',
-  //     PremiumBind: '',
-  //     CoverTypeCode: '',
-  //     CoverTypeShortDesc: '',
-  //     WEF: '',
-  //     WET: '',
-  //     ClientCode: this.selectedClientCode,
-  //     ClientName: '',
-  //     IsNCDapplicable: '',
-  //     ItemDesc: '',
-  //     Location: '',
-  //     NCDlevel: '',
-  //     ProductCode: '',
-  //     PropertyId: '',
-  //     RiskPremAmount: '',
-  //     SubclassCode: this.selectedSubclassCode,
-  //     Town: '',
-  //   }];
-  //   const worksheet = XLSX.utils.json_to_sheet(data);
-  //   const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
-  //   XLSX.writeFile(workbook, 'Motor_upload_template.xls');
+  //   const link = document.createElement('a');
+  //   link.href = '../../../../../../../assets/data/Motor_upload_template.csv';
+  //   link.download = 'Motor_upload_template.csv';
+  //   link.click();
   // }
   exportTemplate(): void {
     const link = document.createElement('a');
-    link.href = '../../../../../../../assets/data/Motor_upload_template.csv';
+    link.href = `${window.location.origin}/assets/data/Motor_upload_template.csv`;
     link.download = 'Motor_upload_template.csv';
     link.click();
   }
@@ -1230,16 +1214,17 @@ export class ImportRisksComponent {
         }
       });
     }
-    // this.insuredCode = this.selectedRisk.insuredName
-    // log.debug("Insured code", this.insuredCode)
-    // this.loadClientsThenInsured()
+
+    this.loadClientsThenInsured()
     log.debug("Selected risk:", risk)
     this.selectedRisk = risk
     this.selectedRisk && this.getVehicleMake()
+    this.insuredName = this.selectedRisk?.insuredName
+    log.debug("Insured name", this.insuredName)
     log.debug("Risk form Values:", this.riskDetailsForm.value)
     this.riskDetailsForm.patchValue(risk);
     this.riskDetailsForm.patchValue({ subclass: risk.subclassCode });
-    this.riskDetailsForm.patchValue({ insureds: risk.insuredName });
+    // this.riskDetailsForm.patchValue({ insureds: risk.insuredName });
     this.onSubclassSelected(this.selectedSubclassCode)
     // this.patchEditValues();
   }
@@ -1552,12 +1537,18 @@ export class ImportRisksComponent {
           client.clientFullName = `${client.firstName || ''} ${client.lastName || ''}`.trim();
         });
         this.clientsData = data.content;
+        const selectedInsuredObject = this.clientsData.find(
+          insured => insured.firstName === this.insuredName || insured.lastName === this.insuredName
+        );
+        log.debug('selected insured name:', this.insuredName)
+        log.debug('selected insured object:', selectedInsuredObject)
+        this.insuredCode = selectedInsuredObject.id
       }),
       switchMap(() => this.clientService.getClientById(this.insuredCode))
     ).subscribe({
       next: (insured: any) => {
         insured.clientFullName = `${insured.firstName || ''} ${insured.lastName || ''}`.trim();
-
+        log.debug('insured object', insured)
         const exists = this.clientsData.some(c => c.id === insured.id);
         if (!exists) {
           this.clientsData = [insured, ...this.clientsData];
@@ -1566,7 +1557,13 @@ export class ImportRisksComponent {
         if (!this.riskDetailsForm.contains('insureds')) {
           this.riskDetailsForm.addControl('insureds', new FormControl(''));
         }
-        this.riskDetailsForm.patchValue({ insureds: insured.id });
+        const selectedInsuredObject = this.clientsData.find(
+          insured => insured.id === this.insuredCode
+        );
+        this.riskDetailsForm.patchValue({ insureds: selectedInsuredObject });
+
+        // this.riskDetailsForm.patchValue({ insureds: insured });
+        log.debug("risk details form:", this.riskDetailsForm.value)
       },
       error: err => log.error('Error fetching clients or insured', err)
     });
@@ -2248,7 +2245,8 @@ export class ImportRisksComponent {
         log.debug('Patch value for vehicle make and model', patchValue)
         // Determine options list
         let options = formControl === 'vehicleMake' ? this.vehicleMakeList : this.vehicleModelDetails;
-
+        log.debug("VEHICLE MAKE", this.vehicleMakeList)
+        log.debug("VEHICLE model", this.vehicleModelDetails)
         // Cast options to a definite array of objects with name/code
         const optionsArray = options as { name: string; code: number }[];
         log.debug('Options array', optionsArray)
