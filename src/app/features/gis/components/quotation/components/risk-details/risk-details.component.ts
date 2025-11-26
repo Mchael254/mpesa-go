@@ -2721,6 +2721,7 @@ export class RiskDetailsComponent {
 
   //   return schedule;
   // }
+
   prepareSchedulePayload() {
     log.debug("Dynamic fields for schedules", this.allSubclassFormData);
 
@@ -6023,15 +6024,7 @@ export class RiskDetailsComponent {
 
   //guard commissions if agent not selected
   isAgentSourceSelected(): boolean {
-    if (!this.quotationDetails?.source?.description) {
-      return false;
-    }
-
-    const sourceDescription = this.quotationDetails.source.description;
-    // log.debug('sourceDescription', sourceDescription)
-    return sourceDescription === 'Agent' ||
-      sourceDescription === 'Agent/b' ||
-      sourceDescription === 'Broker/agent';
+    return !!this.quotationDetails?.agentCode;
   }
 
   get isCommissionsButtonDisabled(): boolean {
@@ -7653,6 +7646,7 @@ export class RiskDetailsComponent {
       this.createScheduleL2()
     }
   }
+
   normalizeOtherDetailsData(levelData: any[]): any[] {
     return levelData.map(row => ({
       ...row,
@@ -7660,6 +7654,7 @@ export class RiskDetailsComponent {
       deductibleDescription: row.deductibleDesc
     }));
   }
+
   onLogBookSelected(selectedFile: any) {
     const file = selectedFile
     const reader = new FileReader();
