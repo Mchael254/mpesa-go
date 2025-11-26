@@ -30,7 +30,7 @@ export interface ReceiptDTO {
   totalAllocatedKnown: number;
   totalAllocatedUnknown: number;
   batchAssignmentUserName: string | null;
-  batchAssignmentUserId:number | null;
+  batchAssignmentUserId: number | null;
 }
 export interface assignUserRctsDTO {
   userId: number;
@@ -39,15 +39,15 @@ export interface assignUserRctsDTO {
 export interface DeAssignDTO {
   receiptNumbers: number[];
 }
-export interface ReAssignUserDTO{
-    fromUserId: number;
+export interface ReAssignUserDTO {
+  fromUserId: number;
   toUserId: number;
-  receiptNumbers: number[]
+  receiptNumbers: number[];
 }
-export interface BatchesDTO{
-    batch_number: number;
-        user_id: number;
-        assignee: string;
-        batch_date: Date;
-        total_amount: number;
+export interface BatchesDTO {
+  batch_number: number;
+  user_id: number;
+  assignee: string;
+  batch_date: Date;
+  total_amount: number;
 }
