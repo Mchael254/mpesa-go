@@ -337,8 +337,8 @@
       </div>
       <p-table [value]="selectedCover?.additionalBenefits" id="clientTable" dataKey="sectionCode"
         [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }" [(selection)]="selectedSections"
-        [resizableColumns]="true" responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true" [paginator]="false"
-        [rows]="10" [scrollable]="true" scrollDirection="horizontal" [showCurrentPageReport]="true"
+        [resizableColumns]="true" responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" paginatorPosition="bottom" [showCurrentPageReport]="true"
+        [rows]="10" [scrollable]="true" scrollDirection="horizontal"  [scrollHeight]="'350px'"
         currentPageReportTemplate="{first} - {last} of {totalRecords}">
         <ng-template pTemplate="header">
           <tr>
@@ -383,7 +383,7 @@
           <button class="btn btn-primary" type="submit" id="btnCoverTypes" (click)="addBenefits()"
             style="font-size: 16px; font-weight: 600; background-color: #00529B; border-color: #00529b;"
             onmouseover="this.style.backgroundColor='#00529b'; this.style.borderColor='#00529b';"
-            onmouseout="this.style.backgroundColor='#00529b'; this.style.borderColor='#00529b';">
+      z      onmouseout="this.style.backgroundColor='#00529b'; this.style.borderColor='#00529b';">
             {{ 'gis.quotation.update_quote' | translate }}
           </button>
 
