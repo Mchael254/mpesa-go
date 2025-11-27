@@ -122,7 +122,7 @@
                     <button
                       type="button"
                       class="btn btn-link btn-sm"
-                      (click)="bankingActions.openDepositModal(batch)"
+                      (click)="deposit.openDepositModal(batch)"
                     >
                       {{ "fms.banking.deposit" | translate }}
                     </button>
@@ -136,7 +136,7 @@
                     <button
                       type="button"
                       class="btn btn-link btn-sm"
-                      (click)="bankingActions.openReAssignModal(batch)"
+                      (click)="users.openReAssignModal(batch)"
                     >
                       {{ "fms.banking.reAssign" | translate }}
                     </button>
@@ -158,8 +158,5 @@
     </button>
   </div>
 </div>
-<app-banking
-  #bankingActions
-  (onReassignSubmit)="handleReassignment($event)"
-  (onFilePost)="handleFilePost($event)"
-></app-banking>
+<app-users #users (onReassignSubmit)="handleReassignment($event)"></app-users>
+<app-deposit #deposit (onFilePost)="handleFilePost($event)"></app-deposit>

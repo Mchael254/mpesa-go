@@ -169,7 +169,7 @@
             <button
               type="button"
               class="btn btn-primary"
-              (click)="bankingActions.openAssignModal()"
+              (click)="users.openAssignModal()"
               *ngIf="selectedReceipts.length > 0"
             >
               {{ "fms.banking.assign" | translate }}
@@ -256,14 +256,14 @@
                           receipt.batchAssignmentUserName != null) ||
                         ''
                       "
-                      (click)="bankingActions.openDepositModal(receipt)"
+                      (click)="deposit.openDepositModal(receipt)"
                     >
                       {{ "fms.banking.deposit" | translate }}
                     </button>
                     <button
                       class="btn btn-link btn-sm"
                       *ngIf="receipt.batchAssignmentUserName != null || ''"
-                      (click)="bankingActions.openReAssignModal(receipt)"
+                      (click)="users.openReAssignModal(receipt)"
                     >
                       {{ "fms.banking.reAssign" | translate }}
                     </button>
@@ -307,9 +307,9 @@
     </button>
   </div>
 </div>
-<app-banking
-  #bankingActions
+<app-users
+  #users
   (onReassignSubmit)="handleReassignment($event)"
   (onAssignSubmit)="handleAssignment($event)"
-  (onFilePost)="handleFilePost($event)"
-></app-banking>
+></app-users>
+<app-deposit #deposit (onFilePost)="handleFilePost($event)"></app-deposit>
