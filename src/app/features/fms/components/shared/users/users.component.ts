@@ -17,11 +17,11 @@ import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 @Component({
-  selector: 'app-banking',
-  templateUrl: './banking.component.html',
-  styleUrls: ['./banking.component.css'],
+  selector: 'app-users',
+  templateUrl: './users.component.html',
+  styleUrls: ['./users.component.css'],
 })
-export class BankingComponent {
+export class UsersComponent {
   /** A flag to determine if the assignment dialog is in 're-assign' mode. */
   reAssign: boolean = false;
   assign: boolean = false;
@@ -30,17 +30,6 @@ export class BankingComponent {
   /** Controls visibility of the main assignment dialog. */
   assignDialogVisible: boolean = false;
   usersForm: FormGroup;
-  depositForm: FormGroup;
-  /** Stores the single file selected by the user for upload. */
-  uploadedFile: File | null = null;
-  /** A flag to disable the file input after one file is selected to enforce a single-file upload limit. */
-  maximumFiles: boolean = false;
-  /** A flag to indicate when a file is being dragged over the dropzone for styling purposes. */
-  isDragging: boolean = false;
-  /** The maximum allowed file size for uploads, in bytes. */
-  private readonly max_file_size = 5 * 1024 * 1024; // 5MB
-  /** An array of bank accounts used to populate the deposit modal dropdown. */
-  bankAccounts: BanksDto[] = [];
   /** Holds the user object selected from the second dialog to display in the first dialog's input. */
   selectedUserForAssignment: StaffDto | null = null;
   /** Temporarily holds the user selected in the user table before confirmation. */
@@ -64,26 +53,17 @@ export class BankingComponent {
   /** The currently selected organization, retrieved from session storage. */
   selectedOrg: OrganizationDTO;
   @Output() onReassignSubmit = new EventEmitter<any>();
-  @Output() onFilePost = new EventEmitter<{
-    file: File;
-    slipNumber: string;
-    amount: number;
-  }>();
   @Output() onAssignSubmit = new EventEmitter<any>();
   constructor(
     private staffService: StaffService,
     private fb: FormBuilder,
     private commonMethodsService: CommonMethodsService,
-    private globalMessagingService: GlobalMessagingService,
-    private dmsService: DmsService,
     private translate: TranslateService,
-    private paymentsService: PaymentsService,
     private sessionStorage: SessionStorageService,
     private authService: AuthService
   ) {}
   ngOnInit() {
     this.initiateUsersForm();
-    this.initializeDepositForm();
     this.fetchActiveUsers(0, this.staffPageSize);
     let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
     let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
@@ -110,7 +90,7 @@ export class BankingComponent {
       this.selectedBranch = null;
     }
     this.loggedInUser = this.authService.getCurrentUser();
-    this.fetchBankAccounts();
+   
   }
   initiateUsersForm() {
     this.usersForm = this.fb.group({
@@ -118,17 +98,7 @@ export class BankingComponent {
       comment: [''],
     });
   }
-  /**
-   * @description Initializes the `depositForm` with required controls.
-   */
-  initializeDepositForm(): void {
-    this.depositForm = this.fb.group({
-      bankAccount: ['', Validators.required],
-      slipNumber: ['', Validators.required],
-      amount: ['', Validators.required],
-      remarks: [''],
-    });
-  }
+  
   /**
    * @description A getter that provides a translated string for the PrimeNG table's paginator report.
    * @returns The translated report template string.
@@ -240,133 +210,7 @@ export class BankingComponent {
     });
     this.closeAssignModal();
   }
-  /**
-   * @description Opens the deposit modal for a specific batch and pre-fills the amount.
-   * @param batch The batch object to be deposited.
-   */
-  openDepositModal(item: any): void {
-    const modalEl = new bootstrap.Modal(
-      document.getElementById('depositModal')
-    );
-    if (modalEl) {
-      modalEl.show();
-    }
-    this.selectedBatchObj = item;
-    this.uploadedFile = null;
-    const amountToSet = item.receiptAmount || item.total_amount;
-    this.depositForm.patchValue({ amount: amountToSet });
-  }
-  /**
-   * @description Closes the deposit modal.
-   */
-  closeDepositModal() {
-    const modal = document.getElementById('depositModal');
-    if (modal) {
-      const modalEl = bootstrap.Modal.getInstance(modal);
-      if (modalEl) {
-        modalEl.hide();
-      }
-    }
-  }
-  /**
-   * Central method to process and validate a selected file.
-   * @param file The File object to process.
-   */
-  private processFile(file: File): void {
-    if (file.size > this.max_file_size) {
-      this.globalMessagingService.displayErrorMessage(
-        'File Too Large',
-        `The selected file exceeds the 5MB size limit.`
-      );
-      return;
-    }
-    // If validation passes, update the component state
-    this.uploadedFile = file;
-    this.maximumFiles = true;
-  }
-  /**
-   * Handles the dragover event.
-   * Prevents the browser's default behavior to allow a drop.
-   * @param event The DragEvent.
-   */
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragging = true;
-  }
-  /**
-   * Handles the dragleave event.
-   * Resets the dragging state.
-   * @param event The DragEvent.
-   */
-  onDragLeave(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragging = false;
-  }
-  /**
-   * Handles the drop event.
-   * Prevents default browser action and processes the dropped file.
-   * @param event The DragEvent.
-   */
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragging = false;
-
-    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
-      // Only proceed if a file is not already selected
-      if (!this.maximumFiles) {
-        this.processFile(event.dataTransfer.files[0]);
-      }
-      // Clear the dataTransfer
-      event.dataTransfer.clearData();
-    }
-  }
-  /**
-   * Triggered when files are selected via the hidden input.
-   * @param event The file input change event.
-   */
-  onFileSelected(event: any): void {
-    if (event.target.files && event.target.files.length > 0) {
-      this.processFile(event.target.files[0]);
-    }
-  }
-  /**
-   * Removes the currently selected file.
-   */
-
-  removeFile(): void {
-    this.uploadedFile = null;
-    this.maximumFiles = false; // Re-enable the input
-  }
-  /**
-   * Validates the form and emits the file and form data to the parent component.
-   */
-  postFile(): void {
-    if (!this.uploadedFile) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'No file selected.'
-      );
-      return;
-    }
-    const formValue = this.depositForm.value;
-    if (!formValue.slipNumber) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Please enter the slip Number first!'
-      );
-      return;
-    }
-    this.onFilePost.emit({
-      file: this.uploadedFile,
-      slipNumber: formValue.slipNumber,
-      amount: formValue.amount,
-    });
-
-    this.removeFile();
-  }
+  
   /**
    * @description Fetches a list of users that the current user can assign tasks to.
    *
@@ -398,23 +242,5 @@ export class BankingComponent {
         },
       });
   }
-  /**
-   * @description a function to retrieve list of banks accounts for banking
-   */
-  fetchBankAccounts(): void {
-    this.paymentsService
-      .getPaymentsBankActs(
-        this.loggedInUser.code,
-        this.selectedOrg?.id || this.defaultOrg?.id,
-        this.defaultBranch?.id || this.selectedBranch?.id
-      )
-      .subscribe({
-        next: (response) => {
-          this.bankAccounts = response.data;
-        },
-        error: (err) => {
-          this.commonMethodsService.handleApiError(err);
-        },
-      });
-  }
+  
 }

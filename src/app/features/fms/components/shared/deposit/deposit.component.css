@@ -1,12 +1,3 @@
-.btn-icon {
-  border: none;
-  background: transparent;
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6c757d;
-}
 .file-dropzone {
   border: 2px dashed #ced4da; 
   background-color: transparent;
