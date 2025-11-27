@@ -57,10 +57,14 @@ export class PolicyService {
     return this.api.GET<any>(`/v2/policies?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
-  getAllPolicy() {
-    return this.api.GET(`/v2/policies`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
+  getAllPolicy(page: number = 0, size: number = 10): Observable<any> {
+    return this.api.GET<any>(
+      `v2/policies?pageNo=${page}&pageSize=${size}`,
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
   }
+
   getPaymentModes() {
     let page = 0;
     let size = 100;
@@ -434,6 +438,8 @@ export class PolicyService {
     return this.api.GET<InternalClaimExp[]>(`api/v2/internal-claims-experience?`, API_CONFIG.GIS_CLAIMS_BASE_URL, params);
 
   }
+
+
 
 
 }

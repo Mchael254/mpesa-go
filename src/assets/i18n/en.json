@@ -1823,7 +1823,8 @@
       "transaction_type": "Transaction Type",
       "client_information": "Client information",
       "commission": "Commission",
-      "exchange_rate": "Exchange rate"
+      "exchange_rate": "Exchange rate",
+      "new_policy":"New Policy"
     },
     "claims": {
       "opening": {
