@@ -250,7 +250,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     public productSubclass: ProductSubclassService,
     private globalMessagingService: GlobalMessagingService,
     public claimsService: ClaimsService,
-    private renderer: Renderer2,
     private cd: ChangeDetectorRef,
     private clientService: ClientService
 
