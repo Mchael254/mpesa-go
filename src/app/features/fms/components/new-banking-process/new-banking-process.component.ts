@@ -1,5 +1,5 @@
 import { ReceiptManagementService } from './../../services/receipt-management.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,6 +27,7 @@ import { CommonMethodsService } from '../../services/common-methods.service';
 import { PaymentsService } from '../../services/payments.service';
 import { BranchDTO } from '../../data/receipting-dto';
 import { BanksDto } from '../../data/payments-dto';
+import { DepositComponent } from '../shared/deposit/deposit.component';
 const log = new Logger('NewBankingProcessComponent');
 /**
  * @Component NewBankingProcessComponent
@@ -85,6 +86,7 @@ export class NewBankingProcessComponent implements OnInit {
    * @property {BranchDTO} defaultBranch - The default branch.
    */
   defaultBranch: BranchDTO;
+  @ViewChild('deposit') DepositComponent: DepositComponent;
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -103,11 +105,8 @@ export class NewBankingProcessComponent implements OnInit {
     private bankingService: BankingProcessService,
     private sessionStorage: SessionStorageService,
     private authService: AuthService,
-    private staffService: StaffService,
-    private receiptManagementService: ReceiptManagementService,
     private dmsService: DmsService,
     private commonMethodsService: CommonMethodsService,
-    private paymentsService: PaymentsService
   ) {}
   /**
    * @description Angular lifecycle hook that runs on component initialization.
@@ -408,6 +407,9 @@ export class NewBankingProcessComponent implements OnInit {
             '',
             response[0].uploadStatus
           );
+           if (this.DepositComponent) {
+                      this.DepositComponent.clearUploadedFile();
+                    }
         },
         error: (err) => this.commonMethodsService.handleApiError(err),
       });
