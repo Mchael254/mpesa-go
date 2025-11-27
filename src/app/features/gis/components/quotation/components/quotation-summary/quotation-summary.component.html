@@ -340,7 +340,12 @@
                               }}
                             </ng-container>
                             <ng-template #defaultField>
-                              {{ product[col.field] }}
+                              <ng-container *ngIf="isDateField(col.field); else notDateField">
+                                {{ formatDateDisplay(product[col.field]) }}
+                              </ng-container>
+                              <ng-template #notDateField>
+                                {{ product[col.field] }}
+                              </ng-template>
                             </ng-template>
                           </ng-container>
 
@@ -426,6 +431,7 @@
               </div>
 
               <div class="tab-content mb-4" id="nav-tabContent">
+
                 <!-- CLAUSES -->
                 <!-- Floating Clauses Column Selector -->
                 <div *ngIf="showClausesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
@@ -770,7 +776,7 @@
                             (click)="handleRowClick(risk)" [class.disabled]="!risk?.code">
                             <td *ngFor="let col of riskColumns" [hidden]="!col.visible">
                               <ng-container *ngIf="isDateField(col.field); else notDateField">
-                                {{ formatDate(getCellValue(risk, col.field)) }}
+                                {{ formatDateDisplay(getCellValue(risk, col.field)) }}
                               </ng-container>
                               <ng-template #notDateField>
                                 {{ getCellValue(risk, col.field) }}
@@ -903,7 +909,7 @@
                                     <!-- Default branch checks internally -->
                                     <ng-container *ngSwitchDefault>
                                       <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
-                                        {{ formatDate(section[col.field]) }}
+                                        {{ formatDateDisplay(section[col.field]) }}
                                       </ng-container>
                                       
                                       <ng-template #checkCurrencyField>
@@ -1113,15 +1119,21 @@
 
                                     <!-- Currency fields -->
                                     <ng-container *ngSwitchDefault>
-                                      <ng-container *ngIf="col.field === 'value'; else defaultField">
-                                        <div class="text-end">
-                                          {{ rowData[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
-                                        </div>
+                                      <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
+                                        {{ formatDateDisplay(getCellValue(rowData, col.field)) }}
                                       </ng-container>
+                                      
+                                      <ng-template #checkCurrencyField>
+                                        <ng-container *ngIf="col.field === 'value'; else defaultField">
+                                          <div class="text-end">
+                                            {{ rowData[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                                          </div>
+                                        </ng-container>
 
-                                      <!-- Default (non-currency fields) -->
-                                      <ng-template #defaultField>
-                                        {{ rowData[col.field] }}
+                                        <!-- Default (non-currency fields) -->
+                                        <ng-template #defaultField>
+                                          {{ rowData[col.field] }}
+                                        </ng-template>
                                       </ng-template>
                                     </ng-container>
 
@@ -1283,7 +1295,7 @@
                                     <!-- Currency + numeric fields -->
                                     <ng-container *ngSwitchDefault>
                                       <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
-                                        {{ formatDate(getCellValue(rowData, col.field)) }}
+                                        {{ formatDateDisplay(getCellValue(rowData, col.field)) }}
                                       </ng-container>
                                       
                                       <ng-template #checkCurrencyField>
@@ -1412,7 +1424,7 @@
                               <tr>
                                 <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
                                   <ng-container *ngIf="isDateField(col.field); else notDateField">
-                                    {{ formatDate(getCellValue(rowData, col.field)) }}
+                                    {{ formatDateDisplay(getCellValue(rowData, col.field)) }}
                                   </ng-container>
                                   <ng-template #notDateField>
                                     {{ getCellValue(rowData, col.field) }}
@@ -1505,7 +1517,7 @@
                                     <!-- Currency + numeric fields -->
                                     <ng-container *ngSwitchDefault>
                                       <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
-                                        {{ formatDate(getCellValue(rowData, col.field)) }}
+                                        {{ formatDateDisplay(getCellValue(rowData, col.field)) }}
                                       </ng-container>
                                       
                                       <ng-template #checkCurrencyField>
@@ -1609,7 +1621,7 @@
                                     <!-- Default branch -->
                                     <ng-container *ngSwitchDefault>
                                       <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
-                                        {{ formatDate(commission[col.field]) }}
+                                        {{ formatDateDisplay(commission[col.field]) }}
                                       </ng-container>
                                       
                                       <ng-template #checkCurrencyField>
@@ -1730,7 +1742,7 @@
                                     </ng-container>
                                     <ng-container *ngSwitchDefault>
                                       <ng-container *ngIf="isDateField(col.field); else notDateField">
-                                        {{ formatDate(riskDoc[col.field]) }}
+                                        {{ formatDateDisplay(riskDoc[col.field]) }}
                                       </ng-container>
                                       <ng-template #notDateField>
                                         {{ col.field === 'name' && !riskDoc['name'] ? riskDoc['actualName'] :
@@ -2026,7 +2038,7 @@
                   <td>{{ row.setStandard }}</td>
                   <td>{{ row.usedStandard }}</td>
                   <td>{{ row.authorizedBy || '—' }}</td>
-                  <td>{{ formatDate(row.authorizedDate) }}</td>
+                  <td>{{ formatDateDisplay(row.authorizedDate) }}</td>
                 </tr>
               </ng-template>
 

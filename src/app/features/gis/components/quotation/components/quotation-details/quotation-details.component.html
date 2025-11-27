@@ -145,15 +145,17 @@
                     <!-- Agent Field -->
                     <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
                       <div class="position-relative" style="cursor: pointer;">
-
                         <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
-                          [value]="displayAgentName || ''" [readonly]="isRevisionMode" [disabled]="isRevisionMode"
+                          readonly
+                          [value]="displayAgentName"
                           (click)="!isRevisionMode && (showAgentSearchModal = true)" style="cursor: pointer;" />
+                        <input type="hidden" formControlName="agent" />
                         <i class="pi pi-search position-absolute"
-                          style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
+                          style="right: 10px; top: 50%; transform: translateY(-50%); color: #00529B; cursor: pointer;"
+                          (click)="!isRevisionMode && (showAgentSearchModal = true)"></i>
                       </div>
-                      <button *ngIf="showAgentSearchModal" data-bs-toggle="modal"
-                        data-bs-target="#searchAgent"></button>
+                      <app-agent-search-modal *ngIf="showAgentSearchModal"
+                        (agentSelected)="onAgentSelected($event)"></app-agent-search-modal>
                       <div
                         *ngIf="quotationForm.get('agent')?.hasError('required') && quotationForm.get('agent')?.touched"
                         class="form-text text-danger">
@@ -1248,74 +1250,7 @@
     </div>
   </div>
 
-  <!-- Agent Modal -->
-  <div id="searchAgent" *ngIf="showAgentSearchModal" class="modal fade show" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="width:700px">
-      <div class="modal-content">
 
-        <!-- Modal Body -->
-        <div class="modal-body">
-          <h5 class="modal-title mt-2 mb-2" id="editOtherDetailsLabel">
-            Select agent
-            <button type="button" class="btn-close float-end red-close" aria-label="Close"
-              (click)="showAgentSearchModal = false"></button>
-          </h5>
-
-          <p-table #selectAgentTable [value]="agents" [tableStyle]="{'min-width': '300px'}" [rows]="5"
-            [paginator]="agents?.length > 10" selectionMode="single" dataKey="id" [rowsPerPageOptions]="[5, 10, 20]"
-            [(selection)]="selectedAgent">
-
-            <ng-template pTemplate="header">
-              <tr>
-                <th class="flexible-header1" style="width: 30%" pSortableColumn="id">
-
-                  Id
-                  <p-sortIcon field="id" />
-                </th>
-                <th class="flexible-header1" style="width: 40%" pSortableColumn="name">
-                  Name <p-sortIcon field="name" />
-                </th>
-                <th class="flexible-header1" style="width: 40%" pSortableColumn="accountType">
-                  Intermediary type<p-sortIcon field="accountType" />
-                </th>
-              </tr>
-              <tr class=" filter-row mb-5 mt-5">
-                <td>
-                  <input type="text" class="form-control form-control-sm" (input)="filterById($event)">
-                </td>
-                <td>
-                  <input type="text" class="form-control form-control-sm" (input)="filterByAgentName($event)">
-                </td>
-                <td>
-                  <input type="text" class="form-control form-control-sm" (input)="filterByIntermediaryType($event)">
-                </td>
-              </tr>
-            </ng-template>
-
-            <ng-template pTemplate="body" let-agent let-rowIndex="rowIndex">
-
-              <tr [class.p-highlight]="agent === selectedAgent" [pSelectableRow]="agent" class="point">
-
-                <td>{{ agent.id }}</td>
-                <td>{{ agent.name |sentenceCase }}</td>
-                <td>{{ agent.accountType |sentenceCase }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div> <!-- Modal Footer -->
-        <div class="mt-4 mb-4 d-flex justify-content-end gap-2">
-          <button type="button" class="btn btn-outline-primary" (click)="showAgentSearchModal = false"
-            id="cancelDetails">
-            {{ 'gis.quotation.cancel' | translate }}
-          </button>
-          <button type="button" class="btn btn-primary" id="saveDetails" (click)="saveAgent(selectedAgent)">
-            {{ 'gis.quotation.save' | translate }}
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
 
   <!-- Marketer modal -->
   <div id="searchMarketer" *ngIf="showMarketerSearchModal" class="modal fade show" tabindex="-1" role="dialog">
