@@ -1760,7 +1760,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
    */
   isDateField(fieldName: string): boolean {
     const dateFieldPatterns = [
-      'date', 'Date', 'DATE',
+      'date', 'Date', 'DATE', 'coverTo', 'coverFrom', 'cover To',
       'wef', 'wet',
       'created', 'updated', 'modified',
       'timestamp', 'time'
