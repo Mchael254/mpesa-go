@@ -27,7 +27,8 @@ import { ProcessBatchComponent } from './components/process-batch/process-batch.
 import { DialogModule } from 'primeng/dialog';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { CheckboxModule } from 'primeng/checkbox';
-import { BankingComponent } from './components/shared/banking/banking.component';
+import { DepositComponent } from './components/shared/deposit/deposit.component';
+import { UsersComponent } from './components/shared/users/users.component';
 @NgModule({
   declarations: [
     ChequeAuthorizationComponent,
@@ -46,7 +47,8 @@ import { BankingComponent } from './components/shared/banking/banking.component'
     BankingDashboardComponent,
     NewBankingProcessComponent,
     ProcessBatchComponent,
-    BankingComponent,
+    UsersComponent,
+    DepositComponent,
   ],
   imports: [
     CommonModule,
