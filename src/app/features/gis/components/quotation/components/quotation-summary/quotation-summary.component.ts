@@ -325,6 +325,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   exceptionsColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
   selectedExceptions: ExceptionListDto[] = [];
   dateFormat: string = 'dd-MMM-yyyy'; // Default format
+  primeNgDateFormat: string = 'dd-M-yy'; // PrimeNG format
   private datePipe: DatePipe = new DatePipe('en-US');
   totalTaxAmount: number = 0;
 
@@ -559,6 +560,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     } else {
       log.debug("Using default date format:", this.dateFormat);
     }
+
+    // Convert dateFormat to PrimeNG format
+    this.primeNgDateFormat = this.dateFormat
+      .replace('yyyy', 'yy')
+      .replace('MM', 'mm');
     
     this.currencyObj = {
       prefix: currencySymbol + ' ',
@@ -964,9 +970,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.columns = [];
     }
   }
-
-
-
 
 
   filterTable(event: Event, field: string, tableRef: any) {
@@ -1976,7 +1979,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
    * Format date for display in templates
    * Returns formatted date string or placeholder if date is null/invalid
    */
-  formatDate(date: any, placeholder: string = '—'): string {
+  formatDateDisplay(date: any, placeholder: string = '—'): string {
     if (!date) {
       return placeholder;
     }
@@ -2006,6 +2009,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const dateFieldPatterns = [
       'date', 'Date', 'DATE',
       'wef', 'wet',
+      'cover',
       'created', 'updated', 'modified',
       'timestamp', 'time'
     ];
@@ -3075,6 +3079,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       header: this.sentenceCase(key),
       visible: defaultVisibleFields.includes(key),
     }));
+
+    log.debug("scheduleColumns:", this.scheduleColumns);
   }
 
   setColumnsFromPerilDetails(sample: any) {
@@ -3083,12 +3089,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       'shortDescription',
       'code',
       'claimExcessType'
-
-
-
-
-
-
 
     ];
 

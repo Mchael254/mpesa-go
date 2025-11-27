@@ -389,11 +389,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     }
 
-
-
-
-
-
   }
 
   ngOnInit(): void {
@@ -427,11 +422,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     });
 
 
-
-
-
-
-
     this.loadDetailedQuotationFields();
     this.minDate = new Date();
     // this.todaysDate = new Date();
@@ -463,12 +453,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     this.loadPersistedClauses();
     this.getUsers();
-
-
-
-
-
-
 
   }
 
@@ -1776,7 +1760,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
    */
   isDateField(fieldName: string): boolean {
     const dateFieldPatterns = [
-      'date', 'Date', 'DATE',
+      'date', 'Date', 'DATE', 'coverTo', 'coverFrom', 'cover To',
       'wef', 'wet',
       'created', 'updated', 'modified',
       'timestamp', 'time'
@@ -3149,6 +3133,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.selectedAgent = agent
     this.selectedAgentName = agent.name
     this.showAgentSearchModal = false
+  }
+
+  onAgentSelected(event: { agentName: string; agentId: number }) {
+    log.debug("Agent selected from modal", event);
+    const agentValue = {
+      id: event.agentId,
+      name: event.agentName
+    };
+    this.quotationForm.controls['agent'].setValue(agentValue);
+    this.selectedAgent = agentValue;
+    this.selectedAgentName = event.agentName;
+    this.showAgentSearchModal = false;
   }
 
 

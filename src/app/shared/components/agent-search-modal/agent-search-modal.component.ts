@@ -1,7 +1,5 @@
-import { ChangeDetectorRef, Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Logger } from '../../services';
-import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
-import { Router } from '@angular/router';
 import { QuotationsService } from '../../../features/gis/components/quotation/services/quotations/quotations.service';
 import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -9,6 +7,7 @@ import { untilDestroyed } from '../../shared.module';
 import { Table } from 'primeng/table';
 import { IntermediaryService } from '../../../features/entities/services/intermediary/intermediary.service';
 import { AgentDto, AgentResponseDto } from 'src/app/features/gis/data/quotations-dto';
+import { Modal } from 'bootstrap';
 
 
 const log = new Logger('agentSearchComponent');
@@ -20,10 +19,13 @@ const log = new Logger('agentSearchComponent');
   standalone: false,
 })
 
-export class AgentSearchModalComponent {
+export class AgentSearchModalComponent implements AfterViewInit {
   @ViewChild('agentTable') agentTable!: Table;
   @ViewChild('closebutton') closebutton;
+  @ViewChild('agentSearchModalElement') modalElementRef: ElementRef;
   @Output() agentSelected = new EventEmitter<{ agentName: string; agentId: number }>();
+
+  private modalInstance: Modal;
 
   agentName: string;
   agentId: number;
@@ -39,7 +41,6 @@ export class AgentSearchModalComponent {
 
 
   constructor(
-    private router: Router,
     public quotationService: QuotationsService,
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
@@ -48,7 +49,22 @@ export class AgentSearchModalComponent {
   ) { }
 
 
-  ngOnDestroy(): void { }
+  ngOnDestroy(): void {
+    if (this.modalInstance) {
+      this.modalInstance.hide();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    const modalElement = this.modalElementRef?.nativeElement;
+    if (modalElement) {
+      this.modalInstance = new Modal(modalElement);
+      this.modalInstance.show();
+      modalElement.addEventListener('shown.bs.modal', () => {
+        this.onModalOpen();
+      });
+    }
+  }
 
   onModalOpen(): void {
     this.selectedAgent = null;
