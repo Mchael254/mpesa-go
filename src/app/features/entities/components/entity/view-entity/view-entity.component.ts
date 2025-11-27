@@ -47,9 +47,9 @@ import {
   FormGroupsDto,
   FormSubGroupsDto,
   SaveAction,
-  // SaveAddressAction, SaveFinanceAction,
   SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
+import {IntermediaryService} from "../../../services/intermediary/intermediary.service";
 
 const log = new Logger('ViewEntityComponent');
 
@@ -68,9 +68,7 @@ export class ViewEntityComponent implements OnInit {
   @ViewChild('financialRef') financialComponent!: FinancialComponent;
   @ViewChild('wealthAmlRef') wealthAmlComponent!: WealthAmlComponent;
 
-  // entityTransactions: EntityTransactionsComponent;
-
-  public entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
+  entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
 
   unAssignedPartyTypes: PartyTypeDto[] = [];
 
@@ -83,7 +81,6 @@ export class ViewEntityComponent implements OnInit {
   page = 0;
   pageSize = 5;
   checked: boolean;
-  // showRelatedAccountsTab: boolean = false;
 
   entitySummaryForm: FormGroup;
   selectRoleModalForm: FormGroup;
@@ -115,7 +112,6 @@ export class ViewEntityComponent implements OnInit {
   states: StateDto[] = [];
 
   wealthAmlDetails: any;
-  // bankDetails: any;
   nokDetails: any[] = [];
   bankBranchDetails: BankBranchDTO;
 
@@ -130,12 +126,6 @@ export class ViewEntityComponent implements OnInit {
 
   language: string = 'en';
 
-  // editPrimeDetailsFormConfig: any;
-  // editContactFormConfig: any;
-  // editAddressFormConfig: any;
-  // editFinancialFormConfig: any;
-  // editWealthAmlFormConfig: any;
-
   selectOptions: {
     idTypes: IdentityModeDTO[],
     countries: CountryDto[],
@@ -147,11 +137,6 @@ export class ViewEntityComponent implements OnInit {
   subModuleId: string = '360_overview';
   moduleId: string = 'account_management';
   subModules: SubModulesDto[];
-
-  Save_Action = SaveAction;
-  // saveAction: SaveAction;
-
-  // protected readonly SaveAction = SaveAction;
 
   constructor(
     private fb: FormBuilder,
@@ -167,6 +152,7 @@ export class ViewEntityComponent implements OnInit {
     private utilService: UtilService,
     private clientService: ClientService,
     private dynamicScreenSetupService: DynamicScreensSetupService,
+    private intermediaryService: IntermediaryService,
   ) {
     this.spinner.show();
     this.selectedRole = {};
@@ -177,14 +163,19 @@ export class ViewEntityComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchSubModules();
-    // this.fetchDynamicDisplayConfig();
-    // this.edit360ViewFormsConfig();
-    this.createEntitySummaryForm();
-    this.createSelectRoleForm();
     this.entityId = this.activatedRoute.snapshot.params['id'];
-    this.getEntityByPartyId();
-    this.getEntityAccountById();
-    this.getCountries();
+    const partyType = this.activatedRoute.snapshot.queryParams['partyType'];
+
+    if (partyType === 'intermediary') { // todo: use enum
+      this.getAgentById(this.entityId);
+      this.getPartyAccountDetailByAccountId(this.entityId);
+    } else {
+      this.createEntitySummaryForm();
+      this.createSelectRoleForm();
+      this.getEntityByPartyId();
+      this.getEntityAccountById();
+      this.getCountries();
+    }
     this.spinner.hide();
   }
 
@@ -203,11 +194,37 @@ export class ViewEntityComponent implements OnInit {
     })
   }
 
+
+  getAgentById(id: number): void {
+    this.intermediaryService.getAgentDetailsById(id).subscribe({
+      next: (data: AgentDTO) => {
+        this.entityDetails = data;
+        this.getEntityByAccountId(data.partyId);
+        log.info('intermediary details >>> ', data);
+      },
+      error: (err: Error) => {
+        this.globalMessagingService.displayErrorMessage('Error', err.message);
+      }
+    })
+  }
+
+  getEntityByAccountId(id: number): void {
+    this.entityService.getAccountById(id).subscribe({
+      next: (data: AccountReqPartyId[]) => {
+        this.entityAccountIdDetails = data;
+      },
+      error: err => {
+
+      }
+    })
+  }
+
   /**
    * This method fetches the setup configuration for Entity360 screen
    */
   fetchDynamicScreenSetup(): void {
-    const targetEntityShortDescription: string = this.entityAccountIdDetails[0].partyType.partyTypeShtDesc;
+    // const targetEntityShortDescription: string = this.entityAccountIdDetails[0].partyType.partyTypeShtDesc;
+    const targetEntityShortDescription = this.partyAccountDetails?.partyType?.partyTypeShtDesc;
 
     this.dynamicScreenSetupService.fetchDynamicSetupByScreen(
       null,
@@ -217,6 +234,7 @@ export class ViewEntityComponent implements OnInit {
       targetEntityShortDescription
     ).subscribe({
       next: (res: DynamicScreenSetupDto) => {
+        log.info('dynamic screen setup ', res);
         this.filterGroupsAndFieldsByCategory(res)
       },
       error: (err) => {
@@ -231,7 +249,6 @@ export class ViewEntityComponent implements OnInit {
    */
   filterGroupsAndFieldsByCategory(dynamicScreenSetupDto: DynamicScreenSetupDto): void {
     const category: string = (this.activatedRoute.snapshot.queryParams['category'])?.toLowerCase();
-    const partyTypeShtDesc: string = this.entityAccountIdDetails[0].partyType.partyTypeShtDesc;
 
     log.info('dynamic screen setup result', dynamicScreenSetupDto);
 
@@ -277,49 +294,6 @@ export class ViewEntityComponent implements OnInit {
     this.formGroupsAndFieldConfig = { groups, fields };
     log.info('sorted groups with fields >>> ', groups);
   }
-
-  /*fetchDynamicDisplayConfig(): void {
-    this.http.get<any>( 'assets/data/dynamicDisplay360View.json').subscribe({
-      next: (data: any) => {
-        this.dynamicDisplay = data;
-        // log.info('dynamicDisplay360View >>> ', data);
-        this.dynamicDisplay = this.dynamicDisplay.sort((a, b) => a.order - b.order);
-
-        data.forEach(item => {
-          if (item.section_id === 'prime_details') {
-            const primaryTabsArr = item.tabs;
-            this.primaryTabs = primaryTabsArr.map(item => item.title);
-          } else if (item.section_id === 'additional_information') {
-            const secondaryTabsArr = item.tabs;
-            this.secondaryTabs = secondaryTabsArr.map(item => item.title);
-          }
-
-          item.tabs = item.tabs.sort((a, b) => a.order - b.order);
-        })
-
-        // log.info(`primary tabs >>> `, this.primaryTabs, this.secondaryTabs);
-      },
-      error: err => {
-        log.error(err);
-      }
-    });
-  }*/
-
-
-  /*edit360ViewFormsConfig(): void {
-    this.http.get<any>( 'assets/data/edit360ViewForms.json').subscribe({
-      next: (data: any) => {
-        this.editPrimeDetailsFormConfig = data.prime_identity;
-        this.editContactFormConfig = data.contact;
-        this.editAddressFormConfig = data.address;
-        this.editFinancialFormConfig = data.financial;
-        this.editWealthAmlFormConfig = data.wealth_aml;
-      },
-      error: err => {
-        log.error(err);
-      }
-    });
-  }*/
 
   getCountries() {
     this.countryService
@@ -403,8 +377,9 @@ export class ViewEntityComponent implements OnInit {
         log.info('clientDetails >>> ', res);
         // this.populateDetailsForDisplay(res);
         this.clientDetails = res;
-        this.clientDetails.contactDetails.branchName = res.organizationBranchName;
-        this.clientDetails.contactDetails.branchId = res.organizationBranchId;
+        this.entityDetails = res;
+        // this.clientDetails.contactDetails.branchName = res.organizationBranchName;
+        // this.clientDetails.contactDetails.branchId = res.organizationBranchId;
         this.fetchDynamicScreenSetup();
       },
       error: (err) => {
@@ -417,7 +392,7 @@ export class ViewEntityComponent implements OnInit {
    * Fetch Entity Accounts - Staff Account, Client Account, Service Provider Account, Intermediary Account
    * @param id representing account code
    */
-  getPartyAccountDetailByAccountId(id: number) {
+  /*getPartyAccountDetailByAccountId(id: number) {
     let accountType =  this.entityAccountIdDetails.find(account =>  account.id == id);
         this.accountService.getAccountDetailsByAccountCode(accountType?.accountCode)
     this.accountService
@@ -428,6 +403,15 @@ export class ViewEntityComponent implements OnInit {
         // this.accountService.setCurrentAccounts(accountType);
         this.populateDetailsForDisplay(data);
       });
+  }*/
+  getPartyAccountDetailByAccountId(id: number): void {
+    this.accountService.getAccountDetailsByAccountCode(id).subscribe({
+      next: (data) => {
+        this.partyAccountDetails = data;
+        this.fetchDynamicScreenSetup();
+      },
+      error: err => {}
+    })
   }
 
   populateDetailsForDisplay(partyAccountDetails: PartyAccountsDetails) {

@@ -78,7 +78,9 @@ export interface AgentDTO {
   agentIdNo?: string;
   branchId?: number;
   category?: string;
+  partyId?:number;
 
+  idNumber?: number;
 }
 
 export interface AgentRequestDTO {

@@ -160,7 +160,14 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
   }
 
   viewDetailsWithId(rowId: number, category?: string): void {
-    this.router.navigate([ `/home/entity/view/${rowId}`], { queryParams: { category } });
+    const partyType = 'intermediary';
+
+    this.router.navigate([ `/home/entity/view/${rowId}`], { queryParams: { category, partyType } });
+
+    /*this.router.navigate(
+      [ `/home/entity/intermediary/view/${rowId}`],
+      { queryParams: { category, partyType } },
+    );*/
   }
 
   /**
