@@ -17,7 +17,8 @@ import { ReceiptPreviewGuard } from './services/receipt-preview-guard.service';
 import { NewBankingProcessComponent } from './components/new-banking-process/new-banking-process.component';
 import { BankingDashboardComponent } from './components/banking-dashboard/banking-dashboard.component';
 import { ProcessBatchComponent } from './components/process-batch/process-batch.component';
-import { BankingComponent } from './components/shared/banking/banking.component';
+import { DepositComponent } from './components/shared/deposit/deposit.component';
+import { UsersComponent } from './components/shared/users/users.component';
 
 
 const routes: Routes = [
@@ -82,8 +83,12 @@ const routes: Routes = [
   component:ProcessBatchComponent
  },
  {
-  path:'banking',
-  component:BankingComponent
+  path:'users',
+  component:UsersComponent
+ },
+ {
+  path:'deposit',
+  component:DepositComponent
  }
 ];
 

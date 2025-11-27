@@ -1,5 +1,5 @@
 import { CommonMethodsService } from './../../services/common-methods.service';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import fmsStepsData from '../../data/fms-step.json';
@@ -11,13 +11,10 @@ import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 import { StaffService } from 'src/app/features/entities/services/staff/staff.service';
 import { DmsService } from 'src/app/shared/services/dms/dms.service';
 import { ReceiptUploadRequest } from 'src/app/shared/data/common/dmsDocument';
-import * as bootstrap from 'bootstrap';
-import { BanksDto } from '../../data/payments-dto';
 import { PaymentsService } from '../../services/payments.service';
-import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
-import { BranchDTO } from '../../data/receipting-dto';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { DepositComponent } from '../shared/deposit/deposit.component';
 @Component({
   selector: 'app-process-batch',
   templateUrl: './process-batch.component.html',
@@ -46,7 +43,8 @@ export class ProcessBatchComponent {
   reAssign: boolean = false;
   /** Stores the batch object currently being acted upon (e.g., for re-assignment or deposit). */
   selectedBatchObj: BatchesDTO;
-
+  // @ViewChild to get a reference to the child component instance
+  @ViewChild('deposit') DepositComponent: DepositComponent;
   /**
    * @constructor
    * @param translate Service for handling internationalization.
@@ -225,15 +223,17 @@ export class ProcessBatchComponent {
           policyNumber: null,
         },
       ];
-
-      this.dmsService.uploadFiles(payload).subscribe({
+    this.dmsService.uploadFiles(payload).subscribe({
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage(
             '',
             response[0].uploadStatus
           );
+           if (this.DepositComponent) {
+            this.DepositComponent.clearUploadedFile();
+          }
         },
-        error: (err) => this.commonMethodsService.handleApiError(err),
+        error: (err) =>this.commonMethodsService.handleApiError(err)
       });
     };
     fileReader.readAsDataURL(event.file);
