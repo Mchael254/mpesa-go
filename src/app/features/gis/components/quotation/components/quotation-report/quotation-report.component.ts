@@ -8,6 +8,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { DmsDocument, SingleDmsDocument } from 'src/app/shared/data/common/dmsDocument';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import * as bootstrap from 'bootstrap';
+import { DatePipe } from '@angular/common';
 
 const log = new Logger('QuotationReportComponent');
 
@@ -73,6 +74,8 @@ export class QuotationReportComponent {
   selectedClientDoc: DmsDocument;
   previewClientDoc: { name: string; mimeType: string; dataUrl: string } | null = null;
   private documentBlobs: { [id: string]: Blob } = {};
+  private datePipe: DatePipe = new DatePipe('en-US');
+  dateFormat: string = 'dd-MM-yyyy';
 
   constructor(
     public quotationService: QuotationsService,
@@ -103,6 +106,14 @@ export class QuotationReportComponent {
     this.clientDetails = clientDetails
     this.clientCode && this.fetchClientDoc(this.clientCode)
     this.loggedInUser = this.quotationDetails.preparedBy
+    // Load date format from session storage
+    const storedDateFormat = sessionStorage.getItem('dateFormat');
+    if (storedDateFormat) {
+      this.dateFormat = storedDateFormat;
+      log.debug("Loaded date format from session storage:", this.dateFormat);
+    } else {
+      log.debug("Using default date format:", this.dateFormat);
+    }
   }
 
   fetchReports() {
@@ -823,6 +834,57 @@ export class QuotationReportComponent {
         log.error(`Download failed!`, err);
       },
     });
+  }
+  formatDate(date: any, placeholder: string = '—'): string {
+    if (!date) {
+      return placeholder;
+    }
+
+    try {
+      let rawDate: Date;
+
+      // Check if format is DD-MM-YYYY (with dashes)
+      if (typeof date === 'string' && date.match(/^\d{2}-\d{2}-\d{4}$/)) {
+        const [day, month, year] = date.split('-');
+        rawDate = new Date(`${year}-${month}-${day}`);
+      }
+      else {
+        // Fallback for normal formats
+        rawDate = new Date(date);
+      }
+
+      log.debug('raw doc created date', rawDate);
+
+      // Check if valid
+      if (isNaN(rawDate.getTime())) {
+        return placeholder;
+      }
+
+      // Format using datePipe
+      const formattedDate = this.datePipe.transform(rawDate, this.dateFormat);
+      return formattedDate || placeholder;
+
+    } catch (error) {
+      log.error('Error formatting date:', error);
+      return placeholder;
+    }
+  }
+
+  /**
+   * Check if a field name represents a date field
+   * Used to determine if formatting should be applied
+   */
+  isDateField(fieldName: string): boolean {
+    const dateFieldPatterns = [
+      'date', 'Date', 'DATE',
+      'wef', 'wet',
+      'created', 'updated', ,
+      'timestamp', 'time'
+    ];
+
+    return dateFieldPatterns.some(pattern =>
+      fieldName.toLowerCase().includes(pattern.toLowerCase())
+    );
   }
 
 }

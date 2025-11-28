@@ -33,7 +33,7 @@
                     <th *ngFor="let col of riskDetailsColumns" [hidden]="!col.visible" class="px-3"
                         [pSortableColumn]="col.field">
                         <div class="d-flex align-items-center gap-1 flex-nowrap">
-                            <span class="text-truncate">{{ col.header }}</span>
+                            <span class="text-truncate">{{ col.header |sentenceCase }}</span>
                             <p-sortIcon [field]="col.field"></p-sortIcon>
                         </div>
                     </th>
@@ -514,7 +514,7 @@
                         <tr>
                             <th *ngFor="let col of columns" class="flexible-header"
                                 [ngClass]="{'text-center': col.field === 'actions'}">
-                                {{ col.header }}
+                                {{ col.header |sentenceCase }}
                             </th>
 
                         </tr>
@@ -721,7 +721,7 @@
     <div class="card-body mx-4">
         <div class="row">
             <div class="col-4 ">
-                <p class="section-title "> {{'gis.quotation.section_details' | translate}}</p>
+                <p class="section-title "> {{ 'gis.quotation.section_details' | translate | sentenceCase }}</p>
             </div>
             <div class="col-8 d-flex justify-content-end">
                 <div class="row">
@@ -1238,7 +1238,7 @@
                     <tr>
                         <th *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header"
                             [pSortableColumn]="col.field">
-                            {{ col.header }}
+                            {{ col.header |sentenceCase }}
                             <p-sortIcon [field]="col.field"></p-sortIcon>
                         </th>
                     </tr>
@@ -1310,7 +1310,7 @@
 
         <div class="row mb-2">
             <div class="col-4 clause-title">
-                <p class="section-title">{{'gis.quotation.other_risk_details' | translate}}</p>
+                <p class="section-title">{{'gis.quotation.other_risk_details' | translate | sentenceCase}}</p>
             </div>
 
             <div class="col-8 d-flex justify-content-end">
@@ -1521,7 +1521,7 @@
                         <th *ngFor="let col of clauseColumns" [hidden]="!col.visible" class="px-3 mb-2"
                             [pSortableColumn]="col.field">
                             <div class="d-flex align-items-center gap-1 flex-nowrap">
-                                <span class="text-truncate">{{ col.header }}</span>
+                                <span class="text-truncate">{{ col.header |sentenceCase }}</span>
                                 <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
                             </div>
                         </th>
@@ -1849,7 +1849,7 @@
 
                             <div class="d-flex align-items-center gap-1 flex-nowrap"
                                 [ngClass]="{ 'justify-content-center': col.field === 'actions' }">
-                                <span class="text-truncate">{{ col.header }}</span>
+                                <span class="text-truncate">{{ col.header |sentenceCase }}</span>
                                 <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
                             </div>
                         </th>
@@ -2140,7 +2140,7 @@
                                 [(ngModel)]="col.visible" (change)="togglePerilColumnVisibility(col.field)"
                                 [id]="col.field">
                             <label class="form-check-label" [for]="col.field">
-                                {{ col.header }}
+                                {{ col.header |sentenceCase }}
                             </label>
                         </div>
                     </div>
@@ -2157,7 +2157,7 @@
                         <th *ngFor="let col of perilColumns" [hidden]="!col.visible" class="px-3 mb-2"
                             [pSortableColumn]="col.field">
                             <div class="d-flex align-items-center gap-1 flex-nowrap">
-                                <span class="text-truncate">{{ col.header }}</span>
+                                <span class="text-truncate">{{ col.header |sentenceCase }}</span>
                                 <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
                             </div>
                         </th>
@@ -2549,7 +2549,7 @@
                         <th *ngFor="let col of commissionsColumns" [hidden]="!col.visible" class="px-3 mb-2"
                             [pSortableColumn]="col.field">
                             <div class="d-flex align-items-center gap-1 flex-nowrap">
-                                <span class="text-truncate">{{ col.header }}</span>
+                                <span class="text-truncate">{{ col.header |sentenceCase }}</span>
                                 <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
                             </div>
                         </th>
@@ -2913,7 +2913,7 @@
                         <th *ngFor="let col of taxesColumns" [hidden]="!col.visible" class="px-3 mb-2"
                             [pSortableColumn]="col.field">
                             <div class="d-flex align-items-center gap-1 flex-nowrap">
-                                <span class="text-truncate">{{ col.header }}</span>
+                                <span class="text-truncate">{{ col.header |sentenceCase}}</span>
                                 <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
                             </div>
                         </th>
@@ -3274,7 +3274,7 @@
                             [pSortableColumn]="col.field" [ngClass]="{'text-center': col.field === 'actions'}">
                             <div class="d-flex align-items-center gap-1 flex-nowrap"
                                 [ngClass]="{'justify-content-center': col.field === 'actions'}">
-                                <span class="text-truncate">{{ col.header }}</span>
+                                <span class="text-truncate">{{ col.header |sentenceCase }}</span>
                                 <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
                             </div>
                         </th>
