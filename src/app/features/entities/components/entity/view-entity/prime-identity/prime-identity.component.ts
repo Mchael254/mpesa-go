@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {PartyAccountsDetails} from "../../../../data/accountDTO";
-import {IdentityModeDTO, ReqPartyById} from "../../../../data/entityDto";
+import {AccountReqPartyId, IdentityModeDTO, ReqPartyById} from "../../../../data/entityDto";
 import {Logger, UtilService} from "../../../../../../shared/services";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {CountryDto} from "../../../../../../shared/data/common/countryDto";
@@ -36,10 +36,11 @@ export class PrimeIdentityComponent implements OnInit {
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
 
   @Input() partyAccountDetails: PartyAccountsDetails;
+  @Input() entityAccountIdDetails: AccountReqPartyId[];
   @Input() entityPartyIdDetails: ReqPartyById;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() clientDetails: ClientDTO;
-  @Input() entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
+  @Input() entityDetails: any /*StaffDto | ClientDTO | ServiceProviderRes | AgentDTO*/;
   @Input() group: FormGroupsDto;
 
   selectOptions: {
@@ -84,15 +85,14 @@ export class PrimeIdentityComponent implements OnInit {
 
   initData(): void {
     setTimeout(() => {
-
-      const partyType = (this.partyAccountDetails.partyType.partyTypeName).toUpperCase();
+      const partyType = (this.entityAccountIdDetails[0]?.partyType?.partyTypeName).toUpperCase();
 
       switch (partyType) {
         case 'CLIENT':
-          this.setClientPrimeDetails();
+          this.primeDetails = this.setClientPrimeDetails();
           break;
         case 'INTERMEDIARIES':
-          //
+          this.primeDetails = this.setIntermediaryDetails();
           break;
           default:
             //
@@ -111,19 +111,32 @@ export class PrimeIdentityComponent implements OnInit {
     }, 1000);
   }
 
-  setClientPrimeDetails(): void {
-    this.primeDetails = {
-      overview_business_reg_no: this.clientDetails.idNumber,
-      overview_pin_number: this.clientDetails.pinNumber,
-      overview_date_of_incorporation: this.clientDetails?.dateOfBirth,
-      overview_client_type: this.clientDetails?.clientType?.clientTypeName,
-      overview_primary_id_type: this.clientDetails.modeOfIdentity?.name,
-      overview_id_number: this.clientDetails.idNumber,
-      overview_date_of_birth: this.clientDetails.dateOfBirth,
-      overview_citizenship: this.clientDetails.citizenshipCountryName,
-      overview_gender: this.clientDetails.gender,
-      overview_marital_status: this.clientDetails.maritalStatus,
+  setClientPrimeDetails() {
+    return {
+      overview_business_reg_no: this.entityDetails.idNumber,
+      overview_pin_number: this.entityDetails.pinNumber,
+      overview_date_of_incorporation: this.entityDetails?.dateOfBirth,
+      overview_client_type: this.entityDetails?.clientType?.clientTypeName,
+      overview_primary_id_type: this.entityDetails.modeOfIdentity?.name,
+      overview_id_number: this.entityDetails.idNumber,
+      overview_date_of_birth: this.entityDetails.dateOfBirth,
+      overview_citizenship: this.entityDetails.citizenshipCountryName,
+      overview_gender: this.entityDetails.gender,
+      overview_marital_status: this.entityDetails.maritalStatus,
     };
+  }
+
+  setIntermediaryDetails() {
+    return {
+      overview_account_type: this.partyAccountDetails.partyType.partyTypeName,
+      overview_doc_id_no: this.entityDetails.idNumber,
+      overview_tax_pin_no: '[check]',
+      overview_ira_license_no: '[check]',
+      overview_dob: this.entityDetails.dateOfBirth,
+      overview_citizenship: '[check]',
+      overview_gender: this.entityDetails.gender,
+      overview_marital_status: '[check]',
+    }
   }
 
 
