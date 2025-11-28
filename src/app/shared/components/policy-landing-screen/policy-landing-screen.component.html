@@ -1,4 +1,4 @@
-<p-tabView>
+<!-- <p-tabView>
     <p-tabPanel header="Life IND" [selected]="true">
       <div>
         <div>
@@ -47,8 +47,6 @@
   
               <div class="col-5">
                 <div class="d-flex justify-content-end">
-                  <!-- <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary" [routerLink]="'/home/lms/ind/quotation/quick'">Quick Quotation</button>
-                  <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary"> Normal Quotation </button> -->
                 </div>
               </div>
             </div>
@@ -108,4 +106,200 @@
     <p-tabPanel header="Pension">
       <p>Pension</p>
     </p-tabPanel>
-  </p-tabView>
+  </p-tabView> -->
+
+<p-tabView (onChange)="onTabChange($event)">
+  <p-tabPanel *ngFor="let tab of visibleTabs" [header]="tab.header">
+    <ng-container [ngSwitch]="tab.content">
+
+      <!-- life insurance -->
+      <ng-container *ngSwitchCase="'lifeInd'">
+        <div>
+          <div>
+            <div>
+              <div class="row">
+                <div class="col-7">
+                  <div>
+                    <div class="row">
+                      <div class="col-8">
+                        <div class="input-group mb-3" style="font-size: 15px">
+                          <span class="input-group-text" id="basic-addon1">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                          </span>
+                          <input style="font-size: 12px !important" type="text" class="form-control"
+                            placeholder="Search by client's name or quotation no" aria-label="Username"
+                            aria-describedby="basic-addon1" />
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="input-group mb-3">
+                          <label class="input-group-text" for="inputGroupSelect01"
+                            style="font-size: 11px !important">Sort by:</label>
+                          <select class="form-select" id="inputGroupSelect01">
+                            <option selected style="font-size: 11px !important">
+                              Status
+                            </option>
+                            <option></option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-5">
+                  <div class="d-flex justify-content-end">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Quotation No.</th>
+                    <th>Client Name</th>
+                    <th>Sum Assured</th>
+                    <th>Premium</th>
+                    <th>Intermediary</th>
+                    <th>Date Created</th>
+                    <th>Cover From</th>
+                    <th>Cover To</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody *ngIf="LMS_IND.length > 0">
+                  <tr *ngFor="let lms of LMS_IND">
+                    <td>{{ lms?.quote_no || "" }}</td>
+                    <td>{{ lms?.quote_no || "" }}</td>
+                    <td>{{ lms?.sum_insured || "" | number }}</td>
+                    <td>{{ lms?.premium || 0 | number }}</td>
+                    <td>{{ lms?.quote_no || "" }}</td>
+                    <td>{{ lms?.created_at || "" }}</td>
+                    <td>{{ lms?.quote_no || "" }}</td>
+                    <td>{{ lms?.quote_no || "" }}</td>
+                    <td>{{ lms?.quote_status || "" }}</td>
+                    <td (click)="selectLmsIndRow(lms)">{{ "Process" }}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div *ngIf="LMS_IND.length === 0" class="text-danger d-flex justify-content-center">
+                No List of Policy Available
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- general insurance -->
+      <ng-container *ngSwitchCase="'general'">
+
+
+        <!-- GIS policy table -->
+        <div class="position-relative">
+          <!-- Column Selector Toggle -->
+          <div class="d-flex justify-content-end align-items-center gap-2 mb-2" *ngIf="policiesLoaded && policies?.length > 0">
+            <div class="mb-0">
+              <button class="btn btn-primary btn-sm">{{'gis.policy.new_policy' | translate}}</button>
+            </div>
+            <button #policyColumnIcon type="button" class="btn btn-outline-secondary btn-sm" (click)="togglePolicyColumns(policyColumnIcon)" aria-label="Select columns" title="Select Columns">
+              <i class="pi" [ngClass]="{ 'pi-caret-down': showPolicyColumnModal, 'pi-caret-up': !showPolicyColumnModal }" style="font-size: 0.9rem;"></i>
+            </button>
+          </div>
+
+          <!-- Floating Column Selector Modal -->
+          <div *ngIf="showPolicyColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+            [ngStyle]="{ top: policyColumnModalPosition.top, left: policyColumnModalPosition.left, zIndex: 1000 }">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong class="text-primary">Select Columns</strong>
+              <button class="btn-close btn-sm" (click)="showPolicyColumnModal = false"></button>
+            </div>
+
+            <div style="max-height: 250px; overflow-y: auto;">
+              <div *ngFor="let col of policyColumns">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible"
+                    (change)="togglePolicyColumnVisibility(col.field)" [id]="'policy_' + col.field">
+                  <label class="form-check-label" [for]="'policy_' + col.field">
+                    {{ col.header }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Policy Table -->
+          <div *ngIf="policiesLoaded && policies?.length > 0" class="table-responsive">
+            <p-table #policyTable [value]="policies" [paginator]="policies?.length > 10"
+              [rowsPerPageOptions]="[5, 10, 20]" [rows]="10" [scrollable]="true" scrollHeight="500px"
+              [tableStyle]="{'min-width': '50rem'}">
+
+              <!-- Table Header -->
+              <ng-template pTemplate="header">
+                <tr>
+                  <th *ngFor="let col of policyColumns" [hidden]="!col.visible" [pSortableColumn]="col.field">
+                    {{ col.header }}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                  </th>
+                </tr>
+                <tr class="filter-row">
+                  <td *ngFor="let col of policyColumns" [hidden]="!col.visible">
+                    <input *ngIf="col.filterable" class="form-control form-control-sm" pInputText type="text"
+                      (input)="policyTable.filter($event.target['value'], col.field, 'contains')" />
+                  </td>
+                </tr>
+              </ng-template>
+
+              <!-- Table Body -->
+              <ng-template pTemplate="body" let-policy>
+                <tr>
+                  <td *ngFor="let col of policyColumns" [hidden]="!col.visible">
+                    <ng-container *ngIf="col.field === 'premium'; else dateOrDefault">
+                      <div class="text-end">
+                        {{ (policy[col.field] || 0) | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                      </div>
+                    </ng-container>
+
+                    <ng-template #dateOrDefault>
+                      <ng-container *ngIf="isDateField(col.field); else notDateField">
+                        {{ formatDateDisplay(policy[col.field]) }}
+                      </ng-container>
+                      <ng-template #notDateField>
+                        {{ policy[col.field] ?? '-' }}
+                      </ng-template>
+                    </ng-template>
+                  </td>
+                </tr>
+              </ng-template>
+
+              <!-- Empty Message -->
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td [attr.colspan]="policyColumns.length" class="text-center text-muted">
+                    No policies found.
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+
+          <div *ngIf="policiesLoaded && (!policies || policies.length === 0)" class="text-muted">
+            No policies available.
+          </div>
+
+          <div *ngIf="!policiesLoaded" class="text-center text-muted">
+            Loading policies...
+          </div>
+          
+        </div>
+      </ng-container>
+    </ng-container>
+  </p-tabPanel>
+</p-tabView>
