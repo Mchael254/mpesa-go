@@ -133,6 +133,7 @@ export class ViewTicketsComponent implements OnInit {
   userDetails: any;
   user: any;
   userCode: number;
+  showAgentSearchModal = false;
 
 
   constructor(
@@ -1348,6 +1349,7 @@ export class ViewTicketsComponent implements OnInit {
     log.debug('Selected Agent:', event);
     log.debug("AgentId", this.agentId);
     this.applyFilter();
+    this.showAgentSearchModal = false;
 
   }
   // onClientSelected(event: any) {
@@ -1456,6 +1458,7 @@ export class ViewTicketsComponent implements OnInit {
   }
 
   openAgentSearchModal() {
+
     log.debug('Agent input clicked - modal will open and trigger agent loading...');
   }
 

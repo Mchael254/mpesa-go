@@ -173,6 +173,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   private modals: { [key: string]: any } = {};
   groupLeaderName: string = '';
   quoteType: string;
+  isAgentSearchModalVisible: boolean = false;
 
 
 
@@ -1004,6 +1005,8 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     // Optional: Log for debugging
     log.debug('Selected Agent:', event);
     log.debug("AgentId", this.agentId);
+    this.isAgentSearchModalVisible = false;
+    this.cdr.detectChanges();
 
     // Also fetch quotations for backend filtering
     this.fetchGISQuotations();
@@ -1261,6 +1264,13 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
   openAgentSearchModal() {
+    this.isAgentSearchModalVisible = false;
+    this.cdr.detectChanges();
+    // Set to true after change detection to ensure proper modal state
+    setTimeout(() => {
+      this.isAgentSearchModalVisible = true;
+      this.cdr.detectChanges();
+    }, 0);
     log.debug('Agent input clicked - modal will open and trigger agent loading...');
   }
 
