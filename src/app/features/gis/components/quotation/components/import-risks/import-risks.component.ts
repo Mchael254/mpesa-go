@@ -390,7 +390,7 @@ export class ImportRisksComponent {
   // }
   exportTemplate(): void {
     const link = document.createElement('a');
-    link.href = 'assets/data/Motor_upload_template.csv';
+    link.href = `${window.location.origin}/assets/data/Motor_upload_template.csv`;
     link.download = 'Motor_upload_template.csv';
     link.click();
   }
@@ -906,6 +906,18 @@ export class ImportRisksComponent {
       return "";
     }
   }
+  formatToIso(dateStr: string): string {
+    if (!dateStr) return '';
+
+    // Case 1: DD/MM/YYYY
+    if (dateStr.includes('/')) {
+      const [d, m, y] = dateStr.split('/');
+      return new Date(`${y}-${m}-${d}`).toISOString().split('T')[0];
+    }
+
+    // Case 2: normal date formats
+    return new Date(dateStr).toISOString().split('T')[0];
+  }
 
   mapCsvToFullPayload(csvData: any[]): any[] {
     return csvData.map(row => ({
@@ -915,11 +927,11 @@ export class ImportRisksComponent {
       agentClientId: row["INSURED ID"] || "",
       agentClientName: row["INSURED NAME"] || "",
       agentClientSurname: "",
-      withEffectFrom: (row["EFF DATE"]),
+      withEffectFrom: this.formatToIso(row["EFF DATE"]),
       agentPolicyId: "",
       insuranceClass: "",
       coverType: row["Cover Type"] || "",
-      withEffectTo: (row["EXP DATE"]),
+      withEffectTo: this.formatToIso(row["EXP DATE"]),
       transactionDateString: "",
       transactionNo: "",
       premium: Number(row["PREMIUM"]) || 0,
