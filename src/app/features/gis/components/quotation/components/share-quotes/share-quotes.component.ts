@@ -73,6 +73,8 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required]
     });
+    
+    this.onMethodChange(this.shareQuoteData.selectedMethod);
   }
 
   onDownload() {
