@@ -325,15 +325,27 @@ export class QuotationsService {
   }
 
   makeReady(quotationCode) {
-    return this.api.POST(`v2/quotation/make-ready?${quotationCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST(`v2/quotation/make-ready?${quotationCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+
   }
 
   confirmQuotation(quotationCode, user) {
-    return this.api.POST(`v2/quotation/confirm?quotationCode=${quotationCode}&user=${user}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST(`v2/quotation/confirm?quotationCode=${quotationCode}&user=${user}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+
   }
 
   authoriseQuotation(quotationCode, user) {
-    return this.api.POST(`v1/quotation/authorise/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST(`v1/quotation/authorise/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+
   }
 
 
@@ -365,11 +377,19 @@ export class QuotationsService {
   }
 
   sendEmail(data: EmailDto): Observable<any> {
-    return this.http.post<any>(`/${this.notificationUrl}api/v2/email/send`, JSON.stringify(data), this.httpOptions)
+    return this.http.post<any>(`/${this.notificationUrl}api/v2/email/send`, JSON.stringify(data), this.httpOptions).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+
   }
 
   sendSms(data) {
-    return this.http.post(`/${this.notificationUrl}/api/v2/sms/send`, JSON.stringify(data), this.httpOptions)
+    return this.http.post(`/${this.notificationUrl}/api/v2/sms/send`, JSON.stringify(data), this.httpOptions).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+
 
   }
 

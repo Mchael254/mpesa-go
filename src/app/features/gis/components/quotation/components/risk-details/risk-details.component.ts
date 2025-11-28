@@ -8068,7 +8068,7 @@ export class RiskDetailsComponent {
       const base64String = (reader.result as string).split(',')[1];
       // const clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '')
       let riskDocPayload: RiskDmsDocument = {
-
+        userName: this.quotationDetails.preparedBy,
         docType: file.type,
         docData: base64String,
         originalFileName: file.name,

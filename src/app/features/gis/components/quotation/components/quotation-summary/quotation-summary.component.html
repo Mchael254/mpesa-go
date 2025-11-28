@@ -911,12 +911,13 @@
                                       <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
                                         {{ formatDateDisplay(section[col.field]) }}
                                       </ng-container>
-                                      
+
                                       <ng-template #checkCurrencyField>
                                         <ng-container *ngIf="col.field === 'limitAmount' || col.field === 'premiumAmount'
                                                         || col.field === 'freeLimit'; else defaultField">
                                           <div class="text-end">
-                                            {{ section[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                                            {{ section[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
+                                            }}
                                           </div>
                                         </ng-container>
 
@@ -1122,11 +1123,12 @@
                                       <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
                                         {{ formatDateDisplay(getCellValue(rowData, col.field)) }}
                                       </ng-container>
-                                      
+
                                       <ng-template #checkCurrencyField>
                                         <ng-container *ngIf="col.field === 'value'; else defaultField">
                                           <div class="text-end">
-                                            {{ rowData[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                                            {{ rowData[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
+                                            }}
                                           </div>
                                         </ng-container>
 
@@ -1297,11 +1299,12 @@
                                       <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
                                         {{ formatDateDisplay(getCellValue(rowData, col.field)) }}
                                       </ng-container>
-                                      
+
                                       <ng-template #checkCurrencyField>
                                         <ng-container *ngIf="col.field === 'value'; else defaultField">
                                           <div class="text-end">
-                                            {{ getCellValue(rowData, col.field) | currency: currencyObj?.prefix : 'symbol'
+                                            {{ getCellValue(rowData, col.field) | currency: currencyObj?.prefix :
+                                            'symbol'
                                             : '1.2-2'
                                             }}
                                           </div>
@@ -1519,7 +1522,7 @@
                                       <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
                                         {{ formatDateDisplay(getCellValue(rowData, col.field)) }}
                                       </ng-container>
-                                      
+
                                       <ng-template #checkCurrencyField>
                                         <ng-container *ngIf="col.field === 'value'; else defaultField">
                                           <div class="text-end">
@@ -1623,18 +1626,20 @@
                                       <ng-container *ngIf="isDateField(col.field); else checkCurrencyField">
                                         {{ formatDateDisplay(commission[col.field]) }}
                                       </ng-container>
-                                      
+
                                       <ng-template #checkCurrencyField>
                                         <ng-container
                                           *ngIf="col.field === 'amount' || col.field === 'discAmount'; else defaultField">
                                           <div class="text-end">
-                                            {{ commission[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
+                                            {{ commission[col.field] | currency: currencyObj?.prefix : 'symbol' :
+                                            '1.2-2'
                                             }}
                                           </div>
                                         </ng-container>
 
                                         <ng-template #defaultField>
-                                          {{ col.field === 'agentDto' ? commission.agentDto?.name : commission[col.field]
+                                          {{ col.field === 'agentDto' ? commission.agentDto?.name :
+                                          commission[col.field]
                                           }}
                                         </ng-template>
                                       </ng-template>
@@ -2283,7 +2288,7 @@
           </span>
 
           <!-- Reassign Button -->
-          <span
+          <!-- <span
             [pTooltip]="afterRejectQuote || viewQuoteFlag ? 'No further action — quotation already authorized.' : null"
             tooltipPosition="top">
             <button type="button "
@@ -2291,7 +2296,24 @@
               [disabled]="afterRejectQuote || viewQuoteFlag" (click)="openReassignQuotationModal()">
               {{ "gis.quotation.reassign" | translate }}
             </button>
+          </span> -->
+
+          <span
+            [pTooltip]="afterRejectQuote || viewQuoteFlag ? 'No further action — quotation already authorized.' : null"
+            tooltipPosition="top">
+            <button type="button" [ngClass]="
+              userHasNoRights || !(afterRejectQuote || viewQuoteFlag)
+                ? 'btn btn-outline-primary'
+                : 'btn btn-secondary'
+            " [disabled]="
+              !userHasNoRights && (afterRejectQuote || viewQuoteFlag)
+            " (click)="openReassignQuotationModal()">
+              {{ 'gis.quotation.reassign' | translate }}
+            </button>
+
+
           </span>
+
 
           <!-- Reject Button -->
           <span
@@ -2589,8 +2611,9 @@
                   <div class="col-md-6">
                     <label class="quote-label">Phone Number <span class="text-danger">*</span></label>
                     <ngx-intl-tel-input id="phoneNumber" [cssClass]="'form-control form-control-sm mb-1'"
-                      [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
-                      [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                      [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true"
+                      [enablePlaceholder]="true" [searchCountryFlag]="true"
+                      [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
                       [selectFirstCountry]="false" [style]="{ width: '100%' }" [selectedCountryISO]="CountryISO.Kenya"
                       [phoneValidation]="true" [separateDialCode]="true" [numberFormat]="PhoneNumberFormat.National"
                       formControlName="phone">
@@ -2617,7 +2640,8 @@
                     <div *ngIf="viewDocForm.get('to')?.invalid && viewDocForm.get('to')?.touched"
                       class="text-danger small">
                       <span *ngIf="viewDocForm.get('to')?.errors?.['required']">Email address is required</span>
-                      <span *ngIf="viewDocForm.get('to')?.errors?.['invalidEmails']">One or more email addresses are invalid</span>
+                      <span *ngIf="viewDocForm.get('to')?.errors?.['invalidEmails']">One or more email addresses are
+                        invalid</span>
                     </div>
                     <div *ngIf="viewDocForm.get('to')?.value" class="text-muted small mt-1">
                       You can enter multiple emails separated by comma, semicolon, or space
@@ -2628,7 +2652,8 @@
                     <input pInputText type="text" class="form-control" formControlName="cc" />
                     <div *ngIf="viewDocForm.get('cc')?.invalid && viewDocForm.get('cc')?.touched"
                       class="text-danger small">
-                      <span *ngIf="viewDocForm.get('cc')?.errors?.['invalidEmails']">One or more email addresses are invalid</span>
+                      <span *ngIf="viewDocForm.get('cc')?.errors?.['invalidEmails']">One or more email addresses are
+                        invalid</span>
                     </div>
                     <div *ngIf="viewDocForm.get('cc')?.value" class="text-muted small mt-1">
                       Multiple emails supported (comma, semicolon, or space separated)
@@ -2639,11 +2664,12 @@
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label class="quote-label">BCC</label>
-                    <input pInputText type="text" class="form-control" formControlName="bcc" 
-                           placeholder="Enter BCC email addresses (optional)" />
+                    <input pInputText type="text" class="form-control" formControlName="bcc"
+                      placeholder="Enter BCC email addresses (optional)" />
                     <div *ngIf="viewDocForm.get('bcc')?.invalid && viewDocForm.get('bcc')?.touched"
                       class="text-danger small">
-                      <span *ngIf="viewDocForm.get('bcc')?.errors?.['invalidEmails']">One or more email addresses are invalid</span>
+                      <span *ngIf="viewDocForm.get('bcc')?.errors?.['invalidEmails']">One or more email addresses are
+                        invalid</span>
                     </div>
                     <div *ngIf="viewDocForm.get('bcc')?.value" class="text-muted small mt-1">
                       Multiple emails supported (comma, semicolon, or space separated)

@@ -204,10 +204,15 @@
 
                                 </ng-container>
                                 <ng-container *ngSwitchDefault>
-                                    {{ col.field === 'name' && !clientDoc['name'] ? clientDoc['actualName'] :
-                                    clientDoc[col.field] }}
-
+                                    <ng-container *ngIf="isDateField(col.field); else notDateField">
+                                        {{ formatDate(clientDoc[col.field]) }}
+                                    </ng-container>
+                                    <ng-template #notDateField>
+                                        {{ col.field === 'name' && !clientDoc['name'] ? clientDoc['actualName'] :
+                                        clientDoc[col.field] }}
+                                    </ng-template>
                                 </ng-container>
+
 
                             </ng-container>
                         </td>
