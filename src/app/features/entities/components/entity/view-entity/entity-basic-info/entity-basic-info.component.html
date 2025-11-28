@@ -13,7 +13,14 @@
         </label>
       </div>
       <div class="col-sm-9">
-        <h5>{{ (entityDetails?.name || entityPartyIdDetails?.name) | titlecase }} </h5>
+        <h5>
+          {{
+            (entityDetails?.name ||
+              entityPartyIdDetails?.name ||
+              entityDetails?.firstName + ' ' + entityDetails?.otherNames
+            ) | titlecase
+          }}
+        </h5>
         <ng-container
           *ngIf="entityAccountIdDetails?.length > 0; else noEntityTypes"
         >

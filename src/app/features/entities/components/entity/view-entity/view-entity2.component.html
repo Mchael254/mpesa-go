@@ -69,12 +69,15 @@
 
         <ng-container *ngIf="
            (clientDetails || entityDetails) &&
+           entityAccountIdDetails &&
            tab.originalLabel==='Prime Identity';"
         >
           <app-prime-identity
             #primeIdentityRef
             [partyAccountDetails]="partyAccountDetails"
+            [entityAccountIdDetails]="entityAccountIdDetails"
             [clientDetails]="clientDetails"
+            [entityDetails]="entityDetails"
             [group]="tab"
             [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
           >
