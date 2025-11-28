@@ -328,6 +328,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   primeNgDateFormat: string = 'dd-M-yy'; // PrimeNG format
   private datePipe: DatePipe = new DatePipe('en-US');
   totalTaxAmount: number = 0;
+  userHasNoRights: boolean = false;
 
   /**
    * Custom validator for multiple email addresses
@@ -340,9 +341,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const emails = control.value.split(/[,;\s]+/).map((email: string) => email.trim()).filter((email: string) => email.length > 0);
-    
+
     const invalidEmails = emails.filter((email: string) => !emailPattern.test(email));
-    
+
     return invalidEmails.length > 0 ? { invalidEmails: true } : null;
   }
 
@@ -551,7 +552,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const currencySymbol = sessionStorage.getItem('currencySymbol')
     log.debug("currency Object:", currencySymbol)
     log.debug("currency Delimeter:", currencyDelimiter)
-    
+
     // Load date format from session storage
     const storedDateFormat = sessionStorage.getItem('dateFormat');
     if (storedDateFormat) {
@@ -565,7 +566,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.primeNgDateFormat = this.dateFormat
       .replace('yyyy', 'yy')
       .replace('MM', 'mm');
-    
+
     this.currencyObj = {
       prefix: currencySymbol + ' ',
       allowNegative: false,
@@ -762,15 +763,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           log.debug("quotation code", this.quotationCode)
         }
 
-        this.branchCode=this.quotationView.branchCode
+        this.branchCode = this.quotationView.branchCode
 
-        log.debug("BranchCode",this.branchCode)
+        log.debug("BranchCode", this.branchCode)
 
         this.branchService.getBranchById(this.branchCode).subscribe(data => {
-  
-         this.branch = data.name || 'N/A'; 
-        log.debug("Branch to display:", this.branch);
-         });
+
+          this.branch = data.name || 'N/A';
+          log.debug("Branch to display:", this.branch);
+        });
 
         this.marketerCommissionAmount = this.quotationView.marketerCommissionAmount;
         log.debug("marketerCommissionAmount", this.marketerCommissionAmount);
@@ -797,14 +798,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         log.debug('Quotation Product Code:', quotationProductCode)
 
         if (firstProduct) {
-  
-         this.taxDetails = firstProduct.taxInformation || [];
 
-  
-        this.totalTaxAmount = this.taxDetails.reduce((sum, tax) => sum + (tax.taxAmount || 0), 0);
+          this.taxDetails = firstProduct.taxInformation || [];
 
-       log.debug('Tax Details:', this.taxDetails);
-       log.debug('Total Tax Amount:', this.totalTaxAmount);
+
+          this.totalTaxAmount = this.taxDetails.reduce((sum, tax) => sum + (tax.taxAmount || 0), 0);
+
+          log.debug('Tax Details:', this.taxDetails);
+          log.debug('Total Tax Amount:', this.totalTaxAmount);
         }
 
         // Extract product details
@@ -1270,9 +1271,23 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
           }
         },
-        error: (e) => {
-          log.debug(e.message)
-          this.messageService.displayErrorMessage('error', e.error.message)
+        // error: (e) => {
+        //   log.debug(e.message)
+        //   this.messageService.displayErrorMessage('error', e.error.message)
+        //   this.userHasNoRights = true
+        // }
+        error: (error: HttpErrorResponse) => {
+          log.error('Error confirming quotation:', error);
+          this.spinner.hide();
+
+          const errorMessage = error.error?.message || error.error?.debugMessage || error.message || 'An unexpected error occurred while confirming the quotation';
+          const errorTitle = error.error?.status === 'ERROR' ? 'Confirming  Quote  Failed' : 'Error';
+
+          this.globalMessagingService.displayErrorMessage(errorTitle, errorMessage);
+          this.userHasNoRights = true
+          log.debug('user has no rights to confirm- value', this.userHasNoRights)
+          log.debug("Type:", typeof this.userHasNoRights, "Value:", this.userHasNoRights);
+
         }
       }
     )
@@ -1949,24 +1964,24 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   convertDate(date: any) {
     log.debug("DATE TO BE CONVERTED", date)
-    
+
     if (!date) {
       return '';
     }
-    
+
     try {
       const rawDate = new Date(date);
       log.debug('Raw date before being formatted', rawDate);
-      
+
       // Check if date is valid
       if (isNaN(rawDate.getTime())) {
         log.error('Invalid date:', date);
         return '';
       }
-      
+
       // Use the date format from session storage
       const formattedDate = this.datePipe.transform(rawDate, this.dateFormat);
-      
+
       log.debug('Converted date using format', this.dateFormat, ':', formattedDate);
       return formattedDate || '';
     } catch (error) {
@@ -1983,23 +1998,59 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     if (!date) {
       return placeholder;
     }
-    
+
     try {
-      const rawDate = new Date(date);
-      
-      // Check if date is valid
+      let rawDate: Date;
+
+      // Check if format is DD-MM-YYYY (with dashes)
+      if (typeof date === 'string' && date.match(/^\d{2}-\d{2}-\d{4}$/)) {
+        const [day, month, year] = date.split('-');
+        rawDate = new Date(`${year}-${month}-${day}`);
+      }
+      else {
+        // Fallback for normal formats
+        rawDate = new Date(date);
+      }
+
+      log.debug('raw doc created date', rawDate);
+
+      // Check if valid
       if (isNaN(rawDate.getTime())) {
         return placeholder;
       }
-      
-      // Use the date format from session storage
+
+      // Format using datePipe
       const formattedDate = this.datePipe.transform(rawDate, this.dateFormat);
       return formattedDate || placeholder;
+
     } catch (error) {
       log.error('Error formatting date:', error);
       return placeholder;
     }
   }
+
+  // format
+  // Date(date: any, placeholder: string = '—'): string {
+  //   if (!date) {
+  //     return placeholder;
+  //   }
+
+  //   try {
+  //     const rawDate = new Date(date);
+  //     log.debug('raw doc created date', rawDate)
+  //     // Check if date is valid
+  //     if (isNaN(rawDate.getTime())) {
+  //       return placeholder;
+  //     }
+
+  //     // Use the date format from session storage
+  //     const formattedDate = this.datePipe.transform(rawDate, this.dateFormat);
+  //     return formattedDate || placeholder;
+  //   } catch (error) {
+  //     log.error('Error formatting date:', error);
+  //     return placeholder;
+  //   }
+  // }
 
   /**
    * Check if a field name represents a date field
@@ -2010,11 +2061,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       'date', 'Date', 'DATE',
       'wef', 'wet',
       'cover',
-      'created', 'updated', 'modified',
+      'created', 'updated', ,
       'timestamp', 'time'
     ];
-    
-    return dateFieldPatterns.some(pattern => 
+
+    return dateFieldPatterns.some(pattern =>
       fieldName.toLowerCase().includes(pattern.toLowerCase())
     );
   }
@@ -2830,45 +2881,45 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showLimitsOfLiabilityColumnModal = true;
   }
- setColumnsFromProductDetails(sample: ProductDetails) {
-  const defaultVisibleFields = [
-    'productName',
-    'premium',
-    'commission',
-    'wet',
-    'wef'
-  ];
+  setColumnsFromProductDetails(sample: ProductDetails) {
+    const defaultVisibleFields = [
+      'productName',
+      'premium',
+      'commission',
+      'wet',
+      'wef'
+    ];
 
-  const excludedFields = [
-    'productClauses',
-    'taxInformation',
-    'riskInformation',
-    'limitsOfLiability'
-  ];
+    const excludedFields = [
+      'productClauses',
+      'taxInformation',
+      'riskInformation',
+      'limitsOfLiability'
+    ];
 
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
 
 
-  keys = keys.sort((a, b) => {
-    const indexA = defaultVisibleFields.indexOf(a);
-    const indexB = defaultVisibleFields.indexOf(b);
+    keys = keys.sort((a, b) => {
+      const indexA = defaultVisibleFields.indexOf(a);
+      const indexB = defaultVisibleFields.indexOf(b);
 
-    if (indexA !== -1 && indexB !== -1) {
-      return indexA - indexB; 
-    }
+      if (indexA !== -1 && indexB !== -1) {
+        return indexA - indexB;
+      }
 
-    if (indexA !== -1) return -1; 
-    if (indexB !== -1) return 1;  
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
 
-    return a.localeCompare(b); 
-  });
+      return a.localeCompare(b);
+    });
 
-  this.columns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key),
-  }));
-}
+    this.columns = keys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key),
+    }));
+  }
 
 
   setColumnsFromTaxesDetails(sample: TaxDetails) {
@@ -3887,7 +3938,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     log.debug("Report blobs", this.reportBlobs)
     const attachments = await Promise.all(
       this.selectedReports.map(async (report: any) => {
-        const reportKey = report.rptCode || report.code; 
+        const reportKey = report.rptCode || report.code;
         const blob = this.reportBlobs[reportKey];
         console.log('Blob for report', reportKey, blob);
         if (!blob) return null;
@@ -3910,7 +3961,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // Helper function to parse and validate email addresses
     const parseEmailAddresses = (emailString: string): string[] => {
       if (!emailString || emailString.trim() === '') return [];
-      
+
       // Split by comma, semicolon, or space and trim each email
       return emailString
         .split(/[,;\s]+/)
@@ -4521,6 +4572,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       const base64String = (reader.result as string).split(',')[1];
       const clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '')
       let riskDocPayload: RiskDmsDocument = {
+        userName: this.quotationDetails.preparedBy,
 
         docType: file.type,
         docData: base64String,

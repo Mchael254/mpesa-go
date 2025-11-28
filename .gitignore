@@ -42,4 +42,5 @@ testem.log
 Thumbs.db
 /documentation
 /.vscode
-/package-lock.json
+/package-lock.jsondist.zip
+dist.zip
