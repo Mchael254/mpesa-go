@@ -173,4 +173,20 @@ export class DefaultSubMenuComponent implements OnInit {
     this.utilService.clearNormalQuoteSessionStorage()
     this.navLink('/home/lms/quotation/list')
   }
+onSearchPolicy(){}
+
+viewPolicy(){
+   this.router.navigate(['home/lms/policy/list']);
+}
+
+
+goToNewPolicy() {
+
+  
+   this.router.navigate(['/home/gis/policy/policy-product']);
+}
+
+
+
+
 }
