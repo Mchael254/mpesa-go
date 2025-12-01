@@ -1009,6 +1009,67 @@ export interface Premiums {
   isChecked?: boolean
   isMandatory?: string
 }
+export interface ApplicableRate {
+  code: number;
+  sectionCode: number;
+  sectionShortDescription: string;
+  sectionType: string;
+  rate: number;
+  dateWithEffectFrom: any;
+  dateWithEffectTo: any;
+  subClassCode: number;
+  binderCode: number;
+  rangeFrom: number;
+  rangeTo: number;
+  rateDescription: string;
+  divisionFactor: number;
+  rateType: string;
+  premiumMinimumAmount: number;
+  territoryCode: any;
+  proratedOrFull: string;
+  premiumEndorsementMinimumAmount: any;
+  multiplierRate: any;
+  multiplierDivisionFactor: number;
+  maximumRate: any;
+  minimumRate: any;
+  freeLimit: any;
+  isExProtectorApplication: string;
+  isSumInsuredLimitApplicable: string;
+  sumInsuredLimitType: string;
+  sumInsuredRate: any;
+  grpCode: any;
+  isNoClaimDiscountApplicable: string;
+  currencyCode: any;
+  agentName: any;
+  rangeType: any;
+  limitAmount: any;
+  doesCashBackApply: any;
+  cashBackLevel: number;
+  rateFrequencyType: string;
+  sectionDescription: string;
+  isMandatory: any;
+  maximumLimitAmount: any;
+  minimumLimitAmount: any;
+  subClassDescription: string;
+  isFreeLimitEditable: any;
+  noClaimDiscountLevel: any;
+}
+
+export interface NewPremiums {
+  code: number;
+  sectionCode: number;
+  sectionShortDescription: string;
+  order: any;
+  isMandatory: string;
+  webEnabled: any;
+  webMandatory: any;
+  applyBenefits: string;
+  applySpecialRates: any;
+  calcGroup: any;
+  limitAmount?: any;
+  rateOptions?: any;
+  applicableRates: ApplicableRate[];
+}
 
 export interface report {
   code: number,
