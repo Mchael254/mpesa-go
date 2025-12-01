@@ -12,6 +12,7 @@ import { ClientService } from '../../../../../entities/services/client/client.se
 import stepData from '../../data/steps.json';
 import {
   Binders,
+  NewPremiums,
   Premiums,
   Products,
   Sections,
@@ -1647,13 +1648,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
       coverTypes.push({
         subclassCode: coverType?.subClassCode,
-        description: coverType?.applicableRates?.[0]?.subClassDescription || null,
+        description: coverType?.sections?.[0]?.applicableRates?.[0]?.subClassDescription || null,
         coverTypeCode: coverType?.coverTypeCode,
         minimumAnnualPremium: null,
         minimumPremium: coverType?.minimumPremium,
         coverTypeShortDescription: coverType?.coverTypeShortDescription,
         coverTypeDescription: coverType?.description,
-        limits: this.getLimitsPayload(coverType?.applicableRates || [], risk)
+        limits: this.getLimitsPayload(coverType?.sections || [], risk)
       });
     }
 
@@ -1661,62 +1662,45 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-  // getLimitsPayload(applicableLimits: any, risk: any): Limit[] {
-  //   log.debug("Processing risk >>.", risk, applicableLimits)
-  //   let limitsPayload: Limit[] = []
-  //   for (let limit of applicableLimits) {
-  //     limitsPayload.push({
-  //       calculationGroup: 1,
-  //       declarationSection: "N",
-  //       rowNumber: 1,
-  //       limitPeriod: limit?.limitPeriod || 0,
-  //       rateDivisionFactor: limit?.divisionFactor,
-  //       premiumRate: limit?.rate,
-  //       rateType: limit?.rateType,
-  //       minimumPremium: limit.premiumMinimumAmount,
-  //       annualPremium: 0,
-  //       multiplierRate: limit?.multiplierRate || 1,
-  //       section: {
-  //         limitAmount: risk?.selfDeclaredValue || risk?.value,
-  //         description: limit?.sectionDescription,
-  //         code: limit?.sectionCode,
-  //         isMandatory: "Y"
-  //       },
-  //       sectionType: limit?.sectionType,
-  //       multiplierDivisionFactor: limit?.multiplierDivisionFactor,
-  //       riskCode: null,
-  //       limitAmount: risk?.selfDeclaredValue || risk?.value,
-  //       description: limit?.sectionDescription,
-  //       shortDescription: limit?.sectionShortDescription,
-  //       sumInsuredRate: limit?.sumInsuredRate,
-  //       freeLimit: limit?.freeLimit || 0,
-  //       compute: "Y",
-  //       dualBasis: "N",
-  //     })
-  //   }
-  //   return limitsPayload
-  // }
 
   // getLimitsPayload(applicableLimits: any, risk: any): Limit[] {
-  //   log.debug("Processing risk >>.", risk, applicableLimits);
+  //   log.debug("Processing risk >>.", risk);
+  //   log.debug("Processing applicableLimits >>.", applicableLimits);
+
   //   let limitsPayload: Limit[] = [];
 
-  //   for (let limit of applicableLimits) {
-  //     // Normalize the description to lowercase for case-insensitive comparison
-  //     const description = limit?.sectionDescription?.toString().toLowerCase() || '';
+  //   // 1️⃣ Filter only relevant limits
+  //   const filteredLimits = applicableLimits.filter((limit: any) => {
+  //     const isMandatory =
+  //       limit?.isMandatory?.toString().toUpperCase() === "Y" ||
+  //       limit?.sectionMandatory?.toString().toUpperCase() === "Y";
 
-  //     // Determine the limitAmount based on the conditions
+  //     const hasFreeLimit = (limit?.freeLimit || 0) > 0;
+
+  //     return isMandatory || hasFreeLimit;
+  //   });
+
+  //   // 2️⃣ Process each filtered limit
+  //   for (let limit of filteredLimits) {
+  //     // Determine limitAmount based on new rules
   //     let limitAmount;
 
-  //     if ((limit?.freeLimit || 0) === 0) {
-  //       // If freeLimit is 0, use selfDeclaredValue
+  //     const isMandatory =
+  //       limit?.isMandatory?.toString().toUpperCase() === "Y" ||
+  //       limit?.sectionMandatory?.toString().toUpperCase() === "Y";
+
+  //     if (isMandatory) {
+  //       // ✅ Mandatory → use selfDeclaredValue
   //       limitAmount = risk?.selfDeclaredValue || risk?.value;
-  //     } else {
-  //       // Otherwise, use the freeLimit
+  //     } else if ((limit?.freeLimit || 0) > 0) {
+  //       // ✅ Has free limit → use freeLimit
   //       limitAmount = limit?.freeLimit;
+  //     } else {
+  //       // Should not happen because of filter, but fallback
+  //       continue;
   //     }
 
-
+  //     // Build payload
   //     limitsPayload.push({
   //       calculationGroup: 1,
   //       declarationSection: "N",
@@ -1725,14 +1709,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   //       rateDivisionFactor: limit?.divisionFactor,
   //       premiumRate: limit?.rate,
   //       rateType: limit?.rateType,
-  //       minimumPremium: limit.premiumMinimumAmount,
+  //       minimumPremium: limit?.premiumMinimumAmount,
   //       annualPremium: 0,
   //       multiplierRate: limit?.multiplierRate || 1,
   //       section: {
   //         limitAmount: limitAmount,
   //         description: limit?.sectionDescription,
   //         code: limit?.sectionCode,
-  //         isMandatory: "Y"
+  //         isMandatory: "Y",
   //       },
   //       sectionType: limit?.sectionType,
   //       multiplierDivisionFactor: limit?.multiplierDivisionFactor,
@@ -1750,75 +1734,79 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   //   return limitsPayload;
   // }
   getLimitsPayload(applicableLimits: any, risk: any): Limit[] {
-    log.debug("Processing risk >>.", risk, applicableLimits);
+    const mandatorysections = applicableLimits.filter(sec => sec.isMandatory === 'Y')
+    log.debug("madatory sections", mandatorysections)
 
-    let limitsPayload: Limit[] = [];
+    return applicableLimits
+      .filter(sec => sec.isMandatory === "Y")
+      .map(sec => {
+        const rate = sec.applicableRates?.[0]; // Pick first rate safely
+        // Determine limit amount based on rules:
+        let limitAmount = 0;
 
-    // 1️⃣ Filter only relevant limits
-    const filteredLimits = applicableLimits.filter((limit: any) => {
-      const isMandatory =
-        limit?.isMandatory?.toString().toUpperCase() === "Y" ||
-        limit?.sectionMandatory?.toString().toUpperCase() === "Y";
 
-      const hasFreeLimit = (limit?.freeLimit || 0) > 0;
+        const isSumInsuredSection =
+          sec.sectionDescription?.toUpperCase().includes('SUM INSURED') ||
+          sec.sectionShortDescription?.toUpperCase().includes('SUM INSURED');
 
-      return isMandatory || hasFreeLimit;
-    });
 
-    // 2️⃣ Process each filtered limit
-    for (let limit of filteredLimits) {
-      // Determine limitAmount based on new rules
-      let limitAmount;
+        if (isSumInsuredSection) {
+          // Rule 1: Sum Insured uses risk values
+          limitAmount = risk?.selfDeclaredValue || risk?.value || 0;
+        } else if (rate?.freeLimit) {
+          // Rule 2: Other sections use free limit if available
+          limitAmount = rate.freeLimit;
+        } else {
+          // Rule 3: Otherwise use limit amount from rate
+          limitAmount = rate?.limitAmount ?? 0;
+        }
 
-      const isMandatory =
-        limit?.isMandatory?.toString().toUpperCase() === "Y" ||
-        limit?.sectionMandatory?.toString().toUpperCase() === "Y";
+        return {
+          description: sec.sectionShortDescription,
+          code: sec.code,
+          calculationGroup: rate?.grpCode ?? 0,
+          declarationSection: "Y",
+          rowNumber: 1,
+          rateDivisionFactor: rate?.divisionFactor ?? 1,
+          premiumRate: rate?.rate ?? 0,
+          rateType: rate?.rateType ?? "FXD",
+          sectionType: rate?.sectionType ?? null,
+          firstLoss: "Y",
+          firstLossAmountPercent: "",
+          firstLossValue: 0,
 
-      if (isMandatory) {
-        // ✅ Mandatory → use selfDeclaredValue
-        limitAmount = risk?.selfDeclaredValue || risk?.value;
-      } else if ((limit?.freeLimit || 0) > 0) {
-        // ✅ Has free limit → use freeLimit
-        limitAmount = limit?.freeLimit;
-      } else {
-        // Should not happen because of filter, but fallback
-        continue;
-      }
+          limitAmount: limitAmount,             // <– final computed limit
+          freeLimit: rate?.freeLimit ?? 0,
 
-      // Build payload
-      limitsPayload.push({
-        calculationGroup: 1,
-        declarationSection: "N",
-        rowNumber: 1,
-        limitPeriod: limit?.limitPeriod || 0,
-        rateDivisionFactor: limit?.divisionFactor,
-        premiumRate: limit?.rate,
-        rateType: limit?.rateType,
-        minimumPremium: limit?.premiumMinimumAmount,
-        annualPremium: 0,
-        multiplierRate: limit?.multiplierRate || 1,
-        section: {
-          limitAmount: limitAmount,
-          description: limit?.sectionDescription,
-          code: limit?.sectionCode,
-          isMandatory: "Y",
-        },
-        sectionType: limit?.sectionType,
-        multiplierDivisionFactor: limit?.multiplierDivisionFactor,
-        riskCode: null,
-        limitAmount: limitAmount,
-        description: limit?.sectionDescription,
-        shortDescription: limit?.sectionShortDescription,
-        sumInsuredRate: limit?.sumInsuredRate,
-        freeLimit: limit?.freeLimit || 0,
-        compute: "Y",
-        dualBasis: "N",
+          topLocRate: 0,
+          topLocDivFact: 0,
+          emlPercentage: 0,
+          compute: "Y",
+
+          section: {
+            code: sec.sectionCode,
+            description: sec.sectionShortDescription,
+            limitAmount: limitAmount,
+            isMandatory: sec.isMandatory
+          },
+
+          multiplierRate: rate?.multiplierRate ?? 0,
+          multiplierDivisionFactor: rate?.multiplierDivisionFactor ?? 1,
+          minimumPremium: rate?.premiumMinimumAmount ?? 0,
+          annualPremium: 0,
+          premiumAmount: 0,
+
+          dualBasis: "Y",
+          shortDescription: sec.sectionShortDescription,
+          sumInsuredRate: rate?.sumInsuredRate ?? 0,
+          limitPeriod: 0,
+          indemFstPeriod: 0,
+          indemPeriod: 0,
+          indemFstPeriodPercentage: 0,
+          indemRemPeriodPercentage: 0
+        };
       });
-    }
-
-    return limitsPayload;
   }
-
 
   /**
    * Loads all currencies and selects based on the currency code.
@@ -2963,7 +2951,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
 
   listenToBenefitsAddition(
-    benefitDto: { risk: RiskLevelPremium; premiumItems: Premiums[] },
+    benefitDto: { risk: RiskLevelPremium; premiumItems: NewPremiums[] },
     productIndex?: number,
     coverIndex?: number
   ) {
@@ -3022,12 +3010,99 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-  modifyPremiumPayload(benefitsDto: {
-    risk: RiskLevelPremium,
-    premiumItems: Premiums[]
-  }, sectionCodeToRemove?: number): PremiumComputationRequest {
-    log.debug("currentComputationPayload", this.currentComputationPayload)
-    // const premiumComputationRequest = this.computationPayload() || this.currentComputationPayload
+  // modifyPremiumPayload(benefitsDto: {
+  //   risk: RiskLevelPremium,
+  //   premiumItems: Premiums[]
+  // }, sectionCodeToRemove?: number): PremiumComputationRequest {
+  //   log.debug("currentComputationPayload", this.currentComputationPayload)
+  //   // const premiumComputationRequest = this.computationPayload() || this.currentComputationPayload
+  //   const premiumComputationRequest =
+  //     this.currentComputationPayload &&
+  //       this.currentComputationPayload.products.some(p =>
+  //         p.risks.some(r => r.code === benefitsDto.risk.code)
+  //       )
+  //       ? this.currentComputationPayload
+  //       : this.computationPayload();
+
+  //   const riskCode = benefitsDto.risk.code;
+  //   const coverTypeCode = benefitsDto.risk.selectCoverType.coverTypeCode;
+  //   const updatedProducts = premiumComputationRequest.products.map(product => ({
+  //     ...product,
+  //     risks: product.risks.map(risk => {
+  //       if (risk.code !== riskCode) return risk;
+  //       return {
+  //         ...risk,
+  //         subclassCoverTypeDto: risk.subclassCoverTypeDto.map(coverType => {
+  //           if (coverType.coverTypeCode !== coverTypeCode) return coverType;
+
+  //           let updatedLimits = [...coverType.limits];
+  //           log.debug("Section to remove>>", sectionCodeToRemove, updatedLimits, coverTypeCode)
+  //           if (sectionCodeToRemove) {
+  //             updatedLimits = updatedLimits.filter(
+  //               limit => limit.section.code !== sectionCodeToRemove
+  //             );
+  //           }
+  //           if (benefitsDto.premiumItems.length > 0) {
+  //             updatedLimits = updatedLimits.map(limit => {
+  //               const match = benefitsDto.premiumItems.find(b => b.code === limit.section.code);
+  //               return match
+  //                 ? { ...limit, limitAmount: match.limitAmount }
+  //                 : limit;
+  //             });
+  //             benefitsDto.premiumItems.forEach(benefit => {
+  //               updatedLimits = updatedLimits.filter(value => value.section.code !== benefit.sectionCode)
+  //               log.debug("I am adding this benefit>>>", benefit)
+  //               updatedLimits.push({
+  //                 section: {
+  //                   code: benefit.sectionCode,
+  //                   description: benefit.sectionDescription,
+  //                   isMandatory: "N",
+  //                   limitAmount: benefit.limitAmount
+  //                 },
+  //                 multiplierDivisionFactor: benefit.multiplierDivisionFactor,
+  //                 riskCode: null,
+  //                 shortDescription: benefit.sectionDescription,
+  //                 limitAmount: benefit.limitAmount,
+  //                 premiumRate: benefit.rate ?? 1,
+  //                 minimumPremium: benefit.minimumPremium ?? 0,
+  //                 rateType: benefit.rateType,
+  //                 calculationGroup: 1,
+  //                 declarationSection: "N",
+  //                 limitPeriod: benefit?.limitPeriod || 0,
+  //                 rowNumber: updatedLimits.length + 1,
+  //                 rateDivisionFactor: benefit.divisionFactor,
+  //                 annualPremium: 0,
+  //                 multiplierRate: benefit.multiplierRate || 1,
+  //                 sectionType: benefit.sectionType,
+  //                 description: benefit.sectionDescription,
+  //                 compute: "Y",
+  //                 dualBasis: "N",
+  //                 freeLimit: benefit.freeLimit
+  //               });
+  //             });
+  //           }
+  //           return {
+  //             ...coverType,
+  //             limits: updatedLimits
+  //           };
+  //         })
+  //       };
+  //     })
+  //   }));
+  //   let updatedPayload = {
+  //     ...premiumComputationRequest,
+  //     products: updatedProducts
+  //   };
+  //   this.currentComputationPayload = updatedPayload
+  //   return updatedPayload;
+  // }
+  modifyPremiumPayload(
+    benefitsDto: { risk: RiskLevelPremium; premiumItems: NewPremiums[] },
+    sectionCodeToRemove?: number
+  ): PremiumComputationRequest {
+
+    log.debug("currentComputationPayload", this.currentComputationPayload);
+
     const premiumComputationRequest =
       this.currentComputationPayload &&
         this.currentComputationPayload.products.some(p =>
@@ -3038,61 +3113,90 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     const riskCode = benefitsDto.risk.code;
     const coverTypeCode = benefitsDto.risk.selectCoverType.coverTypeCode;
+
     const updatedProducts = premiumComputationRequest.products.map(product => ({
       ...product,
       risks: product.risks.map(risk => {
         if (risk.code !== riskCode) return risk;
+
         return {
           ...risk,
           subclassCoverTypeDto: risk.subclassCoverTypeDto.map(coverType => {
             if (coverType.coverTypeCode !== coverTypeCode) return coverType;
 
             let updatedLimits = [...coverType.limits];
-            log.debug("Section to remove>>", sectionCodeToRemove, updatedLimits, coverTypeCode)
+
+            // REMOVE A SINGLE SECTION
             if (sectionCodeToRemove) {
               updatedLimits = updatedLimits.filter(
                 limit => limit.section.code !== sectionCodeToRemove
               );
             }
+
+            // UPDATE / ADD LIMITS FROM premiumItems
             if (benefitsDto.premiumItems.length > 0) {
+              // Update existing limits
               updatedLimits = updatedLimits.map(limit => {
-                const match = benefitsDto.premiumItems.find(b => b.code === limit.section.code);
-                return match
-                  ? { ...limit, limitAmount: match.limitAmount }
-                  : limit;
+                const match = benefitsDto.premiumItems.find(
+                  b => b.sectionCode === limit.section.code
+                );
+
+                if (!match) return limit;
+
+                const rate = match.applicableRates?.[0];
+
+                return {
+                  ...limit,
+                  limitAmount: match?.limitAmount ?? limit.limitAmount,
+                  premiumRate: rate?.rate ?? limit.premiumRate,
+                  minimumPremium: rate?.premiumMinimumAmount ?? limit.minimumPremium,
+                  rateType: rate?.rateType ?? limit.rateType,
+                  multiplierRate: rate?.multiplierRate ?? limit.multiplierRate,
+                  multiplierDivisionFactor: rate?.multiplierDivisionFactor ?? limit.multiplierDivisionFactor,
+                };
               });
+
+              // ADD NEW BENEFITS AS NEW LIMITS
               benefitsDto.premiumItems.forEach(benefit => {
-                updatedLimits = updatedLimits.filter(value => value.section.code !== benefit.sectionCode)
-                log.debug("I am adding this benefit>>>", benefit)
+                log.debug("Adding benefit >>>", benefit);
+
+                const rate = benefit.applicableRates?.[0];
+
+                // remove if exists already
+                updatedLimits = updatedLimits.filter(
+                  limit => limit.section.code !== benefit.sectionCode
+                );
+
                 updatedLimits.push({
                   section: {
                     code: benefit.sectionCode,
-                    description: benefit.sectionDescription,
-                    isMandatory: "N",
-                    limitAmount: benefit.limitAmount
+                    description: benefit.sectionShortDescription,
+                    isMandatory: benefit?.isMandatory,
+                    limitAmount: benefit?.limitAmount,
                   },
-                  multiplierDivisionFactor: benefit.multiplierDivisionFactor,
-                  riskCode: null,
-                  shortDescription: benefit.sectionDescription,
-                  limitAmount: benefit.limitAmount,
-                  premiumRate: benefit.rate ?? 1,
-                  minimumPremium: benefit.minimumPremium ?? 0,
-                  rateType: benefit.rateType,
-                  calculationGroup: 1,
+                  riskCode: Number(risk.code),
+                  shortDescription: benefit?.sectionShortDescription,
+                  limitAmount: benefit?.limitAmount,
+                  premiumRate: rate?.rate,
+                  minimumPremium: rate?.premiumMinimumAmount,
+                  rateType: rate?.rateType,
+                  calculationGroup: benefit.calcGroup ?? 1,
                   declarationSection: "N",
-                  limitPeriod: benefit?.limitPeriod || 0,
+                  limitPeriod: 0,
                   rowNumber: updatedLimits.length + 1,
-                  rateDivisionFactor: benefit.divisionFactor,
+                  multiplierRate: rate?.multiplierRate ?? 0,
+                  multiplierDivisionFactor: rate?.multiplierDivisionFactor,
+                  rateDivisionFactor: rate?.divisionFactor,
                   annualPremium: 0,
-                  multiplierRate: benefit.multiplierRate || 1,
-                  sectionType: benefit.sectionType,
-                  description: benefit.sectionDescription,
+                  sectionType: rate?.sectionType,
+                  description: benefit.sectionShortDescription,
                   compute: "Y",
                   dualBasis: "N",
-                  freeLimit: benefit.freeLimit
+                  freeLimit: rate?.freeLimit
                 });
               });
             }
+
             return {
               ...coverType,
               limits: updatedLimits
@@ -3101,11 +3205,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         };
       })
     }));
-    let updatedPayload = {
+
+    const updatedPayload = {
       ...premiumComputationRequest,
       products: updatedProducts
     };
-    this.currentComputationPayload = updatedPayload
+
+    this.currentComputationPayload = updatedPayload;
     return updatedPayload;
   }
 
