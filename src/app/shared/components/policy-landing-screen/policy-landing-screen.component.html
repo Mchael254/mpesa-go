@@ -244,9 +244,11 @@
               <!-- Table Header -->
               <ng-template pTemplate="header">
                 <tr>
-                  <th *ngFor="let col of policyColumns" [hidden]="!col.visible" [pSortableColumn]="col.field">
+                  <th *ngFor="let col of policyColumns" [hidden]="!col.visible" 
+                      [pSortableColumn]="col.sortable ? col.field : null"
+                      [ngStyle]="{'text-align': col.field === 'actions' ? 'center' : 'left'}">
                     {{ col.header }}
-                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                    <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
                   </th>
                 </tr>
                 <tr class="filter-row">
@@ -261,20 +263,36 @@
               <ng-template pTemplate="body" let-policy>
                 <tr>
                   <td *ngFor="let col of policyColumns" [hidden]="!col.visible">
-                    <ng-container *ngIf="col.field === 'premium'; else dateOrDefault">
-                      <div class="text-end">
-                        {{ (policy[col.field] || 0) | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
-                      </div>
-                    </ng-container>
-
-                    <ng-template #dateOrDefault>
-                      <ng-container *ngIf="isDateField(col.field); else notDateField">
-                        {{ formatDateDisplay(policy[col.field]) }}
+                    <ng-container [ngSwitch]="col.field">
+                      <!-- Actions column -->
+                      <ng-container *ngSwitchCase="'actions'">
+                        <div class="d-flex justify-content-center gap-3">
+                          <span style="color: var(--primary-color); cursor: pointer; font-weight: 500;">
+                            {{ 'gis.policy.view' | translate }}
+                          </span>
+                          <span style="color: var(--primary-color); cursor: pointer; font-weight: 500;">
+                            {{ 'gis.policy.edit' | translate }}
+                          </span>
+                        </div>
                       </ng-container>
-                      <ng-template #notDateField>
-                        {{ policy[col.field] ?? '-' }}
-                      </ng-template>
-                    </ng-template>
+
+                      <!-- Premium column -->
+                      <ng-container *ngSwitchCase="'premium'">
+                        <div class="text-end">
+                          {{ (policy[col.field] || 0) | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                        </div>
+                      </ng-container>
+
+                      <!-- Default columns -->
+                      <ng-container *ngSwitchDefault>
+                        <ng-container *ngIf="isDateField(col.field); else notDateField">
+                          {{ formatDateDisplay(policy[col.field]) }}
+                        </ng-container>
+                        <ng-template #notDateField>
+                          {{ policy[col.field] ?? '-' }}
+                        </ng-template>
+                      </ng-container>
+                    </ng-container>
                   </td>
                 </tr>
               </ng-template>
@@ -294,8 +312,8 @@
             No policies available.
           </div>
 
-          <div *ngIf="!policiesLoaded" class="text-center text-muted">
-            Loading policies...
+          <div *ngIf="!policiesLoaded" class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
           </div>
           
         </div>
