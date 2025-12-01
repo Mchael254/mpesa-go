@@ -19,7 +19,7 @@ import { QuotationsService } from '../../services/quotations/quotations.service'
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Clause, CreateLimitsOfLiability, DynamicRiskField, Excesses, QuotationDetails, quotationRisk, RiskCommissionDto, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab, TaxInformation, TaxPayload } from '../../data/quotationsDTO';
-import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, territories, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
+import { NewPremiums, subclassClauses, SubclassCoverTypes, Subclasses, territories, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, firstValueFrom, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 import { Table } from 'primeng/table';
@@ -146,7 +146,7 @@ export class RiskDetailsComponent {
   quotationRiskData: any;
   quoteProductCode: any;
   quotationRiskCode: any
-  sectionPremium: Premiums[] = [];
+  sectionPremium: NewPremiums[] = [];
   passedCoverFromDate: string;
   passedCoverToDate: string;
 
@@ -165,7 +165,7 @@ export class RiskDetailsComponent {
   modelYear: any;
   selectedRisk: RiskInformation;
 
-  selectedSections: Premiums[] = [];
+  selectedSections: NewPremiums[] = [];
   selectedSection: any;
   updatedSelectedSections: riskSection[] = [];
   sectionDetails: any[] = [];
@@ -2039,17 +2039,35 @@ export class RiskDetailsComponent {
 
           const currentQuotationRiskCode = matchedRisk.code
           this.quotationRiskCode = currentQuotationRiskCode
-          const result = premiumRates;
+          const result: NewPremiums[] = premiumRates;
           // this.sectionPremium = result
           this.sumInsured = matchedRisk.value || this.riskDetailsForm.value.sumInsured
           log.debug("Sum insured:", this.sumInsured)
+          // const sectionPremiums = result
+          //   .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+          //   .map(premium => {
+          //     if (premium.isMandatory === 'Y') {
+          //       return {
+          //         ...premium,
+          //         limitAmount: this.sumInsured
+          //       };
+          //     }
+          //     return premium;
+          //   });
           const sectionPremiums = result
             .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
             .map(premium => {
-              if (premium.isMandatory === 'Y') {
+              if (premium.isMandatory && premium.isMandatory.includes('Y')) {
+                if (premium.sectionShortDescription && premium.sectionShortDescription.toLowerCase().includes('sum insured')) {
+                  return {
+                    ...premium,
+                    limitAmount: this.sumInsured
+                  };
+                }
+
                 return {
                   ...premium,
-                  limitAmount: this.sumInsured
+                  limitAmount: premium?.applicableRates?.[0]?.freeLimit
                 };
               }
               return premium;
@@ -3391,23 +3409,25 @@ export class RiskDetailsComponent {
     let limitsToSave: any[] = [];
     log.debug("Slected section-coming up with the payload:", this.selectedSections)
     for (let section of this.selectedSections) {
+      const rate = section?.applicableRates[0]
+
       limitsToSave.push({
         code: section.code || null,
         calcGroup: 1,
         compute: "Y",
-        description: section.sectionDescription,
-        freeLimit: section.freeLimit || 0,
-        multiplierDivisionFactor: section.multiplierDivisionFactor,
-        multiplierRate: section.multiplierRate,
-        premiumAmount: section.premiumMinimumAmount || 0,
-        premiumRate: section.rate || 0,
-        minimumPremium: section.premiumMinimumAmount,
-        rateDivisionFactor: section.divisionFactor || 1,
-        rateType: section.rateType || "FXD",
-        rowNumber: 1,
-        sectionType: section.sectionType,
-        sumInsuredLimitType: section.sumInsuredLimitType || null,
-        sumInsuredRate: section.sumInsuredRate,
+        description: rate?.sectionDescription,
+        freeLimit: rate?.freeLimit,
+        multiplierDivisionFactor: rate?.multiplierDivisionFactor,
+        multiplierRate: rate?.multiplierRate,
+        premiumAmount: rate?.premiumMinimumAmount || 0,
+        premiumRate: rate?.rate || 0,
+        minimumPremium: rate?.premiumMinimumAmount,
+        rateDivisionFactor: rate?.divisionFactor || 1,
+        rateType: rate?.rateType || "FXD",
+        rowNumber: limitsToSave.length + 1,
+        sectionType: rate?.sectionType,
+        sumInsuredLimitType: rate?.sumInsuredLimitType || null,
+        sumInsuredRate: rate?.sumInsuredRate,
         sectionShortDescription: section.sectionShortDescription,
         sectionCode: section.sectionCode,
         limitAmount: section.limitAmount,
@@ -3449,14 +3469,15 @@ export class RiskDetailsComponent {
     let limitsToSave: any[] = [];
     log.debug("Selected sections", this.selectedSections)
     for (let section of this.selectedSections) {
+      const rate = section?.applicableRates[0]
       limitsToSave.push({
-        sectionCode: section.sectionCode,
-        quotationCode: this.selectedProduct.quotationCode,
-        quotationRiskCode: this.selectedRisk.code,
+        sectionCode: section?.sectionCode,
+        quotationCode: this.selectedProduct?.quotationCode,
+        quotationRiskCode: this.selectedRisk?.code,
         productCode: this.selectedProductCode,
-        quotationProCode: this.selectedProduct.code,
-        minimumPremium: section.minimumPremium,
-        rateDescription: section.rateDescription,
+        quotationProCode: this.selectedProduct?.code,
+        minimumPremium: rate?.premiumMinimumAmount,
+        rateDescription: rate?.rateDescription,
         annualPremium: null,
         usedLimit: null,
         setupPremiumRate: null,
@@ -3470,18 +3491,18 @@ export class RiskDetailsComponent {
         calcGroup: 1,
         code: 0,
         compute: null,
-        description: section.sectionDescription,
-        freeLimit: section.freeLimit,
-        multiplierRate: section.multiplierRate,
+        description: rate?.sectionDescription,
+        freeLimit: rate?.freeLimit,
+        multiplierRate: rate?.multiplierRate,
         premiumAmount: null,
-        premiumRate: section.rate,
-        rateDivisionFactor: section.divisionFactor,
-        rateType: section.rateType,
-        rowNumber: 1,
-        sectionType: section.sectionType,
+        premiumRate: rate?.rate,
+        rateDivisionFactor: rate?.divisionFactor,
+        rateType: rate?.rateType,
+        rowNumber: limitsToSave.length + 1,
+        sectionType: rate?.sectionType,
         sectionShortDescription: section.sectionShortDescription,
         limitAmount: section.limitAmount,
-        sumInsuredRate: section.sumInsuredRate
+        sumInsuredRate: rate?.sumInsuredRate
 
       });
     }

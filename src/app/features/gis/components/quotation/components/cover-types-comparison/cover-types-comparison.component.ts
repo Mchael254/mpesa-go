@@ -34,7 +34,7 @@ import {
   QuotationDetails,
   UserDetail
 } from '../../data/quotationsDTO'
-import { Premiums } from '../../../setups/data/gisDTO';
+import { NewPremiums, Premiums } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
 import {
@@ -61,10 +61,10 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   @Output() selectedCoverEvent: EventEmitter<RiskLevelPremium> = new EventEmitter<RiskLevelPremium>();
   @Output() additionalBenefitsEvent: EventEmitter<{
     risk: RiskLevelPremium,
-    premiumItems: Premiums[]
+    premiumItems: NewPremiums[]
   }> = new EventEmitter<{
     risk: RiskLevelPremium,
-    premiumItems: Premiums[]
+    premiumItems: NewPremiums[]
   }>();
   @Output() additionalBenefitsRemovedEvent: EventEmitter<{
     risk: RiskLevelPremium,
@@ -420,34 +420,59 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
     let limitPremiums = this.riskLevelPremium
       .coverTypeDetails.find(value => value.coverTypeCode === selectedCover.coverTypeCode).limitPremium;
     log.debug("I selected this cover >>>", selectedCover, limitPremiums)
+    log.debug("I selected this cover limit premium  >>>", limitPremiums)
     const coverTypeCode = selectedCover.coverTypeCode
     forkJoin(([
-      this.quotationService.getClauses(this.selectedSubclassCode, coverTypeCode),
+      // this.quotationService.getClauses(this.selectedSubclassCode, coverTypeCode),
       this.quotationService.getExcesses(this.selectedSubclassCode),
       this.quotationService.getLimitsOfLiability(this.selectedSubclassCode),
       this.premiumRateService.getCoverTypePremiums(this.selectedSubclassCode, this.selectedBinderCode, coverTypeCode)
     ])).pipe(
       untilDestroyed(this)
     )
-      .subscribe(([clauses, excesses, limitOfLiabilities, applicablePremiumRates]) => {
-        this.clauseList = clauses._embedded ?? []
+      .subscribe(([excesses, limitOfLiabilities, applicablePremiumRates]) => {
+        // this.clauseList = clauses._embedded ?? []
         this.excessesList = excesses ?? []
         this.limitsOfLiabilityList = limitOfLiabilities ?? []
 
         selectedCover.excesses = excesses ?? []
         selectedCover.limitOfLiabilities = limitOfLiabilities ?? []
-        selectedCover.clauses = clauses._embedded ?? []
+        // selectedCover.clauses = clauses._embedded ?? []
         this.riskLevelPremium.selectCoverType = selectedCover
         this.selectedCoverEvent.emit(this.riskLevelPremium)
         this.additionalBenefits = applicablePremiumRates
-        this.selectedCover.additionalBenefits = applicablePremiumRates.filter(value => value.isMandatory !== 'Y').map((value) => {
-          const matchingSection = limitPremiums.find(limit => limit.sectCode === value.sectionCode)
-          return {
-            ...value,
-            isChecked: !!matchingSection,
-            limitAmount: matchingSection?.limitAmount
-          }
-        })
+        log.debug('additional benefits', this.additionalBenefits)
+        this.selectedCover.additionalBenefits = applicablePremiumRates
+          ?.filter(sec => sec.applicableRates && sec.applicableRates.length > 0)
+          .map(section => {
+            const matchingSection = limitPremiums.find(limit => limit.sectCode === section.sectionCode);
+            log.debug("Matching section", matchingSection)
+            section.rateOptions = section.applicableRates.map(r => ({
+              label: r.rate.toString(),
+              value: r.rate
+            }));
+
+            return {
+              ...section,
+              isChecked: !!matchingSection,
+              limitAmount: matchingSection?.limitAmount,
+              selectedRate: section.applicableRates[0]?.rate || null
+            };
+          })
+          // Sort checked sections first
+          .sort((a, b) => (b.isChecked ? 1 : 0) - (a.isChecked ? 1 : 0));
+        log.debug('additional benefits after', this.selectedCover.additionalBenefits)
+
+
+
+        // this.selectedCover.additionalBenefits = applicablePremiumRates.filter(value => value.isMandatory !== 'Y').map((value) => {
+        //   const matchingSection = limitPremiums.find(limit => limit.sectCode === value.sectionCode)
+        //   return {
+        //     ...value,
+        //     isChecked: !!matchingSection,
+        //     limitAmount: matchingSection?.limitAmount
+        //   }
+        // })
         this.cdr.detectChanges()
       })
   }
@@ -643,7 +668,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
       );
       return;
     }
-    let limitsToComputeOn = this.selectedCover.additionalBenefits.filter(value => value.isChecked && value.isMandatory !== 'Y')
+    // let limitsToComputeOn = this.selectedCover.additionalBenefits.filter(value => value.isChecked && value.isMandatory !== 'Y')
+    let limitsToComputeOn = this.selectedCover.additionalBenefits.filter(value => value.isChecked)
     log.debug("Limits to compute on >>", limitsToComputeOn, this.riskLevelPremium)
     this.additionalBenefitsEvent.emit({
       risk: this.riskLevelPremium,
@@ -870,6 +896,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
     this.additionalBenefitsRemovedEvent.emit({ risk: this.riskLevelPremium, premiumItems: limitToDelete })
   }
 
-  
+
 }
 

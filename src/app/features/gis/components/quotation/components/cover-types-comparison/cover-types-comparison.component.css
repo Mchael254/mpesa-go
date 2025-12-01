@@ -191,3 +191,20 @@
     border: 2px solid red !important;
 }
 
+.limit-table th,
+.limit-table td {
+    white-space: nowrap;
+    min-width: 100px;
+
+}
+
+.limit-table th:first-child,
+.limit-table td:first-child {
+    min-width: 30px;
+    /* numbering column */
+}
+
+.limit-table #action-buttons {
+    min-width: 50px;
+    /* action buttons column */
+}
