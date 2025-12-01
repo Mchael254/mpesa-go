@@ -63,9 +63,9 @@
                   >
                     <option
                       *ngFor="let opt of field.options"
-                      [value]="opt.id || opt.name"
+                      [value]="(opt.id || opt.name)"
                     >
-                      {{ opt.name | uppercase }}
+                      {{ (opt.name || opt.accountType) | uppercase }}
                     </option>
                   </select>
 

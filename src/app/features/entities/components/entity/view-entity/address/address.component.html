@@ -81,7 +81,7 @@
       <div class="modal-content">
         <div class="modal-header border-0">
           <h1 class="modal-title fs-4 text-primary" id="editAddressModalLabel">
-            {{ selectedSubgroup?.label[language] | titlecase }}
+            {{ (selectedSubgroup?.label[language] || group?.label[language]) | titlecase }}
           </h1>
           <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>

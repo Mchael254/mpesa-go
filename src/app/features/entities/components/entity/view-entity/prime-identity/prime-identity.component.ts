@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, O
 import {PartyAccountsDetails} from "../../../../data/accountDTO";
 import {AccountReqPartyId, IdentityModeDTO, ReqPartyById} from "../../../../data/entityDto";
 import {Logger, UtilService} from "../../../../../../shared/services";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormGroup} from "@angular/forms";
 import {CountryDto} from "../../../../../../shared/data/common/countryDto";
 import {MaritalStatus} from "../../../../../../shared/data/common/marital-status.model";
 import {EntityService} from "../../../../services/entity/entity.service";
@@ -11,17 +11,15 @@ import {MaritalStatusService} from "../../../../../../shared/services/setups/mar
 import {forkJoin} from "rxjs";
 import {ClientService} from "../../../../services/client/client.service";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
-import {group} from "@angular/animations";
-import {ClientDTO} from "../../../../data/ClientDTO";
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
   FormGroupsDto, UserCategory
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {EntityUtilService} from "../../../../services/entity-util.service";
-import {StaffDto} from "../../../../data/StaffDto";
-import {ServiceProviderRes} from "../../../../data/ServiceProviderDTO";
-import {AgentDTO} from "../../../../data/AgentDTO";
+import {AccountTypeDTO, AgentDTO} from "../../../../data/AgentDTO";
+import {IntermediaryService} from "../../../../services/intermediary/intermediary.service";
+import {AccountService} from "../../../../services/account/account.service";
 
 const log = new Logger('PrimeIdentityComponent');
 
@@ -39,7 +37,7 @@ export class PrimeIdentityComponent implements OnInit {
   @Input() entityAccountIdDetails: AccountReqPartyId[];
   @Input() entityPartyIdDetails: ReqPartyById;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
-  @Input() clientDetails: ClientDTO;
+  // @Input() clientDetails: ClientDTO;
   @Input() entityDetails: any /*StaffDto | ClientDTO | ServiceProviderRes | AgentDTO*/;
   @Input() group: FormGroupsDto;
 
@@ -55,24 +53,28 @@ export class PrimeIdentityComponent implements OnInit {
   idTypes: IdentityModeDTO[] = [];
   countries: CountryDto[] = [];
   maritalStatuses: MaritalStatus[] = [];
+  accountTypes: AccountTypeDTO[] = [];
+
   genders: {id: number, name: string, shtDesc: string}[] = [
-    { id: 1, name: 'male', shtDesc: 'm'},
-    { id: 2, name: 'female', shtDesc: 'f'},
+    { id: 1, name: 'Male', shtDesc: 'm'},
+    { id: 2, name: 'Female', shtDesc: 'f'},
   ]
 
   primeDetails: any;
   fields: ConfigFormFieldsDto[];
+  partyTypeShtDesc: string;
 
   constructor(
     private utilService: UtilService,
-    // private fb: FormBuilder,
     private entityService: EntityService,
     private countryService: CountryService,
     private maritalStatusService: MaritalStatusService,
+    private accountService: AccountService,
     private clientService: ClientService,
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
     private entityUtilService: EntityUtilService,
+    private intermediaryService: IntermediaryService,
   ) {
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
@@ -85,13 +87,14 @@ export class PrimeIdentityComponent implements OnInit {
 
   initData(): void {
     setTimeout(() => {
-      const partyType = (this.entityAccountIdDetails[0]?.partyType?.partyTypeName).toUpperCase();
+      this.fetchSelectOptions();
+      this.partyTypeShtDesc = (this.entityAccountIdDetails[0]?.partyType?.partyTypeShtDesc).toUpperCase();
 
-      switch (partyType) {
-        case 'CLIENT':
+      switch (this.partyTypeShtDesc) {
+        case 'C':
           this.primeDetails = this.setClientPrimeDetails();
           break;
-        case 'INTERMEDIARIES':
+        case 'A':
           this.primeDetails = this.setIntermediaryDetails();
           break;
           default:
@@ -107,7 +110,7 @@ export class PrimeIdentityComponent implements OnInit {
       this.fields.sort((a, b) => a.order - b.order);
 
       this.editForm = this.entityUtilService.createEditForm(this.fields);
-      this.fetchSelectOptions();
+
     }, 1000);
   }
 
@@ -127,15 +130,17 @@ export class PrimeIdentityComponent implements OnInit {
   }
 
   setIntermediaryDetails() {
+    const gender = this.genders.find(g => g.shtDesc === this.entityDetails.gender);
+
     return {
-      overview_account_type: this.partyAccountDetails.partyType.partyTypeName,
+      overview_account_type: this.entityDetails.accountType?.accountType,
       overview_doc_id_no: this.entityDetails.idNumber,
-      overview_tax_pin_no: '[check]',
-      overview_ira_license_no: '[check]',
+      overview_tax_pin_no: this.entityDetails.pinNumber,
+      overview_ira_license_no: this.entityDetails.licenceNumber,
       overview_dob: this.entityDetails.dateOfBirth,
-      overview_citizenship: '[check]',
-      overview_gender: this.entityDetails.gender,
-      overview_marital_status: '[check]',
+      overview_citizenship :null,
+      overview_gender: gender?.name,
+      overview_marital_status: this.entityDetails.maritalStatus,
     }
   }
 
@@ -144,13 +149,15 @@ export class PrimeIdentityComponent implements OnInit {
     forkJoin({
       idTypes: this.entityService.getIdentityType(),
       countries: this.countryService.getCountries(),
-      maritalStatuses: this.maritalStatusService.getMaritalStatus()
+      maritalStatuses: this.maritalStatusService.getMaritalStatus(),
+      accountTypes: this.accountService.getAccountType(),
     }).subscribe({
       next: data => {
         this.idTypes = data.idTypes;
         this.countries = data.countries;
-        this.maritalStatuses = data.maritalStatuses
-        this.setSelectOptions(data.idTypes, data.countries, data.maritalStatuses);
+        this.maritalStatuses = data.maritalStatuses;
+        this.accountTypes = data.accountTypes;
+        this.setSelectOptions(data.idTypes, data.countries, data.maritalStatuses, data.accountTypes);
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;
@@ -163,7 +170,8 @@ export class PrimeIdentityComponent implements OnInit {
   setSelectOptions(
     idTypes: IdentityModeDTO[],
     countries: CountryDto[],
-    maritalStatuses: MaritalStatus[]
+    maritalStatuses: MaritalStatus[],
+    accountTypes: AccountTypeDTO[],
   ): void {
     this.formGroupsAndFieldConfig.fields.forEach((field) => {
       switch (field.fieldId) {
@@ -179,6 +187,9 @@ export class PrimeIdentityComponent implements OnInit {
         case 'overview_gender':
           field.options = this.genders;
           break;
+        case 'overview_account_type':
+          field.options = accountTypes;
+          break;
         default:
           // do something
       }
@@ -186,28 +197,54 @@ export class PrimeIdentityComponent implements OnInit {
     });
   }
 
-  patchFormValues(): void {
+  patchClientFormValues(): void {
     let patchData: {};
-    const category = this.clientDetails.category;
-    const dob = this.clientDetails?.dateOfBirth;
+    const category = this.entityDetails.category;
+    const dob = this.entityDetails?.dateOfBirth;
 
     if (category.toUpperCase() === UserCategory.CORPORATE) {
       patchData = {
-        overview_business_reg_no: this.clientDetails.idNumber,
+        overview_business_reg_no: this.entityDetails.idNumber,
         overview_date_of_incorporation: new Date(dob).toISOString().split('T')[0],
-        overview_pin_number: this.clientDetails?.pinNumber,
+        overview_pin_number: this.entityDetails?.pinNumber,
       }
     } else if (category.toUpperCase() === UserCategory.INDIVIDUAL) {
-      const gender = this.genders.find(g => (g.shtDesc).toUpperCase() === this.clientDetails.gender);
+      const gender = this.genders.find(g => (g.shtDesc).toUpperCase() === this.entityDetails.gender);
       patchData = {
-        overview_client_type: this.clientDetails?.clientType?.clientTypeName,
-        overview_primary_id_type: this.clientDetails.modeOfIdentity?.id,
-        overview_id_number: this.clientDetails.idNumber,
-        overview_pin_number: this.clientDetails.pinNumber,
+        overview_client_type: this.entityDetails?.clientType?.clientTypeName,
+        overview_primary_id_type: this.entityDetails.modeOfIdentity?.id,
+        overview_id_number: this.entityDetails.idNumber,
+        overview_pin_number: this.entityDetails.pinNumber,
         overview_date_of_birth: new Date(dob).toISOString().split('T')[0],
-        overview_citizenship: this.clientDetails?.citizenshipCountryId,
+        overview_citizenship: this.entityDetails?.countryId,
         overview_gender: gender.id,
-        overview_marital_status: this.clientDetails.maritalStatus,
+        overview_marital_status: this.entityDetails.maritalStatus,
+      }
+    }
+    this.editForm.patchValue(patchData)
+  }
+
+  patchAgentFormValues(): void {
+    let patchData: {};
+    const category = this.entityDetails.category;
+    const dob = this.entityDetails.dateOfBirth;
+
+    if (category.toUpperCase() === UserCategory.CORPORATE) {
+      // create payload for corporate
+
+    } else if (category.toUpperCase() === UserCategory.INDIVIDUAL) {
+      const gender = this.genders.find(g => g.shtDesc === this.entityDetails.gender);
+      // const status = this.maritalStatuses.find(m => m.value === this.entityDetails.status);
+
+      patchData = {
+        overview_account_type: this.entityDetails.accountType?.id,
+        overview_doc_id_no: this.entityDetails.idNumber,
+        overview_tax_pin_no: this.entityDetails.pinNumber,
+        overview_ira_license_no: this.entityDetails.licenceNumber,
+        overview_dob: new Date(dob).toISOString().split('T')[0],
+        overview_citizenship: null,
+        overview_gender: gender?.id,
+        overview_marital_status: undefined,
       }
     }
     this.editForm.patchValue(patchData)
@@ -216,13 +253,39 @@ export class PrimeIdentityComponent implements OnInit {
 
   openEditPrimeIdentityDialog(): void {
     this.editButton.nativeElement.click();
-    this.patchFormValues();
+
+    switch (this.partyTypeShtDesc) {
+      case 'C':
+        this.patchClientFormValues();
+        break;
+      case 'A':
+        this.patchAgentFormValues();
+        break;
+      default:
+      //
+    }
+  }
+
+  editPrimeDetails(): void {
+    const formValues = this.editForm.getRawValue();
+    const category = this.entityDetails?.category;
+
+    switch (this.partyTypeShtDesc) {
+      case 'C':
+        this.editClientDetails(category, formValues);
+        break;
+      case 'A':
+        this.editAgentDetails(category, formValues);
+        break;
+      default:
+      //
+    }
+
+    this.closeButton.nativeElement.click();
   }
 
 
-  editPrimeDetails(): void {
-    const formValues = this.editForm.value;
-    const category = this.clientDetails?.category;
+  editClientDetails(category: string, formValues: any): void {
     let primeDetails: {};
 
     if (category.toUpperCase() === UserCategory.CORPORATE) {
@@ -245,16 +308,16 @@ export class PrimeIdentityComponent implements OnInit {
     }
 
     const client = {
-      clientCode: this.clientDetails.clientCode,
-      partyAccountCode: this.clientDetails.partyAccountCode,
-      partyId: this.clientDetails.partyId,
+      clientCode: this.entityDetails.clientCode,
+      partyAccountCode: this.entityDetails.partyAccountCode,
+      partyId: this.entityDetails.partyId,
       ...primeDetails,
     };
 
-    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
+    this.clientService.updateClientSection(this.entityDetails.clientCode, client).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
-        this.clientDetails = data;
+        this.entityDetails = data;
         this.initData();
       },
       error: err => {
@@ -262,7 +325,52 @@ export class PrimeIdentityComponent implements OnInit {
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
       }
     });
-    this.closeButton.nativeElement.click();
+  }
+
+
+  editAgentDetails(category: string, formValues: any): void {
+    let primeDetails: {};
+
+    if (category.toUpperCase() === UserCategory.CORPORATE) {
+      // create payload for corporate client
+
+    } else if (category.toUpperCase() === UserCategory.INDIVIDUAL) {
+      const gender = this.genders.find(g => g.id === parseInt(formValues.overview_gender));
+      const country  = this.countries.find(cou => cou.id === parseInt(formValues.overview_citizenship));
+      const maritalStatus  = this.maritalStatuses.find(m => m.name === formValues.overview_marital_status);
+
+      log.info('form values >>. ', formValues);
+      primeDetails = {
+        accountTypeId: parseInt(formValues.overview_account_type),
+        licenceNumber: formValues.overview_ira_license_no,
+        idNumber: formValues.overview_doc_id_no,
+        pinNumber: formValues.overview_tax_pin_no,
+        dateOfBirth: formValues.overview_dob,
+        countryName: country.name,
+        gender: gender?.shtDesc,
+        countryId: parseInt(formValues.overview_citizenship),
+        maritalStatus: maritalStatus?.value,
+      }
+    }
+
+    const accountCode = this.partyAccountDetails.accountCode;
+    const agentPayload = {
+      accountCode: this.partyAccountDetails.accountCode,
+      partyAccountCode: this.entityDetails.partyAccountCode,
+      partyId: this.entityDetails.partyId,
+      ...primeDetails,
+    };
+
+    this.intermediaryService.updateAgentSection(accountCode, agentPayload).subscribe({
+      next: data => {
+        this.entityDetails = data;
+        this.initData();
+        this.globalMessagingService.displaySuccessMessage('Success', 'Entity details updated successfully');
+      },
+      error: err => {
+        const errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);      }
+    });
   }
 
 }
