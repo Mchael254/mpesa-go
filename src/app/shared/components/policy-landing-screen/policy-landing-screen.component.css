@@ -1,6 +1,7 @@
 /* Tab view styling */
 ::ng-deep .p-tabview-title {
     font-size: 13px !important;
+
 }
 
 ::ng-deep .p-tabview .p-tabview-nav {
@@ -19,7 +20,7 @@
 /* Active tab */
 ::ng-deep .p-tabview .p-tabview-nav li.p-highlight {
     border-bottom: 3px solid var(--primary-color) !important;
-    margin-bottom: -1px; 
+    margin-bottom: -1px;
 }
 
 ::ng-deep .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link,
@@ -27,7 +28,7 @@
     color: var(--primary-color) !important;
     font-weight: 600 !important;
     font-size: 16px !important;
-    text-decoration: none !important; 
+    text-decoration: none !important;
 }
 
 /* Table styling */
@@ -60,7 +61,7 @@ th {
 }
 
 /* PrimeNG table header specific styling */
-::ng-deep .p-datatable .p-datatable-thead > tr > th {
+::ng-deep .p-datatable .p-datatable-thead>tr>th {
     white-space: nowrap;
     padding: 0.75rem;
     font-weight: 600;
@@ -69,7 +70,7 @@ th {
 }
 
 
-::ng-deep .p-datatable .p-datatable-thead > tr > th .p-sortable-column-icon {
+::ng-deep .p-datatable .p-datatable-thead>tr>th .p-sortable-column-icon {
     margin-left: 0.25rem;
 }
 
@@ -133,7 +134,7 @@ tr {
     appearance: auto !important;
     -webkit-appearance: checkbox !important;
     accent-color: var(--primary-color) !important;
-    border: 1px solid rgba(0,0,0,0.25) !important;
+    border: 1px solid rgba(0, 0, 0, 0.25) !important;
     background-clip: padding-box;
 }
 
