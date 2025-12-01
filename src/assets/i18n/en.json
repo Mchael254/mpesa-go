@@ -1824,7 +1824,9 @@
       "client_information": "Client information",
       "commission": "Commission",
       "exchange_rate": "Exchange rate",
-      "new_policy":"New Policy"
+      "new_policy":"New Policy",
+      "view": "View",
+      "edit": "Edit"
     },
     "claims": {
       "opening": {

@@ -1680,7 +1680,9 @@
       "check_off_installments": "Cuotas de verificación",
       "transaction_type": "Tipo de transacción",
       "client_information": "Información del cliente",
-      "commission": "Comisión"
+      "commission": "Comisión",
+      "view": "Ver",
+      "edit": "Editar"
     },
     "claims": {
       "opening": {
