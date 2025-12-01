@@ -51,6 +51,7 @@ export class DynamicSetupTableComponent implements OnInit {
   modalVisible: boolean = false;
 
   @Input() tableTitle: string;
+  @Input() modalTitle: string;
   @Input() addButtonText: string;
   @Input() emptyTableMessage: string;
   @Input() formFields: ConfigFormFieldsDto[] = [];

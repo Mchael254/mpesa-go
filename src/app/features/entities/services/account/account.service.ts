@@ -554,4 +554,11 @@ export class AccountService {
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
+
+  getClientCategories(): Observable<AccountsEnum[]> {
+    return this.api.GET<AccountsEnum[]>(
+      `/system-definitions/client-categories`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
 }
