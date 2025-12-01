@@ -2039,17 +2039,35 @@ export class RiskDetailsComponent {
 
           const currentQuotationRiskCode = matchedRisk.code
           this.quotationRiskCode = currentQuotationRiskCode
-          const result = premiumRates;
+          const result: NewPremiums[] = premiumRates;
           // this.sectionPremium = result
           this.sumInsured = matchedRisk.value || this.riskDetailsForm.value.sumInsured
           log.debug("Sum insured:", this.sumInsured)
+          // const sectionPremiums = result
+          //   .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+          //   .map(premium => {
+          //     if (premium.isMandatory === 'Y') {
+          //       return {
+          //         ...premium,
+          //         limitAmount: this.sumInsured
+          //       };
+          //     }
+          //     return premium;
+          //   });
           const sectionPremiums = result
             .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
             .map(premium => {
-              if (premium.isMandatory === 'Y') {
+              if (premium.isMandatory && premium.isMandatory.includes('Y')) {
+                if (premium.sectionShortDescription && premium.sectionShortDescription.toLowerCase().includes('sum insured')) {
+                  return {
+                    ...premium,
+                    limitAmount: this.sumInsured
+                  };
+                }
+
                 return {
                   ...premium,
-                  limitAmount: this.sumInsured
+                  limitAmount: premium?.applicableRates?.[0]?.freeLimit
                 };
               }
               return premium;
