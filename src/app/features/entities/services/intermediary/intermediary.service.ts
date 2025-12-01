@@ -13,6 +13,7 @@ import { IdentityModeDTO } from '../../data/entityDto';
 import { UtilService } from '../../../../shared/services';
 import { ApiService } from '../../../../shared/services/api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
+import {ClientDTO} from "../../data/ClientDTO";
 
 @Injectable({
   providedIn: 'root',
@@ -20,12 +21,12 @@ import { API_CONFIG } from '../../../../../environments/api_service_config';
 export class IntermediaryService {
   constructor(private utilService: UtilService, private api: ApiService) {}
 
-  getAllAgents(): Observable<AgentDTO[]> {
+  /*getAllAgents(): Observable<AgentDTO[]> {
     return this.api.GET<AgentDTO[]>(
       `agents`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
-  }
+  }*/
 
   getAgents(
     page: number | null = 0,
@@ -52,6 +53,13 @@ export class IntermediaryService {
   getAgentById(id: number): Observable<AgentDTO> {
     return this.api.GET<AgentDTO>(
       `agents/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  getAgentDetailsById(agentId: number): Observable<AgentDTO> {
+    return this.api.GET<AgentDTO>(
+      `v2/api/intermediary/${agentId}`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }

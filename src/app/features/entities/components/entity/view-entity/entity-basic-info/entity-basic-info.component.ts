@@ -45,8 +45,10 @@ export class EntityBasicInfoComponent {
   @Input() partyAccountDetails: PartyAccountsDetails;
   @Input() unAssignedPartyTypes: PartyTypeDto[];
   @Input() overviewConfig: any;
-  @Input() clientDetails: any;
+  // @Input() clientDetails: any;
+  @Input() entityDetails: any;
   @Input() formGroupsAndFieldConfig: any;
+  @Input() overviewFormFields: ConfigFormFieldsDto[];
 
   language: string = 'en'
   selectedRole: PartyTypeDto;
@@ -54,8 +56,6 @@ export class EntityBasicInfoComponent {
   selectedClientStatus: StatusDTO;
   applicableStatuses: StatusDTO[] = [];
   actionableStatuses: StatusDTO[] = [];
-
-  @Input() overviewFormFields: ConfigFormFieldsDto[];
 
   isEditingWefWet: boolean = false;
   wetDateForm:FormGroup;
@@ -89,6 +89,7 @@ export class EntityBasicInfoComponent {
 
     setTimeout(() => {
       this.fetchClientStatuses();
+      log.info('party account details ', this.partyAccountDetails)
     }, 1000);
   }
 
@@ -125,7 +126,8 @@ export class EntityBasicInfoComponent {
         this.selectedClientStatus = statuses.find(status => (status.value).toUpperCase() === 'SUSPENDED');
         break;
       default:
-        // do nothing
+        this.selectedClientStatus = statuses.find(status => (status.value).toUpperCase() === 'INACTIVE');
+        break;
     }
 
     this.filterApplicableStatuses();
@@ -209,12 +211,12 @@ export class EntityBasicInfoComponent {
     if (this.isEditingWefWet) {
       // patch current wet date
       this.wetDateForm.patchValue({
-        wetDate: (this.clientDetails.withEffectToDate)?.split('T')[0]
+        wetDate: (this.entityDetails.withEffectToDate)?.split('T')[0]
       })
     } else {
       // update client details
       const withEffectToDate = this.wetDateForm.getRawValue().wetDate;
-      const withEffectFromDate = this.clientDetails.withEffectFromDate;
+      const withEffectFromDate = this.entityDetails.withEffectFromDate;
 
       log.info(withEffectFromDate, withEffectToDate, new Date(withEffectFromDate) > new Date(withEffectToDate));
 
@@ -223,18 +225,38 @@ export class EntityBasicInfoComponent {
         return;
       }
 
-      const clientCode = this.clientDetails.clientCode;
+      const entityCode = this.entityDetails.clientCode; //todo: set code for other entities
+      this.updateEntitySection(entityCode, withEffectToDate);
 
-      this.clientService.updateClientSection(clientCode, { withEffectToDate }).subscribe({
-        next: data => {
-          this.clientDetails = data;
-          this.globalMessagingService.displaySuccessMessage('Success', 'WET date updated successfully');
-        },
-        error: err => {
-          this.globalMessagingService.displayErrorMessage('Error', 'could not update WET date');
-        }
-      })
     }
+  }
+
+  updateEntitySection(entityCode: number, withEffectToDate: string) {
+    log.info('party account details ', this.partyAccountDetails);
+    const partyType = (this.partyAccountDetails?.partyType?.partyTypeName).toUpperCase();
+
+    switch (partyType) {
+      case 'CLIENT':
+        this.updateClientSection(entityCode, withEffectToDate);
+        break;
+      case 'INTERMEDIARIES':
+        // UPDATE INTERMEDIARIES
+        break;
+        default:
+          // do something else
+    }
+  }
+
+  updateClientSection(clientCode: number, withEffectToDate: string): void {
+    this.clientService.updateClientSection(clientCode, { withEffectToDate }).subscribe({
+      next: data => {
+        this.entityDetails = data;
+        this.globalMessagingService.displaySuccessMessage('Success', 'WET date updated successfully');
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', 'could not update WET date');
+      }
+    });
   }
 
   uploadProfileImage(event: Event): void {
@@ -261,7 +283,7 @@ export class EntityBasicInfoComponent {
   }
 
   getFieldLabel(fieldName: string): ConfigFormFieldsDto {
-    return this.overviewConfig.fields.filter(el => el.originalLabel.toLowerCase() === fieldName.toLowerCase())[0]
+    return this.overviewConfig?.fields.filter(el => el.originalLabel.toLowerCase() === fieldName.toLowerCase())[0]
   }
 
 }
