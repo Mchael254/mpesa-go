@@ -28,8 +28,8 @@ export class PolicyLandingScreenComponent implements OnInit {
   assignedSystems: any[] = [];
 
   possibleTabs = [
-    { header: 'Life IND', systemName: 'LIFE MANAGEMENT SYSTEM', content: 'lifeInd' },
-    { header: 'General', systemName: 'GENERAL INSURANCE SYSTEM', content: 'general' }
+    { header: 'General', systemName: 'GENERAL INSURANCE SYSTEM', content: 'general' },
+    { header: 'Life IND', systemName: 'LIFE MANAGEMENT SYSTEM', content: 'lifeInd' }
   ];
   policies: any[] = [];
 
@@ -235,6 +235,15 @@ export class PolicyLandingScreenComponent implements OnInit {
         sortable: true
       }));
 
+    // Add actions column at the end
+    this.policyColumns.push({
+      field: 'actions',
+      header: 'Actions',
+      visible: true,
+      filterable: false,
+      sortable: false
+    });
+
     // Restore visibility from session storage
     const saved = sessionStorage.getItem('policyColumns');
     if (saved) {
@@ -246,7 +255,7 @@ export class PolicyLandingScreenComponent implements OnInit {
     }
   }
 
-  defaultVisiblePolicyFields = ['policyNumber', 'clientName', 'agentShortDescription', 'premium', 'policyCoverFrom', 'policyCoverTo'];
+  defaultVisiblePolicyFields = ['policyNumber', 'clientName', 'agentShortDescription', 'premium', 'policyCoverFrom', 'policyCoverTo', 'actions'];
 
   // Save column visibility to session storage
   savePolicyColumnsToSession(): void {

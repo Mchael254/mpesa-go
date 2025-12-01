@@ -18,7 +18,12 @@
   },
   "crm": {},
   "entities": {},
-  "gis": {},
+  "gis": {
+    "policy": {
+      "view": "View",
+      "edit": "Edit"
+    }
+  },
   "lms": {
       "common": {},
       "ind": {},
