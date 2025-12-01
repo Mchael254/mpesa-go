@@ -1,0 +1,98 @@
+/* Tab view styling */
+::ng-deep .p-tabview-title {
+    color: black !important;
+    font-size: 13px !important;
+}
+
+::ng-deep .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    border-color: rgb(4, 11, 23) !important;
+    border-bottom: 2px solid;
+}
+
+/* Table styling */
+.table>thead>tr {
+    --bs-table-bg: #BAD0E4;
+}
+
+.input-group span {
+    background: var(--bs-border-color);
+    color: #fff;
+}
+
+table tr th {
+    color: rgba(0, 0, 0, 0.6) !important;
+    font-weight: 600;
+}
+
+/* PrimeNG table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Fix header wrapping - prevent text from wrapping in table headers */
+th {
+    text-align: left;
+    padding: 8px;
+    background-color: #BAD0E4;
+    white-space: nowrap;
+}
+
+/* PrimeNG table header specific styling */
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    white-space: nowrap;
+    padding: 0.75rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.6);
+    background-color: #BAD0E4;
+}
+
+/* Ensure sort icons don't wrap */
+::ng-deep .p-datatable .p-datatable-thead > tr > th .p-sortable-column-icon {
+    margin-left: 0.25rem;
+}
+
+/* Filter row styling */
+::ng-deep .p-datatable .filter-row td {
+    padding: 0.5rem;
+}
+
+::ng-deep .p-datatable .filter-row input {
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+td {
+    padding: 8px;
+    white-space: nowrap;
+}
+
+tr {
+    border-bottom: none !important;
+}
+
+/* Currency alignment */
+.text-end {
+    text-align: right;
+}
+
+/* Column selector modal styling */
+.card.shadow {
+    min-width: 180px;
+    max-width: 250px;
+}
+
+.form-check {
+    padding: 0.25rem 0.5rem;
+}
+
+.form-check-label {
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+/* Button styling */
+.btn-outline-secondary.btn-sm {
+    padding: 0.25rem 0.5rem;
+}

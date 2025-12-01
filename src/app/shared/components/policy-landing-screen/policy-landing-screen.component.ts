@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 import { SessionStorageService } from '../../services/session-storage/session-storage.service';
@@ -8,6 +8,8 @@ import { Logger } from '../../services/logger/logger.service';
 import { DatePipe } from '@angular/common';
 import { NgxCurrencyConfig } from 'ngx-currency';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { BankService } from '../../services/setups/bank/bank.service';
+import { CurrencyDTO } from '../../data/common/currency-dto';
 
 const log = new Logger('QuotationDetailsComponent');
 
@@ -43,30 +45,29 @@ export class PolicyLandingScreenComponent implements OnInit {
   public policiesLoading: boolean = false;
   public policiesLoaded: boolean = false;
 
+  // Currency properties
+  currencyDelimiter: any;
+  defaultCurrencyName: string;
+  defaultCurrencySymbol: string;
+  defaultCurrency: CurrencyDTO;
+  currency: CurrencyDTO[];
+
 
   constructor(
     private session_service: SessionStorageService,
     private router: Router,
     private quotationsService: QuotationsService,
     private policyService: PolicyService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private bankService: BankService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
-    // initialize currency formatting object (uses session settings if present)
-    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
-    const currencySymbol = sessionStorage.getItem('currencySymbol') || '';
-    this.currencyObj = {
-      prefix: currencySymbol ? currencySymbol + ' ' : '',
-      allowNegative: false,
-      allowZero: false,
-      decimal: '.',
-      precision: 0,
-      thousands: currencyDelimiter || ',',
-      suffix: ' ',
-      nullable: true,
-      align: 'left',
-    } as NgxCurrencyConfig;
+    // Initialize currency from session storage first (will be updated by fetchCurrencies)
+    this.initializeCurrency();
+    // Fetch currencies from API
+    this.fetchCurrencies();
 
     // Initialize date format from session storage
     const sessionDateFormat = sessionStorage.getItem('dateFormat');
@@ -82,6 +83,64 @@ export class PolicyLandingScreenComponent implements OnInit {
     this.loadSystemsAssignedToUser();
   }
 
+  /**
+   * Initialize currency object from session storage
+   */
+  private initializeCurrency(): void {
+    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
+    const currencySymbol = sessionStorage.getItem('currencySymbol') || '';
+    log.debug('Currency Symbol:', currencySymbol);
+    log.debug('Currency Delimiter:', currencyDelimiter);
+    this.currencyObj = {
+      prefix: currencySymbol ? currencySymbol + ' ' : '',
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: currencyDelimiter || ',',
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    } as NgxCurrencyConfig;
+  }
+
+  /**
+   * Fetch currencies from API and set default currency
+   */
+  fetchCurrencies(): void {
+    this.bankService.getCurrencies()
+      .subscribe({
+        next: (currencies: any[]) => {
+          // Process currencies
+          this.currency = currencies.map((value) => {
+            let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+            return { ...value, name: capitalizedDescription };
+          });
+
+          log.info(this.currency, 'Currency list');
+
+          const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
+          if (defaultCurrency) {
+            log.debug('DEFAULT CURRENCY', defaultCurrency);
+            this.defaultCurrency = defaultCurrency;
+            this.defaultCurrencyName = defaultCurrency.name;
+            this.defaultCurrencySymbol = defaultCurrency.symbol;
+            sessionStorage.setItem('currencySymbol', this.defaultCurrencySymbol);
+
+            log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+            log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+
+            // Re-initialize currency object with fetched values
+            this.initializeCurrency();
+            this.cdr.detectChanges();
+          }
+        },
+        error: (error) => {
+          log.error('Error fetching currencies', error);
+        }
+      });
+  }
+
   get visibleTabs() {
     return this.possibleTabs.filter(tab => this.assignedSystems.some(sys => sys.systemName === tab.systemName));
   }
@@ -94,8 +153,9 @@ export class PolicyLandingScreenComponent implements OnInit {
       // If General insurance system is present, load policies
       const hasGeneral = this.assignedSystems.some(sys => sys.systemName === 'GENERAL INSURANCE SYSTEM');
       if (hasGeneral) {
-        this.loadGeneralPolicies();
+        this.loadGeneralPolicies(0, 500, true);
       }
+      this.cdr.detectChanges();
     });
   }
 
@@ -103,10 +163,11 @@ export class PolicyLandingScreenComponent implements OnInit {
   /**
    * Load policies and return a Promise that resolves when loading completes.
    */
-  loadGeneralPolicies(page: number = 0, size: number = 500, showSpinner: boolean = false): Promise<void> {
+  loadGeneralPolicies(page: number = 0, size: number = 500, showSpinner: boolean = true): Promise<void> {
+    this.policiesLoading = true;
+    this.policiesLoaded = false;
+    
     if (showSpinner) {
-      this.policiesLoading = true;
-      this.policiesLoaded = false;
       this.spinner.show();
     }
 
@@ -126,9 +187,10 @@ export class PolicyLandingScreenComponent implements OnInit {
 
           if (showSpinner) {
             this.spinner.hide();
-            this.policiesLoading = false;
-            this.policiesLoaded = true;
           }
+          this.policiesLoading = false;
+          this.policiesLoaded = true;
+          this.cdr.detectChanges();
           resolve();
         },
         (err: any) => {
@@ -136,9 +198,10 @@ export class PolicyLandingScreenComponent implements OnInit {
           this.policies = [];
           if (showSpinner) {
             this.spinner.hide();
-            this.policiesLoading = false;
-            this.policiesLoaded = true; // loaded but empty/error
           }
+          this.policiesLoading = false;
+          this.policiesLoaded = true; // loaded but empty/error
+          this.cdr.detectChanges();
           reject(err);
         }
       );
@@ -152,8 +215,8 @@ export class PolicyLandingScreenComponent implements OnInit {
     const selectedIndex = event?.index ?? 0;
     const selectedTab = this.visibleTabs[selectedIndex];
     if (selectedTab && selectedTab.content === 'general') {
-      if (!this.policiesLoaded) {
-        this.loadGeneralPolicies(0, 100, true).catch(() => { /* error already logged */ });
+      if (!this.policiesLoaded && !this.policiesLoading) {
+        this.loadGeneralPolicies(0, 500, true).catch(() => { });
       }
     }
   }
