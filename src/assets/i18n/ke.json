@@ -1652,7 +1652,9 @@
       "check_off_installments": "Malipo ya kuangalia",
       "transaction_type": "Aina ya muamala",
       "client_information": "Taarifa za mteja",
-      "commission": "Kamisheni"
+      "commission": "Kamisheni",
+      "view": "Tazama",
+      "edit": "Hariri"
     },
     "claims": {
       "opening": {

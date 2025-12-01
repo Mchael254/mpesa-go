@@ -1651,7 +1651,9 @@
       "check_off_installments": "Abbuchungsraten prüfen",
       "transaction_type": "Transaktionstyp",
       "client_information": "Kundeninformationen",
-      "commission": "Provision"
+      "commission": "Provision",
+      "view": "Anzeigen",
+      "edit": "Bearbeiten"
     },
     "claims": {
       "opening": {

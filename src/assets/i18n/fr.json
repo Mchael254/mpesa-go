@@ -1678,7 +1678,9 @@
       "check_offf_installments": "Vérifier les mensualités",
       "transaction_type": "Type de transaction",
       "client_information": "Informations sur le client",
-      "commission": "Commission"
+      "commission": "Commission",
+      "view": "Voir",
+      "edit": "Modifier"
     },
     "claims": {
       "opening": {
