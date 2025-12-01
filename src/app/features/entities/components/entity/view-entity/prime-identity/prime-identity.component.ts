@@ -19,6 +19,9 @@ import {
   FormGroupsDto, UserCategory
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {EntityUtilService} from "../../../../services/entity-util.service";
+import {StaffDto} from "../../../../data/StaffDto";
+import {ServiceProviderRes} from "../../../../data/ServiceProviderDTO";
+import {AgentDTO} from "../../../../data/AgentDTO";
 
 const log = new Logger('PrimeIdentityComponent');
 
@@ -36,6 +39,8 @@ export class PrimeIdentityComponent implements OnInit {
   @Input() entityPartyIdDetails: ReqPartyById;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() clientDetails: ClientDTO;
+  @Input() entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
+  @Input() group: FormGroupsDto;
 
   selectOptions: {
     idTypes: IdentityModeDTO[],
@@ -56,7 +61,6 @@ export class PrimeIdentityComponent implements OnInit {
 
   primeDetails: any;
   fields: ConfigFormFieldsDto[];
-  @Input() group: FormGroupsDto;
 
   constructor(
     private utilService: UtilService,
@@ -80,18 +84,19 @@ export class PrimeIdentityComponent implements OnInit {
 
   initData(): void {
     setTimeout(() => {
-      this.primeDetails = {
-        overview_business_reg_no: this.clientDetails.idNumber,
-        overview_pin_number: this.clientDetails.pinNumber,
-        overview_date_of_incorporation: this.clientDetails?.dateOfBirth,
-        overview_client_type: this.clientDetails?.clientType?.clientTypeName,
-        overview_primary_id_type: this.clientDetails.modeOfIdentity?.name,
-        overview_id_number: this.clientDetails.idNumber,
-        overview_date_of_birth: this.clientDetails.dateOfBirth,
-        overview_citizenship: this.clientDetails.citizenshipCountryName,
-        overview_gender: this.clientDetails.gender,
-        overview_marital_status: this.clientDetails.maritalStatus,
-      };
+
+      const partyType = (this.partyAccountDetails.partyType.partyTypeName).toUpperCase();
+
+      switch (partyType) {
+        case 'CLIENT':
+          this.setClientPrimeDetails();
+          break;
+        case 'INTERMEDIARIES':
+          //
+          break;
+          default:
+            //
+      }
 
       this.fields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === this.group.groupId);
 
@@ -104,6 +109,21 @@ export class PrimeIdentityComponent implements OnInit {
       this.editForm = this.entityUtilService.createEditForm(this.fields);
       this.fetchSelectOptions();
     }, 1000);
+  }
+
+  setClientPrimeDetails(): void {
+    this.primeDetails = {
+      overview_business_reg_no: this.clientDetails.idNumber,
+      overview_pin_number: this.clientDetails.pinNumber,
+      overview_date_of_incorporation: this.clientDetails?.dateOfBirth,
+      overview_client_type: this.clientDetails?.clientType?.clientTypeName,
+      overview_primary_id_type: this.clientDetails.modeOfIdentity?.name,
+      overview_id_number: this.clientDetails.idNumber,
+      overview_date_of_birth: this.clientDetails.dateOfBirth,
+      overview_citizenship: this.clientDetails.citizenshipCountryName,
+      overview_gender: this.clientDetails.gender,
+      overview_marital_status: this.clientDetails.maritalStatus,
+    };
   }
 
 

@@ -16,7 +16,7 @@
             </span>
         </ng-template>
 
-        <ng-container
+        <!--<ng-container
           *ngIf="
           entityPartyIdDetails &&
           entityAccountIdDetails &&
@@ -25,19 +25,20 @@
           clientDetails &&
           tab.originalLabel === '360 overview'
           "
-        >
-        <app-entity-basic-info
-          [unAssignedPartyTypes]="unAssignedPartyTypes"
-          [partyAccountDetails]="partyAccountDetails"
-          [entityAccountIdDetails]="entityAccountIdDetails"
-          [entityPartyIdDetails]="entityPartyIdDetails"
-          [clientDetails]="clientDetails"
-          (assignRole)="onAssignRole($event)"
-          (partyTypeRole)="selectPartyTypeRole($event)"
-          [overviewConfig]="tab"
-          [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
-        ></app-entity-basic-info>
-    </ng-container>
+        >-->
+        <ng-container>
+          <app-entity-basic-info
+            [unAssignedPartyTypes]="unAssignedPartyTypes"
+            [partyAccountDetails]="partyAccountDetails"
+            [entityAccountIdDetails]="entityAccountIdDetails"
+            [entityPartyIdDetails]="entityPartyIdDetails"
+            [entityDetails]="entityDetails"
+            (assignRole)="onAssignRole($event)"
+            (partyTypeRole)="selectPartyTypeRole($event)"
+            [overviewConfig]="tab"
+            [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
+          ></app-entity-basic-info>
+        </ng-container>
       </p-tabPanel>
     </ng-container>
   </p-tabView>
@@ -67,7 +68,7 @@
         </ng-template>
 
         <ng-container *ngIf="
-           clientDetails &&
+           (clientDetails || entityDetails) &&
            tab.originalLabel==='Prime Identity';"
         >
           <app-prime-identity
