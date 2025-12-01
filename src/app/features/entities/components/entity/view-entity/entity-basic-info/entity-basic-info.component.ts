@@ -23,6 +23,7 @@ import {
   DynamicScreensSetupService
 } from "../../../../../../shared/services/setups/dynamic-screen-config/dynamic-screens-setup.service";
 import {ConfigFormFieldsDto} from "../../../../../../shared/data/common/dynamic-screens-dto";
+import {IntermediaryService} from "../../../../services/intermediary/intermediary.service";
 
 const log = new Logger('EntityBasicInfoComponent');
 
@@ -77,7 +78,7 @@ export class EntityBasicInfoComponent {
     private globalMessagingService: GlobalMessagingService,
     private fb: FormBuilder,
     private entityService: EntityService,
-    private dynamicScreenSetupService: DynamicScreensSetupService,
+    private intermediaryService: IntermediaryService,
   ) {
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
@@ -89,7 +90,6 @@ export class EntityBasicInfoComponent {
 
     setTimeout(() => {
       this.fetchClientStatuses();
-      log.info('party account details ', this.partyAccountDetails)
     }, 1000);
   }
 
@@ -175,20 +175,18 @@ export class EntityBasicInfoComponent {
     const comment = this.commentInput?.nativeElement.value;
     const status = this.selectedClientStatus.value.charAt(0)
     const accountCode = this.partyAccountDetails.accountCode;
+    const partyTypeShtDesc = this.partyAccountDetails.partyType.partyTypeShtDesc;
 
-    // update status
-    this.clientService.updateClientSection(accountCode, { status, comment }).subscribe({
-      next: data => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Client status updated successfully');
-        this.partyAccountDetails.status = data.status;
-        // this.setCurrentStatus(this.clientStatuses);
-        this.filterApplicableStatuses();
-        log.info('partyAccountDetails >>> ', data);
-      },
-      error: err => {
-        log.info(`status not updated >>> `, err)
-      }
-    })
+    switch (partyTypeShtDesc) {
+      case 'C':
+        this.updateClientSection(accountCode, { status, comment });
+        break;
+      case 'A':
+        this.updateAgentSection(accountCode, { status, comment });
+        break;
+      default:
+      // do something else
+    }
   }
 
 
@@ -202,7 +200,6 @@ export class EntityBasicInfoComponent {
   }
 
   selectPartyTypeRole(role: PartyTypeDto) {
-    // this.entityAccountIdDetails = [];
     this.partyTypeRole.emit(role);
   }
 
@@ -214,47 +211,55 @@ export class EntityBasicInfoComponent {
         wetDate: (this.entityDetails.withEffectToDate)?.split('T')[0]
       })
     } else {
-      // update client details
       const withEffectToDate = this.wetDateForm.getRawValue().wetDate;
       const withEffectFromDate = this.entityDetails.withEffectFromDate;
-
-      log.info(withEffectFromDate, withEffectToDate, new Date(withEffectFromDate) > new Date(withEffectToDate));
 
       if (new Date(withEffectFromDate) > new Date(withEffectToDate)) {
         this.globalMessagingService.displayErrorMessage('Error', 'WEF date cannot be greater than WET date');
         return;
       }
 
-      const entityCode = this.entityDetails.clientCode; //todo: set code for other entities
-      this.updateEntitySection(entityCode, withEffectToDate);
+      const entityCode = this.partyAccountDetails.accountCode;
+      this.updateEntitySection(entityCode, { withEffectToDate });
 
     }
   }
 
-  updateEntitySection(entityCode: number, withEffectToDate: string) {
-    log.info('party account details ', this.partyAccountDetails);
-    const partyType = (this.partyAccountDetails?.partyType?.partyTypeName).toUpperCase();
+  updateEntitySection(entityCode: number, payload: {}) {
+    const partyTypeShtDesc = (this.partyAccountDetails?.partyType?.partyTypeShtDesc).toUpperCase();
 
-    switch (partyType) {
-      case 'CLIENT':
-        this.updateClientSection(entityCode, withEffectToDate);
+    switch (partyTypeShtDesc) {
+      case 'C':
+        this.updateClientSection(entityCode, payload);
         break;
-      case 'INTERMEDIARIES':
-        // UPDATE INTERMEDIARIES
+      case 'A':
+        this.updateAgentSection(entityCode, payload);
         break;
         default:
           // do something else
     }
   }
 
-  updateClientSection(clientCode: number, withEffectToDate: string): void {
-    this.clientService.updateClientSection(clientCode, { withEffectToDate }).subscribe({
+  updateClientSection(clientCode: number, payload: {}): void {
+    this.clientService.updateClientSection(clientCode, payload).subscribe({
       next: data => {
         this.entityDetails = data;
-        this.globalMessagingService.displaySuccessMessage('Success', 'WET date updated successfully');
+        this.globalMessagingService.displaySuccessMessage('Success', 'Enitity details updated successfully');
       },
       error: err => {
-        this.globalMessagingService.displayErrorMessage('Error', 'could not update WET date');
+        this.globalMessagingService.displayErrorMessage('Error', 'could not update Entity');
+      }
+    });
+  }
+
+  updateAgentSection(agentCode: number, payload: {}): void {
+    this.intermediaryService.updateAgentSection(agentCode, payload).subscribe({
+      next: data => {
+        this.entityDetails = data;
+        this.globalMessagingService.displaySuccessMessage('Success', 'Entity details updated successfully');
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', 'could not update Entity');
       }
     });
   }

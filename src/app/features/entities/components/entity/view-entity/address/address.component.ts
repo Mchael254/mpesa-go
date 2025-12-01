@@ -17,6 +17,8 @@ import {
 import {AddressModel, Branch, ClientDTO} from "../../../../data/ClientDTO";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
 import {EntityUtilService} from "../../../../services/entity-util.service";
+import {PartyAccountsDetails} from "../../../../data/accountDTO";
+import {AccountReqPartyId} from "../../../../data/entityDto";
 
 const log = new Logger('AddressComponent');
 
@@ -30,7 +32,11 @@ export class AddressComponent implements OnInit {
   @ViewChild('editButton') editButton!: ElementRef<HTMLButtonElement>;
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
 
+  @Input() partyAccountDetails: PartyAccountsDetails;
+  @Input() entityAccountIdDetails: AccountReqPartyId[];
+
   @Input() clientDetails: ClientDTO;
+  @Input() entityDetails: any;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
   addressDetails: AddressModel;
@@ -44,20 +50,17 @@ export class AddressComponent implements OnInit {
 
   states: StateDto[];
   clientState: StateDto;
-  // states$: Observable<StateDto[]>;
 
   towns: TownDto[] = [];
   clientTown: TownDto;
-  // towns$: Observable<TownDto[]>;
 
   postalCodes: PostalCodesDTO[] = [];
-  // clientPostalCode: PostalCodesDTO
-  // postalCodes$: Observable<PostalCodesDTO[]>
 
   language: string = 'en';
   editForm: FormGroup;
 
   fields: ConfigFormFieldsDto[];
+  partyTypeShtDesc: string;
   tableHeaders: ConfigFormFieldsDto[];
   table: { cols: any[], data: any[] } = { cols: [], data: [] };
 
@@ -74,7 +77,6 @@ export class AddressComponent implements OnInit {
 
 
   constructor(
-    // private fb: FormBuilder,
     private utilService: UtilService,
     private countryService: CountryService,
     private globalMessagingService: GlobalMessagingService,
@@ -91,31 +93,22 @@ export class AddressComponent implements OnInit {
 
   prepareDataDisplay(): void {
     setTimeout(() => {
-      this.addressDetails = this.clientDetails.address;
+      this.partyTypeShtDesc = (this.entityAccountIdDetails[0]?.partyType?.partyTypeShtDesc).toUpperCase();
+      this.addressDetails = this.entityDetails?.address;
 
-      const displayAddressDetails  = {
-        overview_branch_Id: null,
-        overview_head_office_address: this.addressDetails.residentialAddress,
-        // overview_branch_details_name: null,
-        overview_head_office_country: this.addressDetails.countryName,
-        overview_head_office_county: this.addressDetails.stateName,
-        overview_country: this.addressDetails.countryName,
-        overview_head_office_city: this.addressDetails.townName,
-        overview_county: this.addressDetails.stateName,
-        overview_head_office_physical_address: this.addressDetails.physicalAddress,
-        overview_city: this.addressDetails.townName,
-        overview_head_office_postal_address: this.addressDetails.residentialAddress,
-        overview_physical_address: this.addressDetails.physicalAddress,
-        overview_head_office_postal_code: this.addressDetails.postalCode,
-        overview_postal_address: this.addressDetails.residentialAddress,
-        overview_postal_code: this.addressDetails.postalCode,
-        overview_branch_email: null,
-        overview_landline_number: this.addressDetails.phoneNumber,
-        overview_branch_mobile_no: this.addressDetails.phoneNumber,
-        overview_address: null,
-        overview_road: this.addressDetails.road,
-        overview_house_name_no: this.addressDetails.houseNumber,
+      let displayAddressDetails: {};
+
+      switch (this.partyTypeShtDesc) {
+        case 'C':
+          displayAddressDetails = this.setClientAddressDetails();
+          break;
+        case 'A':
+          displayAddressDetails = this.setAgentAddressDetails();
+          break;
+        default:
+        //
       }
+
 
       if (this.group.subGroup.length === 0) {
         this.prepareGroupDetails(displayAddressDetails);
@@ -134,6 +127,47 @@ export class AddressComponent implements OnInit {
 
     }, 1000);
   }
+
+
+  setClientAddressDetails() {
+    return {
+      overview_branch_Id: null,
+      overview_head_office_address: this.addressDetails.residentialAddress,
+      // overview_branch_details_name: null,
+      overview_head_office_country: this.addressDetails.countryName,
+      overview_head_office_county: this.addressDetails.stateName,
+      overview_country: this.addressDetails.countryName,
+      overview_head_office_city: this.addressDetails.townName,
+      overview_county: this.addressDetails.stateName,
+      overview_head_office_physical_address: this.addressDetails.physicalAddress,
+      overview_city: this.addressDetails.townName,
+      overview_head_office_postal_address: this.addressDetails.residentialAddress,
+      overview_physical_address: this.addressDetails.physicalAddress,
+      overview_head_office_postal_code: this.addressDetails.postalCode,
+      overview_postal_address: this.addressDetails.residentialAddress,
+      overview_postal_code: this.addressDetails.postalCode,
+      overview_branch_email: null,
+      overview_landline_number: this.addressDetails.phoneNumber,
+      overview_branch_mobile_no: this.addressDetails.phoneNumber,
+      overview_address: null,
+      overview_road: this.addressDetails.road,
+      overview_house_name_no: this.addressDetails.houseNumber,
+    };
+  }
+
+
+  setAgentAddressDetails() {
+    log.info('entity details >>> ', this.entityDetails);
+    return {
+      overview_country: this.addressDetails.countryName,
+      overview_county: this.addressDetails.stateName,
+      overview_city: this.addressDetails.townName,
+      overview_physical_address: this.addressDetails.physicalAddress,
+      overview_postal_address: '[   ]',
+      overview_postal_code: this.addressDetails.postalCode,
+    };
+  }
+
 
   /**
    * prepares fields and table details for display when address details has no subgroup
@@ -365,16 +399,16 @@ export class AddressComponent implements OnInit {
 
     let patchDropdowns = {};
     if (this.saveAction === SaveAction.EDIT_ADDRESS_DETAILS) {
-      const address: AddressModel = this.clientDetails.address;
+      const address: AddressModel = this.entityDetails.address;
       log.info('address details >>> ', address)
       patchDropdowns = {
-        overview_country: this.clientDetails.address.countryId,
+        overview_country: this.entityDetails.address.countryId,
         overview_head_office_country: address.countryId,
         overview_head_office_county: address.stateId,
-        overview_county: this.clientDetails.address.stateId,
-        overview_city: this.clientDetails.address.townId,
+        overview_county: this.entityDetails.address.stateId,
+        overview_city: this.entityDetails.address.townId,
         overview_head_office_city: address.townId,
-        overview_postal_code: this.clientDetails.address.postalCode,
+        overview_postal_code: this.entityDetails.address.postalCode,
         overview_head_office_postal_code: address.postalCode,
       };
     } else if (this.saveAction === SaveAction.EDIT_BRANCH) {

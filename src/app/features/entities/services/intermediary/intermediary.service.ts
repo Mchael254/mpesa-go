@@ -129,4 +129,12 @@ export class IntermediaryService {
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
+
+  updateAgentSection(agentId: number, payload: {}): Observable<AgentV2DTO> {
+    return this.api.POST<AgentV2DTO>(
+      `v2/api/intermediary/${agentId}`,
+      JSON.stringify(payload),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
 }
