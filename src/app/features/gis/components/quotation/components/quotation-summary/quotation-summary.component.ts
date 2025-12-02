@@ -4977,6 +4977,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       });
     }
   }
+  // get allAuthorized() {
+  //   return this.exceptionsData.every(item => item.isAuthorized === 'Y');
+  // }
+  get allAuthorized() {
+    console.log('exceptionsData:', this.exceptionsData);
+    const result = this.exceptionsData.every(item => item.isAuthorized === 'Y');
+    console.log('allAuthorized result:', result);
+    return result;
+  }
 
 }
 

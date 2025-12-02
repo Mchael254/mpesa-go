@@ -777,7 +777,7 @@
                                 [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }"
                                 [(selection)]="selectedSections" [resizableColumns]="true" responsiveLayout="scroll"
                                 class='ui-datatable' [autoLayout]="true" [paginator]="sectionPremium?.length > 10"
-                                [rowsPerPageOptions]="[2, 3, 5]" [rows]="3" [scrollable]="true"
+                                [rowsPerPageOptions]="[2, 3, 5]" [rows]="5" [scrollable]="true"
                                 scrollDirection="horizontal" [showCurrentPageReport]="true"
                                 currentPageReportTemplate="{first} - {last} of {totalRecords}"
                                 [globalFilterFields]="['sectionDescription']">
@@ -827,32 +827,46 @@
                                             <input type="checkbox" id="check_section_{{ section.sectionCode }}"
                                                 [(ngModel)]="section.isChecked" (click)="onKeyUp($event, section)">
                                         </td>
-                                        <td class="flexible-header">{{ section.sectionDescription |sentenceCase }}</td>
+                                        <td class="flexible-header">{{ section.sectionShortDescription |sentenceCase }}
+                                        </td>
                                         <td class="flexible-header">
                                             <ng-container
-                                                *ngIf="section.isFreeLimitEditable === 'Y'; else readOnlyFreeLimit">
+                                                *ngIf="section?.applicableRates[0]?.isFreeLimitEditable === 'Y'; else readOnlyFreeLimit">
                                                 <input type="text" class="form-control form-control-sm"
-                                                    [(ngModel)]="section.freeLimit" [options]="currencyObj"
-                                                    currencyMask />
+                                                    [(ngModel)]="section.applicableRates[0].freeLimit"
+                                                    [options]="currencyObj" currencyMask />
                                             </ng-container>
                                             <ng-template #readOnlyFreeLimit>
-                                                {{ section.freeLimit | number }}
+                                                {{ section.applicableRates[0]?.freeLimit | number }}
                                             </ng-template>
                                         </td>
-                                        <td class="flexible-header" [pEditableColumn]="section.limitAmount"
+                                        <td class="flexible-header"
+                                            [pEditableColumn]="section.applicableRates[0]?.limitAmount"
                                             pEditableColumnField="limitAmount">
                                             <input class=" form-control form-control-sm  error-border"
-                                                id="section_{{ section.sectionCode }}" [(ngModel)]="section.limitAmount"
+                                                id="section_{{ section.sectionCode }}"
+                                                [(ngModel)]="section.applicableRates[0].limitAmount"
                                                 [options]="currencyObj" currencyMask type="text"
                                                 (keydown)="onKeyUp($event, section)"
-                                                [ngClass]="{'error-border': section.isChecked && !section.limitAmount}">
+                                                [ngClass]="{'error-border': section.isChecked && !section.applicableRates[0]?.limitAmount}">
                                         </td>
-                                        <td class="flexible-header" [pEditableColumn]="section.rate"
+                                        <!-- <td class="flexible-header" [pEditableColumn]="section.rate"
                                             pEditableColumnField="rate">
                                             <input class="form-control form-control-sm  error-border"
                                                 id="section_{{ section.sectionCode }}" [(ngModel)]="section.rate"
                                                 type="number" (keydown)="onKeyUp($event, section)"
                                                 [ngClass]="{'error-border': section.isChecked && !section.rate}">
+                                        </td> -->
+
+                                        <td style="width: 100px;">
+                                            <p-dropdown [options]="section.rateOptions"
+                                                [(ngModel)]="section.selectedRate" [editable]="true" appendTo="body"
+                                                [overlayOptions]="{ 
+                                                        autoZIndex: true, 
+                                                        baseZIndex: 1050 
+                                                    }">
+                                            </p-dropdown>
+
                                         </td>
                                     </tr>
                                 </ng-template>
@@ -1825,7 +1839,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- limits table -->
             <p-table #addedlimitTable [value]="addedLimitsOfLiability" dataKey="code"
                 [paginator]="addedLimitsOfLiability?.length > 10" [rowsPerPageOptions]="[2, 3, 5]" [rows]="3"
