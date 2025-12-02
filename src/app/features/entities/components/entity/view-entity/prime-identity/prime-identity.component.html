@@ -1,7 +1,7 @@
 
 <ng-container *ngIf="group?.subGroup.length === 0">
   <div class="row">
-    <ng-container *ngFor="let field of this.fields">
+    <ng-container *ngFor="let field of fields">
       <div class="col-sm-4">
         <div class="row my-2">
           <div class="col-sm-4 text-dark">
@@ -43,7 +43,6 @@
                 <div class="col-md-6">
                   <label [for]="field.fieldId" class="form-label">
                     {{ field.label[language] | titlecase }}
-                    <br> {{ field.fieldId }}
                   </label>
                   <!--Text input-->
                   <input
@@ -64,9 +63,9 @@
                   >
                     <option
                       *ngFor="let opt of field.options"
-                      [value]="opt.id || opt.name"
+                      [value]="(opt.id || opt.name)"
                     >
-                      {{ opt.name | uppercase }}
+                      {{ (opt.name || opt.accountType) | uppercase }}
                     </option>
                   </select>
 
