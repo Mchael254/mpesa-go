@@ -774,11 +774,11 @@
                             </h5>
 
                             <p-table #sectionTable [value]="sectionPremium" id="clientTable" dataKey="code"
-                                [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }"
-                                [(selection)]="selectedSections" [resizableColumns]="true" responsiveLayout="scroll"
-                                class='ui-datatable' [autoLayout]="true" [paginator]="sectionPremium?.length > 10"
-                                [rowsPerPageOptions]="[2, 3, 5]" [rows]="5" [scrollable]="true"
-                                scrollDirection="horizontal" [showCurrentPageReport]="true"
+                                [tableStyle]="{ 'border-spacing': '10 10px' }" [(selection)]="selectedSections"
+                                [resizableColumns]="true" responsiveLayout="scroll" class='ui-datatable'
+                                [autoLayout]="true" [paginator]="sectionPremium?.length > 10"
+                                [rowsPerPageOptions]="[5, 10,20]" [rows]="5" scrollDirection="horizontal"
+                                [showCurrentPageReport]="true" [scrollHeight]="'350px'"
                                 currentPageReportTemplate="{first} - {last} of {totalRecords}"
                                 [globalFilterFields]="['sectionDescription']">
                                 <ng-template pTemplate="header">
@@ -822,7 +822,7 @@
                                 </ng-template>
 
                                 <ng-template pTemplate="body" let-section let-editing="editing" let-i="rowIndex">
-                                    <tr style="height: 40px; padding: 10px; margin-bottom: 10px;">
+                                    <tr style="padding: 10px; margin-bottom: 10px;">
                                         <td>
                                             <input type="checkbox" id="check_section_{{ section.sectionCode }}"
                                                 [(ngModel)]="section.isChecked" (click)="onKeyUp($event, section)">
@@ -1243,9 +1243,8 @@
                 </div>
             </div>
 
-            <p-table [value]="sectionDetails" [tableStyle]="{ 'min-width': '300px' }" selectionMode="single"
-                [(selection)]="selectedSection" dataKey="code" editMode="row" [paginator]="sectionDetails?.length > 10"
-                [rowsPerPageOptions]="[2, 4, 6]" [rows]="2">
+            <p-table [value]="sectionDetails" selectionMode="single" [(selection)]="selectedSection" dataKey="code"
+                editMode="row" [paginator]="sectionDetails?.length > 10" [rowsPerPageOptions]="[2, 4, 6]" [rows]="2">
 
 
                 <ng-template pTemplate="header">
@@ -1266,13 +1265,13 @@
                                 <ng-container *ngSwitchCase="'actions'">
 
                                     <button pButton type="button"
-                                        class="p-button-text p-button-sm p-text-bold text-primary"
+                                        class="p-button-text p-button-sm p-text-bold text-primary fw-bold "
                                         (click)="onOpenEditSectionModal(section)">
                                         {{'gis.quotation.edit' | translate}}
                                     </button>
 
                                     <button pButton type="button"
-                                        class="p-button-text p-button-sm  p-text-bold text-primary"
+                                        class="p-button-text p-button-sm  p-text-bold text-primary fw-bold"
                                         (click)="setSectionToDelete(section)" data-bs-toggle="modal"
                                         data-bs-target="#deleteSection">
                                         {{'gis.quotation.delete' | translate}}
