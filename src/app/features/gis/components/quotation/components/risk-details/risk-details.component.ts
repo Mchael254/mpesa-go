@@ -2054,23 +2054,60 @@ export class RiskDetailsComponent {
           //     }
           //     return premium;
           //   });
-          const sectionPremiums = result
-            .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+          // const sectionPremiums = result
+          //   .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+          //   .map(premium => {
+          //     if (premium.isMandatory && premium.isMandatory.includes('Y')) {
+          //       if (premium.sectionShortDescription && premium.sectionShortDescription.toLowerCase().includes('sum insured')) {
+          //         return {
+          //           ...premium,
+          //           limitAmount: this.sumInsured
+          //         };
+          //       }
+
+          //       return {
+          //         ...premium,
+          //         limitAmount: premium?.applicableRates?.[0]?.freeLimit
+          //       };
+          //     }
+          //     return premium;
+          //   });
+          const sectionPremiums = premiumRates
+            .filter(premium =>
+              !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode)
+            )
             .map(premium => {
+              // ---- Build rateOptions first ----
+              const rateOptions = premium?.applicableRates?.map(r => ({
+                label: r.rate.toString(),
+                value: r.rate
+              })) || [];
+
+              // ---- Mandatory logic ----
               if (premium.isMandatory && premium.isMandatory.includes('Y')) {
-                if (premium.sectionShortDescription && premium.sectionShortDescription.toLowerCase().includes('sum insured')) {
+                if (
+                  premium.sectionShortDescription &&
+                  premium.sectionShortDescription.toLowerCase().includes('sum insured')
+                ) {
                   return {
                     ...premium,
+                    rateOptions,
                     limitAmount: this.sumInsured
                   };
                 }
 
                 return {
                   ...premium,
+                  rateOptions,
                   limitAmount: premium?.applicableRates?.[0]?.freeLimit
                 };
               }
-              return premium;
+
+              // ---- Non-Mandatory: return premium + rateOptions ----
+              return {
+                ...premium,
+                rateOptions
+              };
             });
 
           this.sectionPremium = sectionPremiums;
@@ -2219,8 +2256,45 @@ export class RiskDetailsComponent {
           // this.quotationDetails = quoteDetails
           // log.debug("Quotation List-risk creation method:", this.quotationDetails);
 
-          const result = premiumRates;
-          this.sectionPremium = result
+          const sectionPremiums = premiumRates
+            .filter(premium =>
+              !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode)
+            )
+            .map(premium => {
+              // ---- Build rateOptions first ----
+              const rateOptions = premium?.applicableRates?.map(r => ({
+                label: r.rate.toString(),
+                value: r.rate
+              })) || [];
+
+              // ---- Mandatory logic ----
+              if (premium.isMandatory && premium.isMandatory.includes('Y')) {
+                if (
+                  premium.sectionShortDescription &&
+                  premium.sectionShortDescription.toLowerCase().includes('sum insured')
+                ) {
+                  return {
+                    ...premium,
+                    rateOptions,
+                    limitAmount: this.sumInsured
+                  };
+                }
+
+                return {
+                  ...premium,
+                  rateOptions,
+                  limitAmount: premium?.applicableRates?.[0]?.freeLimit
+                };
+              }
+
+              // ---- Non-Mandatory: return premium + rateOptions ----
+              return {
+                ...premium,
+                rateOptions
+              };
+            });
+
+          this.sectionPremium = sectionPremiums
           // log.debug("Risk Clauses List:", this.riskClausesList);
           log.debug("RESPONSE AFTER getting premium rates ", this.sectionPremium);
           // log.debug("Keys in sectionPremium[0]:", Object.keys(this.sectionPremium[0]));
@@ -2888,16 +2962,54 @@ export class RiskDetailsComponent {
         console.log('Premium rates:', premiumRates);
         console.log('Schedule levels:', scheduleLevels);
 
+        // const sectionPremiums = premiumRates
+        //   .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+        //   .map(premium => {
+        //     if (premium.isMandatory === 'Y') {
+        //       return {
+        //         ...premium,
+        //         limitAmount: this.sumInsured
+        //       };
+        //     }
+        //     return premium;
+        //   });
+
         const sectionPremiums = premiumRates
-          .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+          .filter(premium =>
+            !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode)
+          )
           .map(premium => {
-            if (premium.isMandatory === 'Y') {
+            // ---- Build rateOptions first ----
+            const rateOptions = premium?.applicableRates?.map(r => ({
+              label: r.rate.toString(),
+              value: r.rate
+            })) || [];
+
+            // ---- Mandatory logic ----
+            if (premium.isMandatory && premium.isMandatory.includes('Y')) {
+              if (
+                premium.sectionShortDescription &&
+                premium.sectionShortDescription.toLowerCase().includes('sum insured')
+              ) {
+                return {
+                  ...premium,
+                  rateOptions,
+                  limitAmount: this.sumInsured
+                };
+              }
+
               return {
                 ...premium,
-                limitAmount: this.sumInsured
+                rateOptions,
+                limitAmount: premium?.applicableRates?.[0]?.freeLimit
               };
             }
-            return premium;
+
+            // ---- Non-Mandatory: return premium + rateOptions ----
+            return {
+              ...premium,
+              rateOptions
+            };
           });
 
         this.sectionPremium = sectionPremiums;
@@ -3690,16 +3802,51 @@ export class RiskDetailsComponent {
       this.premiumRateService.getCoverTypePremiums(passedSubclassCode, passedBinderCode, passedCoverTypeCode).subscribe({
         next: (result: any[]) => {
           // Apply the same filtering and mapping logic
+          // const sectionPremiums = result
+          //   .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+          //   .map(premium => {
+          //     if (premium.isMandatory === 'Y') {
+          //       return {
+          //         ...premium,
+          //         limitAmount: this.sumInsured
+          //       };
+          //     }
+          //     return premium;
+          //   });
           const sectionPremiums = result
-            .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+            .filter(premium =>
+              !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode)
+            )
             .map(premium => {
-              if (premium.isMandatory === 'Y') {
+              const rateOptions = premium?.applicableRates?.map(r => ({
+                label: r.rate.toString(),
+                value: r.rate
+              })) || [];
+
+              if (premium.isMandatory && premium.isMandatory.includes('Y')) {
+                if (
+                  premium.sectionShortDescription &&
+                  premium.sectionShortDescription.toLowerCase().includes('sum insured')
+                ) {
+                  return {
+                    ...premium,
+                    rateOptions,
+                    limitAmount: this.sumInsured
+                  };
+                }
+
                 return {
                   ...premium,
-                  limitAmount: this.sumInsured
+                  rateOptions,
+                  limitAmount: premium?.applicableRates?.[0]?.freeLimit
                 };
               }
-              return premium;
+
+              // ---- Non-Mandatory: return premium + rateOptions ----
+              return {
+                ...premium,
+                rateOptions
+              };
             });
 
           this.sectionPremium = sectionPremiums;

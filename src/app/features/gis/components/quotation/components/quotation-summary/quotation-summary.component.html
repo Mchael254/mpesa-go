@@ -1971,90 +1971,22 @@
           </div>
 
           <!-- Authorize Button (Shown when open) -->
-          <div *ngIf="!exceptionsCollapsed" class="mb-3 d-flex justify-content-end">
+          <!-- <div *ngIf="!exceptionsCollapsed" class="mb-3 d-flex justify-content-end">
             <button class="btn btn-primary btn-sm" (click)="authorizeSelectedExceptions()">Authorize exceptions</button>
+          </div> -->
+          <div *ngIf="!exceptionsCollapsed" class="mb-3 d-flex justify-content-end">
+            <span tooltipPosition="top">
+              <button type="button" [ngClass]="allAuthorized ? 'btn btn-secondary' : 'btn btn-primary'"
+                [disabled]="!allAuthorized" (click)="authorizeSelectedExceptions()">
+                Authorize exceptions
+              </button>
+            </span>
           </div>
+
 
           <!-- Exceptions Table -->
           <div *ngIf="!exceptionsCollapsed">
-            <!-- <p-table [value]="exceptionsData" [scrollable]="true" scrollHeight="200px" responsiveLayout="scroll"
-              [paginator]="exceptionsData?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
-              [tableStyle]="{ 'width': '100%' }">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th class="flexible-header1"><p-checkbox name="selectAll" [(ngModel)]="selectAll"
-                      (onChange)="toggleAll()" [binary]="true"></p-checkbox></th>
-                  <th class="flexible-header1" pSortableColumn="id">
-                    ID
-                    <p-sortIcon field="id"></p-sortIcon>
-                  </th>
 
-                  <th class="flexible-header1" pSortableColumn="description">
-                    Description
-                    <p-sortIcon field="description"></p-sortIcon>
-                  </th>
-
-                  <th class="flexible-header1" pSortableColumn="remark">
-                    Remarks
-                    <p-sortIcon field="remark"></p-sortIcon>
-                  </th>
-
-                  <th class="flexible-header1" pSortableColumn="authorized">
-                    Authorized
-                    <p-sortIcon field="authorized"></p-sortIcon>
-                  </th>
-
-                  <th class="flexible-header1" pSortableColumn="setStandard">
-                    Set standard
-                    <p-sortIcon field="setStandard"></p-sortIcon>
-                  </th>
-
-                  <th class="flexible-header1" pSortableColumn="usedStandard">
-                    Used standard
-                    <p-sortIcon field="usedStandard"></p-sortIcon>
-                  </th>
-
-                  <th class="flexible-header1" pSortableColumn="authorizedBy">
-                    Authorized by
-                    <p-sortIcon field="authorizedBy"></p-sortIcon>
-                  </th>
-
-                  <th class="flexible-header1" pSortableColumn="authorizedDate">
-                    <span style="white-space: nowrap;">
-                      Authorized date
-                      <p-sortIcon field="authorizedDate"></p-sortIcon>
-                    </span>
-                  </th>
-                </tr>
-              </ng-template>
-
-              <ng-template pTemplate="body" let-row>
-                <tr>
-                  <td><p-checkbox name="row_{{ row.id }}" [(ngModel)]="row.selected" [binary]="true">
-                    </p-checkbox>
-                  </td>
-                  <td>{{ row.id }}</td>
-                  <td>{{ row.description }}</td>
-                  <td>
-                    <p-dropdown [options]="" [(ngModel)]="row.remark" placeholder="Select remark"
-                      [style]="{width: '180px'}"></p-dropdown>
-                  </td>
-                  <td>{{ row.authorized }}</td>
-                  <td>{{ row.setStandard }}</td>
-                  <td>{{ row.usedStandard }}</td>
-                  <td>{{ row.authorizedBy || '—' }}</td>
-                  <td>{{ formatDateDisplay(row.authorizedDate) }}</td>
-                </tr>
-              </ng-template>
-
-              <ng-template pTemplate="emptymessage">
-                <tr>
-                  <td colspan="9" class="text-center text-muted py-3">
-                    "No exceptions available."
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table> -->
             <p-table [value]="exceptionsData" [(selection)]="selectedExceptions" dataKey="code"
               [paginator]="exceptionsData?.length > 10" [rows]="5" [scrollable]="true" responsiveLayout="scroll"
               styleClass="p-datatable-striped" [rowHover]="true" [rowsPerPageOptions]="[5, 10,20]">
