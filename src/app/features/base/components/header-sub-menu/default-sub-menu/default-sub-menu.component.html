@@ -209,13 +209,18 @@
                         font-size: 10px;
                         border-top-right-radius: 0;
                         border-bottom-right-radius: 0;
-                      " />
+                        border-right: none;
+                      "
+                    />
 
                     <button class="input-group-text" style="
                         cursor: pointer;
                         border-top-left-radius: 0;
                         border-bottom-left-radius: 0;
-                      " (click)="onSearch()">
+                        border-left: none;
+                      "
+                      (click)="onSearch()"
+                    >
                       <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
                   </div>
@@ -231,11 +236,20 @@
                 </div>
                 <div class="col-9" style="padding: 0.5rem 0">
                   <div class="input-group input-group-sm">
-                    <input [(ngModel)]="idSearchTerm" (keyup.enter)="onSearch()" (focus)="showRecentSearches()"
-                      type="text" class="form-control" style="border-radius: 0.3rem 0 0 0.3rem; font-size: 10px" />
+                    <input
+                      [(ngModel)]="idSearchTerm"
+                      (keyup.enter)="onSearch()"
+                      (focus)="showRecentSearches()"
+                      type="text"
+                      class="form-control"
+                      style="border-radius: 0.3rem 0 0 0.3rem; font-size: 10px;border-right: none;"
+                    />
 
-                    <button class="input-group-text" style="cursor: pointer; border-radius: 0 0.3rem 0.3rem 0"
-                      (click)="onSearch()">
+                    <button
+                      class="input-group-text"
+                      style="cursor: pointer; border-radius: 0 0.3rem 0.3rem 0;border-left: none;"
+                      (click)="onSearch()"
+                    >
                       <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
                   </div>
@@ -301,11 +315,24 @@
               <div class="mb-3">
                 <label class="text-muted" style="font-size: 12px">Policy ID</label>
                 <div class="input-group input-group-sm">
-                  <input [(ngModel)]="idSearchTermPolicy" (keyup.enter)="onSearch()" (focus)="showRecentSearches()"
-                    type="text" class="form-control" style="font-size: 11px" />
+                  <input
+                    [(ngModel)]="idSearchTermPolicy"
+                    (keyup.enter)="onSearch()"
+                    (focus)="showRecentSearches()"
+                    type="text"
+                    class="form-control"
+                    style="font-size: 11px;border-right: none;"
+                  />
 
-                  <button class="input-group-text" style="cursor: pointer" (click)="onSearch()">
-                    <i class="fa-solid fa-magnifying-glass" style="font-size: 12px"></i>
+                  <button
+                    class="input-group-text"
+                    style="cursor: pointer;border-left: none;"
+                    (click)="onSearch()"
+                  >
+                    <i
+                      class="fa-solid fa-magnifying-glass"
+                      style="font-size: 12px"
+                    ></i>
                   </button>
                 </div>
               </div>
@@ -314,11 +341,24 @@
               <div class="mb-3">
                 <label class="text-muted" style="font-size: 12px">Quotation ID</label>
                 <div class="input-group input-group-sm">
-                  <input [(ngModel)]="idSearchTerm" (keyup.enter)="onSearch()" (focus)="showRecentSearches()"
-                    type="text" class="form-control" style="font-size: 11px" />
+                  <input
+                    [(ngModel)]="idSearchTerm"
+                    (keyup.enter)="onSearch()"
+                    (focus)="showRecentSearches()"
+                    type="text"
+                    class="form-control"
+                    style="font-size: 11px;border-right: none;"
+                  />
 
-                  <button class="input-group-text" style="cursor: pointer" (click)="onSearchPolicy()">
-                    <i class="fa-solid fa-magnifying-glass" style="font-size: 12px"></i>
+                  <button
+                    class="input-group-text"
+                    style="cursor: pointer"
+                    (click)="onSearchPolicy()"
+                  >
+                    <i
+                      class="fa-solid fa-magnifying-glass"
+                      style="font-size: 12px;border-left: none;"
+                    ></i>
                   </button>
                 </div>
               </div>
