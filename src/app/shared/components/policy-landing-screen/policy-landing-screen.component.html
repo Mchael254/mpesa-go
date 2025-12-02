@@ -254,7 +254,8 @@
                 <tr class="filter-row">
                   <td *ngFor="let col of policyColumns" [hidden]="!col.visible">
                     <input *ngIf="col.filterable" class="form-control form-control-sm" pInputText type="text"
-                      (input)="policyTable.filter($event.target['value'], col.field, 'contains')" />
+                      (input)="policyTable.filter($event.target['value'], col.field, 'contains')" 
+                      (keydown.enter)="col.field === 'policyNumber' && searchPolicy($any($event.target).value)"/>
                   </td>
                 </tr>
               </ng-template>
