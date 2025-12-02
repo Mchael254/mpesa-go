@@ -163,7 +163,7 @@ export class PolicyLandingScreenComponent implements OnInit {
   /**
    * Load policies and return a Promise that resolves when loading completes.
    */
-  loadGeneralPolicies(page: number = 0, size: number = 500, showSpinner: boolean = true): Promise<void> {
+  loadGeneralPolicies(page: number = 0, size: number = 500, showSpinner: boolean = true, policyNumber?: string): Promise<void> {
     this.policiesLoading = true;
     this.policiesLoaded = false;
     
@@ -172,7 +172,7 @@ export class PolicyLandingScreenComponent implements OnInit {
     }
 
     return new Promise((resolve, reject) => {
-      this.policyService.getAllPolicy(page, size).subscribe(
+      this.policyService.getAllPolicy(page, size,policyNumber).subscribe(
         (resp: any) => {
           if (resp && Array.isArray(resp.content)) {
             this.policies = resp.content;
@@ -342,5 +342,18 @@ export class PolicyLandingScreenComponent implements OnInit {
       fieldName.toLowerCase().includes(pattern.toLowerCase())
     );
   }
+
+searchPolicy(policyNumber: string) {
+  const trimmedPolicyNumber = policyNumber.trim();
+  if (trimmedPolicyNumber) {
+    const decodedPolicyNumber = decodeURIComponent(trimmedPolicyNumber);
+    this.loadGeneralPolicies(0, 10, true, decodedPolicyNumber);
+  } else {
+    this.loadGeneralPolicies(0, 10, true);
+  }
+}
+
+
+
 
 }
