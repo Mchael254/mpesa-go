@@ -69,12 +69,14 @@
 
         <ng-container *ngIf="
            (clientDetails || entityDetails) &&
+           entityAccountIdDetails &&
            tab.originalLabel==='Prime Identity';"
         >
           <app-prime-identity
             #primeIdentityRef
             [partyAccountDetails]="partyAccountDetails"
-            [clientDetails]="clientDetails"
+            [entityAccountIdDetails]="entityAccountIdDetails"
+            [entityDetails]="entityDetails"
             [group]="tab"
             [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
           >
@@ -94,12 +96,16 @@
         </ng-container>
 
         <ng-container *ngIf="
-            clientDetails &&
-            tab.originalLabel==='Address Details';"
+           (clientDetails || entityDetails) &&
+           entityAccountIdDetails &&
+           tab.originalLabel==='Address Details';"
         >
           <app-address
             #addressRef
+            [partyAccountDetails]="partyAccountDetails"
+            [entityAccountIdDetails]="entityAccountIdDetails"
             [clientDetails]="clientDetails"
+            [entityDetails]="entityDetails"
             [group]="tab"
             [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
           ></app-address>

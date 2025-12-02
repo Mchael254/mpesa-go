@@ -13,7 +13,14 @@
         </label>
       </div>
       <div class="col-sm-9">
-        <h5>{{ (entityDetails?.name || entityPartyIdDetails?.name) | titlecase }} </h5>
+        <h5>
+          {{
+            (entityDetails?.name ||
+              entityPartyIdDetails?.name ||
+              entityDetails?.firstName + ' ' + entityDetails?.otherNames
+            ) | titlecase
+          }}
+        </h5>
         <ng-container
           *ngIf="entityAccountIdDetails?.length > 0; else noEntityTypes"
         >
@@ -114,130 +121,6 @@
 </div>
 
 <div class="row g-3 align-items-center">
-  <!-- Profile Section -->
-  <!--div class="col-sm-5">
-  <div class="row profile g-2">
-    <div class="col-sm-3">
-      <label class="">
-        <img
-          class="profile-image"
-          [src]="photoPreviewUrl"
-          alt="{{ entityPartyIdDetails?.name | titlecase }}"
-        />
-        <input type="file" hidden (change)="uploadProfileImage($event)">
-      </label>
-    </div>
-    <div class="col-sm-9">
-      <h5>{{ entityPartyIdDetails?.name | titlecase }}</h5>
-      <ng-container
-        *ngIf="entityAccountIdDetails?.length > 0; else noEntityTypes"
-      >
-        <ng-container *ngFor="let role of entityAccountIdDetails">
-          <button
-            id="select-party-type-role"
-            class="btn btn-sm me-2 my-2"
-            [ngClass]="{
-                'btn-primary':
-                  partyAccountDetails?.partyType?.id === role?.partyType?.id,
-                'btn-outline-primary':
-                  partyAccountDetails?.partyType?.id !== role?.partyType?.id
-              }"
-            (click)="selectPartyTypeRole(role)"
-          >
-            {{ role?.partyType.partyTypeName }}
-          </button>
-        </ng-container>
-      </ng-container>
-      <ng-template #noEntityTypes> Loading... </ng-template>
-    </div>
-  </div>
-</div>-->
-
-  <!-- Assign Role Button -->
-  <!--<div class="col-sm-3">
-    <h5 style="visibility: hidden;">Assign role button</h5> &lt;!&ndash;this is for layout purposes and should not be displayed&ndash;&gt;
-    <button
-      class="btn btn-primary btn-sm"
-      data-bs-toggle="modal"
-      data-bs-target="#assignRole"
-    >
-      {{ this.getFieldLabel('Assign Role')?.label[language] }}
-    </button>
-    <button class="btn btn-primary btn-sm" (click)="initiateReassignStatus('reassign')">
-      {{ this.getFieldLabel('Reassign Task')?.label[language] }}
-    </button>
-  </div>-->
-
-  <!-- Status -->
-  <!--<div class="col-sm-4 ">
-    <h5 style="visibility: hidden;">Status select dropdown</h5> &lt;!&ndash;this is for layout purposes and should not be displayed&ndash;&gt;
-    <div *ngIf="partyAccountDetails?.status" class="row text-end">
-      <div class="col-sm-8">
-        <label for="status" class="col-form-label">
-          {{ this.getFieldLabel('status')?.label[language] }}
-        </label>
-      </div>
-      <div class="col-sm-4">
-        <select id="status" class="form-select form-select-sm" aria-label="Default select example" (change)="processSelectedStatus($event)">
-          <option
-            *ngFor="let status of applicableStatuses"
-            [value]="status.value"
-            [selected]="status.value === selectedClientStatus.value"
-          >
-            {{ status.name }}
-          </option>
-        </select>
-      </div>
-    </div>
-  </div>-->
-
-  <!-- WEF/WET Fields -->
-  <!--<div class="col-sm-5">
-    <div class="row">
-      <div class="offset-sm-3 col-sm-9 mt-3">
-        <ng-container
-          *ngIf="
-            partyAccountDetails?.partyType?.partyTypeName !== 'Lead' &&
-            partyAccountDetails?.partyType?.partyTypeName !== 'Prospect'">
-          <ng-container *ngTemplateOutlet="wefWetFields"></ng-container>
-        </ng-container>
-        <ng-container
-          *ngIf="
-            partyAccountDetails?.partyType?.partyTypeName === 'Lead' ||
-            partyAccountDetails?.partyType?.partyTypeName === 'Prospect'"
-        >
-          <ng-container *ngTemplateOutlet="wefWetFields"></ng-container>
-        </ng-container>
-        <ng-template #wefWetFields>
-          <div class="col-sm-auto flex-grow-1 d-flex flex-wrapfloat-end">
-            <p class="me-5">
-              {{ this.getFieldLabel('WEF')?.label[language] }}
-              <span class="ms-1 fw-bold">{{ entityDetails?.withEffectFromDate | date }}</span>
-            </p>
-            <p *ngIf="!isEditingWefWet">
-              {{ this.getFieldLabel('WET')?.label[language] }}
-              <span class="ms-1 fw-bold">{{ entityDetails?.withEffectToDate | date }}</span>
-            </p>
-            <form [formGroup]="wetDateForm" *ngIf="isEditingWefWet">
-              <div  class="row mb-3">
-                <label for="wetDate" class="col-sm-2 col-form-label">{{ this.getFieldLabel('WET')?.label[language] }}</label>
-                <div class="col-sm-10">
-                  <input type="date" class="form-control" id="wetDate" formControlName="wetDate">
-                </div>
-              </div>
-            </form>
-            <p>
-              <button class="btn btn-light btn-sm ms-4" style="border-radius: 100%" (click)="toggleWefWetEdit()">
-                <i *ngIf="!isEditingWefWet" class="fa fa-pencil" style="color: #00529b; font-size: 0.8em"></i>
-                <i *ngIf="isEditingWefWet" class="fa fa-check" style="color: #00529b; font-size: 1.2em; font-weight: bold"></i>
-              </button>
-            </p>
-          </div>
-        </ng-template>
-      </div>
-    </div>
-  </div>-->
-
 
   <!-- Dynamic Buttons Section -->
   <div class="col-sm-auto flex-grow-0 d-flex flex-wrap justify-content-between">

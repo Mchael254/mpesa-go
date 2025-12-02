@@ -12,12 +12,11 @@ import {
 } from '../../../data/entityDto';
 import {Pagination} from '../../../../../shared/data/common/pagination';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {finalize, ReplaySubject, take, takeUntil} from 'rxjs';
+import {finalize, ReplaySubject, takeUntil} from 'rxjs';
 import {PartyAccountsDetails} from '../../../data/accountDTO';
 import {ActivatedRoute, Router} from '@angular/router';
 import {EntityService} from '../../../services/entity/entity.service';
 import {AccountService} from '../../../services/account/account.service';
-import {DatePipe} from '@angular/common';
 import {Logger, UtilService} from '../../../../../shared/services';
 import {ClientDTO} from '../../../data/ClientDTO';
 import {ServiceProviderRes} from '../../../data/ServiceProviderDTO';
@@ -112,7 +111,7 @@ export class ViewEntityComponent implements OnInit {
   states: StateDto[] = [];
 
   wealthAmlDetails: any;
-  nokDetails: any[] = [];
+  // nokDetails: any[] = [];
   bankBranchDetails: BankBranchDTO;
 
   partyTypes: PartyTypeDto[];
@@ -166,16 +165,13 @@ export class ViewEntityComponent implements OnInit {
     this.entityId = this.activatedRoute.snapshot.params['id'];
     const partyType = this.activatedRoute.snapshot.queryParams['partyType'];
 
-    if (partyType === 'intermediary') { // todo: use enum
-      this.getAgentById(this.entityId);
-      this.getPartyAccountDetailByAccountId(this.entityId);
-    } else {
-      this.createEntitySummaryForm();
-      this.createSelectRoleForm();
-      this.getEntityByPartyId();
-      this.getEntityAccountById();
-      this.getCountries();
+    if (partyType === 'intermediary') {
+      this.getAgentById(this.entityId, partyType);
     }
+
+    this.getEntityAccountById(this.entityId);
+    // this.getEntityByPartyId();
+    this.getEntityByAccountId(this.entityId);
     this.spinner.hide();
   }
 
@@ -195,12 +191,14 @@ export class ViewEntityComponent implements OnInit {
   }
 
 
-  getAgentById(id: number): void {
+  getAgentById(id: number, partyType?: string): void {
     this.intermediaryService.getAgentDetailsById(id).subscribe({
       next: (data: AgentDTO) => {
         this.entityDetails = data;
-        this.getEntityByAccountId(data.partyId);
-        log.info('intermediary details >>> ', data);
+        if (partyType) {
+          this.getEntityByAccountId(data.partyId);
+          this.getPartyAccountDetailByAccountId(this.entityId);
+        }
       },
       error: (err: Error) => {
         this.globalMessagingService.displayErrorMessage('Error', err.message);
@@ -212,9 +210,17 @@ export class ViewEntityComponent implements OnInit {
     this.entityService.getAccountById(id).subscribe({
       next: (data: AccountReqPartyId[]) => {
         this.entityAccountIdDetails = data;
+        const partyType = data[0]?.partyType.partyTypeShtDesc;
+        const accountCode = data[0]?.accountCode;
+
+        if (partyType === 'A') {
+          this.getAgentById(accountCode);
+        } else if (partyType === 'C') {
+          this.getClientDetails(accountCode);
+        }
       },
       error: err => {
-
+        this.globalMessagingService.displayErrorMessage('Error', err.message);
       }
     })
   }
@@ -223,7 +229,6 @@ export class ViewEntityComponent implements OnInit {
    * This method fetches the setup configuration for Entity360 screen
    */
   fetchDynamicScreenSetup(): void {
-    // const targetEntityShortDescription: string = this.entityAccountIdDetails[0].partyType.partyTypeShtDesc;
     const targetEntityShortDescription = this.partyAccountDetails?.partyType?.partyTypeShtDesc;
 
     this.dynamicScreenSetupService.fetchDynamicSetupByScreen(
@@ -273,45 +278,10 @@ export class ViewEntityComponent implements OnInit {
     }
 
     this.secondaryTabs = groups.map(item => item.originalLabel)
-
-
-    // map entity details with fields setup
-    /*switch (partyTypeShtDesc) {
-      case 'C':
-        this.mapClientDetailsWithFieldSetup(this.clientDetails, fields);
-        break;
-    }*/
-
-    /*log.info('setup groups >>> ', groups);
-    log.info ('setup fields >>> ', fields);
-
-    for (const group of groups) {
-      group.fields = fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === group.groupId);
-      this.secondaryTabs2.push(group.groupId);
-    }
-    this.dynamicScreenFormGroupSetup = groups;
-    this.selectedSubTab = groups[0].groupId;*/
     this.formGroupsAndFieldConfig = { groups, fields };
     log.info('sorted groups with fields >>> ', groups);
   }
 
-  getCountries() {
-    this.countryService
-      .getCountries()
-      .pipe(take(1))
-      .subscribe({
-        next: (countries: CountryDto[]) => {
-          this.countries = countries;
-        },
-        error: (err) => {
-          const errorMessage = err?.error?.message ?? err.message;
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            errorMessage
-          );
-        },
-      });
-  }
 
   getMainCityStateBy(countryId: number) {
     this.countryService.getMainCityStatesByCountry(countryId).subscribe({
@@ -368,22 +338,18 @@ export class ViewEntityComponent implements OnInit {
       });
 
     this.getPartyAccountDetailByAccountId(this.accountCode);
-    this.getClientDetails(this.accountCode);
+    // this.getClientDetails(this.accountCode);
   }
 
   getClientDetails(clientCode: number) {
     this.clientService.getClientDetailsByClientCode(clientCode).subscribe({
       next: (res) => {
-        log.info('clientDetails >>> ', res);
-        // this.populateDetailsForDisplay(res);
         this.clientDetails = res;
         this.entityDetails = res;
-        // this.clientDetails.contactDetails.branchName = res.organizationBranchName;
-        // this.clientDetails.contactDetails.branchId = res.organizationBranchId;
         this.fetchDynamicScreenSetup();
       },
       error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Error', 'Could not fetch client details');
+        this.globalMessagingService.displayErrorMessage('Error', err.message);
       },
     })
   }
@@ -392,25 +358,15 @@ export class ViewEntityComponent implements OnInit {
    * Fetch Entity Accounts - Staff Account, Client Account, Service Provider Account, Intermediary Account
    * @param id representing account code
    */
-  /*getPartyAccountDetailByAccountId(id: number) {
-    let accountType =  this.entityAccountIdDetails.find(account =>  account.id == id);
-        this.accountService.getAccountDetailsByAccountCode(accountType?.accountCode)
-    this.accountService
-      .getAccountDetailsByAccountCode(this.accountCode)
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe((data: PartyAccountsDetails) => {
-        this.partyAccountDetails = data;
-        // this.accountService.setCurrentAccounts(accountType);
-        this.populateDetailsForDisplay(data);
-      });
-  }*/
   getPartyAccountDetailByAccountId(id: number): void {
     this.accountService.getAccountDetailsByAccountCode(id).subscribe({
       next: (data) => {
         this.partyAccountDetails = data;
         this.fetchDynamicScreenSetup();
       },
-      error: err => {}
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err.message);
+      }
     })
   }
 
@@ -421,13 +377,7 @@ export class ViewEntityComponent implements OnInit {
       partyAccountDetails
     );
     this.getMainCityStateBy(partyAccountDetails?.address.country_id);
-    // this.partyAccountDetails = partyAccountDetails;
     this.accountService.setCurrentAccounts(partyAccountDetails);
-    // this.getPaymentDetails(partyAccountDetails);
-    this.wealthAmlDetails = partyAccountDetails?.wealthAmlDetails;
-    this.nokDetails = partyAccountDetails?.nextOfKinDetailsList;
-    // this.fetchTransactions(partyAccountDetails);
-    // this.cdr.detectChanges();
   }
 
   /***
@@ -440,39 +390,15 @@ export class ViewEntityComponent implements OnInit {
       .subscribe(
         (data: any) => {
           this.entityPartyIdDetails = data;
-          const datePipe = new DatePipe('en-GB'); // TODO: Proper way to fetch locales via constructor injection token
-
-          // log.info(
-          //   'This is the Entity Details By PartyId',
-          //   this.entityPartyIdDetails
-          // );
-
-          this.entitySummaryForm.patchValue({
-            contact: null,
-            category: this.entityPartyIdDetails?.categoryName,
-            taxId: this.entityPartyIdDetails?.modeOfIdentityNumber,
-            phoneNumber: null,
-            emailAddress: null,
-            status: null,
-            dateCreated: datePipe.transform(
-              this.entityPartyIdDetails?.effectiveDateFrom,
-              'dd-MM-yyy'
-            ),
-            entityName: this.entityPartyIdDetails?.name,
-            partyType: this.entityPartyIdDetails?.categoryName,
-            primaryIdType: this.entityPartyIdDetails?.modeOfIdentity.name,
-            pinNumber: this.entityPartyIdDetails?.pinNumber,
-            idNumber: this.entityPartyIdDetails?.modeOfIdentityNumber,
-            // profilePicture: null
-          });
           this.url = this.entityPartyIdDetails.profileImage
             ? 'data:image/jpeg;base64,' + this.entityPartyIdDetails.profileImage
             : '';
           this.cdr.detectChanges();
           this.spinner.hide();
         },
-        (error) => {
+        (err) => {
           this.spinner.hide();
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
         }
       );
   }
@@ -480,9 +406,8 @@ export class ViewEntityComponent implements OnInit {
   /***
    *   Fetch all accounts (AccountReqPartyId[]) for a specific entity
    */
-  getEntityAccountById() {
-    this.entityService
-      .getAccountById(this.entityId)
+  getEntityAccountById(id: number) {
+    this.entityService.getAccountById(id)
       .pipe(
         takeUntil(this.destroyed$),
         finalize(() => this.setAccountCode())
@@ -491,30 +416,7 @@ export class ViewEntityComponent implements OnInit {
         this.entityAccountIdDetails = data;
         this.getUnAssignedRoles();
         this.entityService.setCurrentEntityAccounts(data);
-        this.fetchDynamicScreenSetup();
-        // this.fetchAllPartyAccountsDetails();
       });
-  }
-
-  /*** Create Summary Form **/
-  createEntitySummaryForm() {
-    this.entitySummaryForm = this.fb.group({
-      contact: ['', Validators.required],
-      category: ['', Validators.required],
-      taxId: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
-      emailAddress: ['', Validators.required],
-      status: ['', Validators.required],
-      dateCreated: ['', Validators.required],
-      entityName: ['', Validators.required],
-      partyType: ['', Validators.required],
-      primaryIdType: ['', Validators.required],
-      pinNumber: ['', Validators.required],
-      idNumber: ['', Validators.required],
-      profilePicture: [null],
-      // partyType: ['']
-    });
-    // this.entitySummaryForm.addControl('value', this.getPartyAccountDetailByAccountId)
   }
 
   createSelectRoleForm() {
@@ -641,27 +543,6 @@ export class ViewEntityComponent implements OnInit {
     this.router.navigate([`/home/entity/edit/${id}`]);
   }
 
-  /**
-   * fetch all transactions based on the logged in PartyType
-   * @param partyAccountDetails required to get account id
-   * @returns void
-   */
-  /*fetchTransactions(partyAccountDetails: PartyAccountsDetails): void {
-    this.partyAccountDetails = partyAccountDetails;
-    const id: number = partyAccountDetails?.accountCode;
-    const username = partyAccountDetails?.userDto?.username;
-
-    const partyTypeShtDesc: string =
-      partyAccountDetails?.partyType?.partyTypeShtDesc;
-
-    this.entityTransactions.fetchTransactionsByPartyAndAccountCode(
-      partyTypeShtDesc,
-      id,
-      username,
-      this.partyTypes
-    );
-  }*/
-
   selectPartyTypeRole(role: AccountReqPartyId): void {
     const accountId: number = role?.id;
     const accountType: AccountReqPartyId = this.entityAccountIdDetails.find(
@@ -674,7 +555,6 @@ export class ViewEntityComponent implements OnInit {
       .subscribe({
         next: (data: PartyAccountsDetails): void => {
           this.populateDetailsForDisplay(data);
-          // this.fetchTransactions(data);
           log.info(`party account details >>> `, data);
           this.cdr.detectChanges();
         },
@@ -687,30 +567,6 @@ export class ViewEntityComponent implements OnInit {
         },
       });
   }
-
-  /*getPaymentDetails(partyAccountDetails: PartyAccountsDetails): void {
-    if (partyAccountDetails?.paymentDetails?.id) {
-      const id: number = partyAccountDetails?.paymentDetails?.bank_branch_id;
-      this.entityService.fetchBankDetailsByBranchId(id).subscribe({
-        next: (bank: Bank) => {
-          this.bankDetails = {
-            ...bank,
-            accountNo: partyAccountDetails?.paymentDetails?.account_number,
-            paymentMethod: 'xxx',
-            accountType: 'xxx',
-            partyAccountId: partyAccountDetails?.paymentDetails?.partyAccountId,
-          };
-          log.info(`Bank details ==> `, this.bankDetails);
-          this.getBankBranchesByBankId(bank.bankId, bank.id);
-        },
-        error: (err) => {},
-      });
-    } else {
-      this.bankDetails = null;
-      log.info(`Bank details ==> `, this.bankDetails);
-    }
-  }*/
-
 
   selectTab(tab: any): void {
     log.info('selectTab', tab);
@@ -741,31 +597,6 @@ export class ViewEntityComponent implements OnInit {
           // do something
     }
   }
-
-  /*fetchSelectOptions(): void {
-    log.info(`fetching select options >>> `);
-    forkJoin({
-      idTypes: this.entityService.getIdentityType(),
-      countries: this.countryService.getCountries(),
-      maritalStatuses: this.maritalStatusService.getMaritalStatus()
-    }).subscribe({
-      next: data => {
-        this.selectOptions = {
-          idTypes: data.idTypes,
-          countries: data.countries,
-          maritalStatuses: data.maritalStatuses,
-        }
-        this.countries = data.countries;
-        log.info(`select options >>> `, data);
-        // this.cdr.detectChanges();
-      },
-      error: err => {
-        const errorMessage = err?.error?.message ?? err.message;
-        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-        log.error(`could not fetch: `, err);
-      }
-    });
-  }*/
 
   protected readonly open = open;
 }
