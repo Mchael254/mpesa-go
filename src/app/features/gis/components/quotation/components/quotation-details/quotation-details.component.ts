@@ -3543,6 +3543,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
                 if (code) {
                   log.debug("Fetching clauses for first product automatically:", code);
                   this.getProductClause(code);
+                  this.toggleProductClausesopen()
                 }
               }, 0);
             }
@@ -3811,6 +3812,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
                 if (code) {
                   log.debug("Fetching clauses for first product automatically:", code);
                   this.getProductClause(code);
+                  this.toggleProductClausesopen()
+
                 }
               }, 0);
             }

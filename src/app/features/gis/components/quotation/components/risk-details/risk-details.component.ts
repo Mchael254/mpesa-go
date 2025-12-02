@@ -2073,15 +2073,18 @@ export class RiskDetailsComponent {
           //     return premium;
           //   });
           const sectionPremiums = premiumRates
+            // Exclude premiums already in sectionDetails
             .filter(premium =>
               !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode)
             )
+            // Exclude premiums with empty or missing applicableRates
+            .filter(premium => premium.applicableRates && premium.applicableRates.length > 0)
             .map(premium => {
               // ---- Build rateOptions first ----
-              const rateOptions = premium?.applicableRates?.map(r => ({
+              const rateOptions = premium.applicableRates.map(r => ({
                 label: r.rate.toString(),
                 value: r.rate
-              })) || [];
+              }));
 
               // ---- Mandatory logic ----
               if (premium.isMandatory && premium.isMandatory.includes('Y')) {
@@ -2099,7 +2102,7 @@ export class RiskDetailsComponent {
                 return {
                   ...premium,
                   rateOptions,
-                  limitAmount: premium?.applicableRates?.[0]?.freeLimit
+                  limitAmount: premium.applicableRates[0].freeLimit
                 };
               }
 
@@ -2109,6 +2112,7 @@ export class RiskDetailsComponent {
                 rateOptions
               };
             });
+
 
           this.sectionPremium = sectionPremiums;
           // log.debug("Risk Clauses List:", this.riskClausesList);
@@ -2257,15 +2261,18 @@ export class RiskDetailsComponent {
           // log.debug("Quotation List-risk creation method:", this.quotationDetails);
 
           const sectionPremiums = premiumRates
+            // Exclude premiums already in sectionDetails
             .filter(premium =>
               !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode)
             )
+            // Exclude premiums with empty or missing applicableRates
+            .filter(premium => premium.applicableRates && premium.applicableRates.length > 0)
             .map(premium => {
               // ---- Build rateOptions first ----
-              const rateOptions = premium?.applicableRates?.map(r => ({
+              const rateOptions = premium.applicableRates.map(r => ({
                 label: r.rate.toString(),
                 value: r.rate
-              })) || [];
+              }));
 
               // ---- Mandatory logic ----
               if (premium.isMandatory && premium.isMandatory.includes('Y')) {
@@ -2283,7 +2290,7 @@ export class RiskDetailsComponent {
                 return {
                   ...premium,
                   rateOptions,
-                  limitAmount: premium?.applicableRates?.[0]?.freeLimit
+                  limitAmount: premium.applicableRates[0].freeLimit
                 };
               }
 
@@ -2975,15 +2982,18 @@ export class RiskDetailsComponent {
         //   });
 
         const sectionPremiums = premiumRates
+          // Exclude premiums already in sectionDetails
           .filter(premium =>
             !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode)
           )
+          // Exclude premiums with empty or missing applicableRates
+          .filter(premium => premium.applicableRates && premium.applicableRates.length > 0)
           .map(premium => {
             // ---- Build rateOptions first ----
-            const rateOptions = premium?.applicableRates?.map(r => ({
+            const rateOptions = premium.applicableRates.map(r => ({
               label: r.rate.toString(),
               value: r.rate
-            })) || [];
+            }));
 
             // ---- Mandatory logic ----
             if (premium.isMandatory && premium.isMandatory.includes('Y')) {
@@ -3001,7 +3011,7 @@ export class RiskDetailsComponent {
               return {
                 ...premium,
                 rateOptions,
-                limitAmount: premium?.applicableRates?.[0]?.freeLimit
+                limitAmount: premium.applicableRates[0].freeLimit
               };
             }
 
@@ -3017,7 +3027,7 @@ export class RiskDetailsComponent {
 
         // SCHEDULES RESPONSE
         this.scheduleLevels = scheduleLevels?._embedded || [];
-        const sortedLevels = this.scheduleLevels.sort((a, b) => a.levelNumber - b.levelNumber);
+        const sortedLevels = this.scheduleLevels?.sort((a, b) => a.levelNumber - b.levelNumber);
         // Set the tab labels
         this.scheduleTabs = sortedLevels
           .sort((a, b) => a.levelNumber - b.levelNumber)
@@ -3530,11 +3540,11 @@ export class RiskDetailsComponent {
         description: rate?.sectionDescription,
         freeLimit: rate?.freeLimit,
         multiplierDivisionFactor: rate?.multiplierDivisionFactor,
-        multiplierRate: rate?.multiplierRate,
+        multiplierRate: rate?.multiplierRate ?? 1,
         premiumAmount: rate?.premiumMinimumAmount || 0,
-        premiumRate: rate?.rate || 0,
+        premiumRate: section.selectedRate ?? rate?.rate,
         minimumPremium: rate?.premiumMinimumAmount,
-        rateDivisionFactor: rate?.divisionFactor || 1,
+        rateDivisionFactor: rate?.divisionFactor,
         rateType: rate?.rateType || "FXD",
         rowNumber: limitsToSave.length + 1,
         sectionType: rate?.sectionType,
@@ -3542,7 +3552,7 @@ export class RiskDetailsComponent {
         sumInsuredRate: rate?.sumInsuredRate,
         sectionShortDescription: section.sectionShortDescription,
         sectionCode: section.sectionCode,
-        limitAmount: section.limitAmount,
+        limitAmount: rate.limitAmount,
       });
     }
 
@@ -3559,10 +3569,10 @@ export class RiskDetailsComponent {
         description: section.description || section.sectionShortDescription,
         freeLimit: section.freeLimit || 0,
         multiplierDivisionFactor: section.multiplierDivisionFactor,
-        multiplierRate: section.multiplierRate,
+        multiplierRate: section.multiplierRate ?? 1,
         premiumAmount: section.premiumAmount || 0,
-        premiumRate: section.premiumRate || 0,
-        rateDivisionFactor: section.rateDivisionFactor || 1,
+        premiumRate: section.premiumRate,
+        rateDivisionFactor: section.rateDivisionFactor,
         rateType: section.rateType || "FXD",
         rowNumber: 1,
         sectionType: section.sectionType,
@@ -3605,7 +3615,7 @@ export class RiskDetailsComponent {
         compute: null,
         description: rate?.sectionDescription,
         freeLimit: rate?.freeLimit,
-        multiplierRate: rate?.multiplierRate,
+        multiplierRate: rate?.multiplierRate ?? 1,
         premiumAmount: null,
         premiumRate: rate?.rate,
         rateDivisionFactor: rate?.divisionFactor,
@@ -3814,15 +3824,20 @@ export class RiskDetailsComponent {
           //     return premium;
           //   });
           const sectionPremiums = result
+            // Exclude premiums already in sectionDetails
             .filter(premium =>
               !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode)
             )
+            // Exclude premiums with empty or missing applicableRates
+            .filter(premium => premium.applicableRates && premium.applicableRates.length > 0)
             .map(premium => {
-              const rateOptions = premium?.applicableRates?.map(r => ({
+              // ---- Build rateOptions first ----
+              const rateOptions = premium.applicableRates.map(r => ({
                 label: r.rate.toString(),
                 value: r.rate
-              })) || [];
+              }));
 
+              // ---- Mandatory logic ----
               if (premium.isMandatory && premium.isMandatory.includes('Y')) {
                 if (
                   premium.sectionShortDescription &&
@@ -3838,7 +3853,7 @@ export class RiskDetailsComponent {
                 return {
                   ...premium,
                   rateOptions,
-                  limitAmount: premium?.applicableRates?.[0]?.freeLimit
+                  limitAmount: premium.applicableRates[0].freeLimit
                 };
               }
 
@@ -3848,6 +3863,7 @@ export class RiskDetailsComponent {
                 rateOptions
               };
             });
+
 
           this.sectionPremium = sectionPremiums;
           log.debug("Section premium reloaded after delete", this.sectionPremium);
@@ -6648,7 +6664,7 @@ export class RiskDetailsComponent {
                   isMandatory: null
                 },
                 minimumPremium: limit.minimumPremium,
-                multiplierRate: 1,
+                multiplierRate: limit.multiplierRate ?? 1,
                 limitPeriod: 0,
                 multiplierDivisionFactor: limit.multiplierDivisionFactor,
                 dualBasis: limit.dualBasis,
@@ -6676,7 +6692,7 @@ export class RiskDetailsComponent {
                 premiumRate: limit.premiumRate,
                 freeLimit: limit.freeLimit,
                 sectionType: limit.sectionType,
-                multiplierRate: 1,
+                multiplierRate: limit.multiplierRate ?? 1,
                 shortDescription: limit.sectionShortDescription
               };
             }) || []
@@ -6693,7 +6709,7 @@ export class RiskDetailsComponent {
             taxRateType: tax.taxType || tax.rateType,
             applicationLevel: null,
             code: tax.code || 0,
-            divisionFactor: 0,
+            divisionFactor: 1,
             taxRate: tax.rate || 0,
             rangeTo: 0,
             rangeFrom: 0,
