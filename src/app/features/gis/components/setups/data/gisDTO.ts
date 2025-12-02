@@ -1056,6 +1056,7 @@ export interface ApplicableRate {
 }
 
 export interface NewPremiums {
+  selectedRate: number;
   code: number;
   sectionCode: number;
   sectionShortDescription: string;
