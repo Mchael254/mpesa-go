@@ -60,7 +60,7 @@ export class PolicyService {
 getAllPolicy(page: number = 0, size: number = 10, policyNumber?: string): Observable<any> {
   let url = `v2/policies?pageNo=${page}&pageSize=${size}`;
   if (policyNumber) {
-    url += `&policyNumber=${encodeURIComponent(policyNumber)}`;
+    url += `&policyNumber=${policyNumber}`;
   }
   return this.api.GET<any>(url, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
 }
