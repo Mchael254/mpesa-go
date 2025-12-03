@@ -1,0 +1,17 @@
+[
+  {
+    "number": 1,
+    "title": "Product and Policy details",
+    "link": "/home/gis/policy/product-and-policy-details"
+  },
+  {
+    "number": 2,
+    "title": "Policy details",
+    "link": "/home/gis/policy/policy-details"
+  },
+  {
+    "number": 3,
+    "title": "Policy summary",
+    "link": "/home/gis/policy/policy-summary"
+  }
+]

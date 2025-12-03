@@ -1,0 +1,239 @@
+<div class="mx-4 mt-3">
+    <!-- Stepper -->
+    <app-stepper [currentStep]="1" [stepperData]="steps" [disableNavigation]="true"></app-stepper>
+
+    <!-- Cards: Product and Policy Details  -->
+    <div class="card mb-4 mt-4">
+        <div class="card-body my-4 mx-4">
+            <h6 class="subheading mt-2 mb-3">{{ 'gis.policy.policy_product_details' | translate }}</h6>
+
+            <!-- Client selection (static UI only; no modal/search functionality) -->
+            <div class="d-flex gap-2 mb-3">
+                <div class="method-option d-flex align-items-center" style="min-width:180px;"
+                    (click)="selectedClientType = 'new'" [class.selected]="selectedClientType === 'new'">
+                    <i class="far fa-circle" *ngIf="selectedClientType !== 'new'"></i>
+                    <i class="fas fa-dot-circle" *ngIf="selectedClientType === 'new'" style="margin-left:2px"></i>
+                    <span style="margin-left:8px"> {{ 'gis.quotation.new_client' | translate }}</span>
+                </div>
+
+                <div class="method-option d-flex align-items-center" style="min-width:180px;"
+                    (click)="selectedClientType = 'existing'" [class.selected]="selectedClientType === 'existing'">
+                    <i class="far fa-circle" *ngIf="selectedClientType !== 'existing'"></i>
+                    <i class="fas fa-dot-circle" *ngIf="selectedClientType === 'existing'"></i>
+                    <span style="margin-left:8px">{{ 'gis.quotation.existing_client' | translate }}</span>
+                </div>
+            </div>
+
+            <!-- Dynamic Product Policy Fields -->
+            <form [formGroup]="policyDetailsForm" *ngIf="policyFormFields.length > 0">
+                <div class="row">
+                    <ng-container *ngFor="let field of policyFormFields; let i = index">
+                        <div class="col-sm-6 col-lg-4 mb-4" *ngIf="field.isHidden !== 'Y' && isFieldVisible(field)">
+                            <div class="form-group form-group-sm">
+                                <label *ngIf="field.name" [attr.for]="i + field.name" id="quote-label"
+                                    [ngClass]="{ 'required': field.isMandatory === 'Y' }">
+                                    {{ field.label || field.name }}
+                                </label>
+
+                                <!-- Text Input -->
+                                <ng-container
+                                    *ngIf="field.type === 'text' && !radioFields.includes(field.name) && policyDetailsForm.contains(field.name)">
+                                    <input type="text" class="form-control" [formControlName]="field.name" />
+                                </ng-container>
+
+                                <!-- Radio Input for specific text fields -->
+                                <ng-container
+                                    *ngIf="field.type === 'text' && radioFields.includes(field.name) && policyDetailsForm.contains(field.name)">
+                                    <div class="d-flex gap-3 align-items-center mt-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" [formControlName]="field.name"
+                                                [id]="i + field.name + 'Y'" value="Y"
+                                                (change)="onFieldChange(field.name, $event)">
+                                            <label class="form-check-label"
+                                                [attr.for]="i + field.name + 'Y'">Yes</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" [formControlName]="field.name"
+                                                [id]="i + field.name + 'N'" value="N"
+                                                (change)="onFieldChange(field.name, $event)">
+                                            <label class="form-check-label" [attr.for]="i + field.name + 'N'">No</label>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                                <!-- Number Input -->
+                                <ng-container *ngIf="field.type === 'number' && policyDetailsForm.contains(field.name)">
+                                    <input type="number" class="form-control" [formControlName]="field.name" />
+                                </ng-container>
+
+                                <!-- Select/Dropdown -->
+                                <ng-container *ngIf="field.type === 'select' && policyDetailsForm.contains(field.name)">
+                                    <p-dropdown [formControlName]="field.name" [options]="getSelectOptions(field)"
+                                        optionLabel="label" optionValue="value" [filter]="true" filterBy="label"
+                                        [showClear]="true" placeholder=""
+                                        (onChange)="onFieldChange(field.name, $event)">
+                                    </p-dropdown>
+                                </ng-container>
+
+                                <!-- Date Input -->
+                                <ng-container *ngIf="field.type === 'date' && policyDetailsForm.contains(field.name)">
+                                    <p-calendar [formControlName]="field.name" [dateFormat]="primeNgDateFormat"
+                                        inputStyleClass="form-control form-control-sm" [showButtonBar]="true"
+                                        [dataType]="'string'" [showIcon]="true" styleClass="w-100">
+                                    </p-calendar>
+                                </ng-container>
+
+                                <!-- Textarea -->
+                                <ng-container
+                                    *ngIf="field.type === 'textarea' && policyDetailsForm.contains(field.name)">
+                                    <textarea class="form-control" [formControlName]="field.name" rows="3"></textarea>
+                                </ng-container>
+
+                                <!-- Checkbox -->
+                                <ng-container
+                                    *ngIf="field.type === 'checkbox' && policyDetailsForm.contains(field.name)">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" [formControlName]="field.name"
+                                            [id]="i + field.name" />
+                                    </div>
+                                </ng-container>
+
+                                <!-- Validation Errors -->
+                                <div *ngIf="policyDetailsForm.get(field.name)?.touched && policyDetailsForm.get(field.name)?.errors as errors"
+                                    class="text-danger small mt-1">
+                                    <div *ngIf="errors['required']">
+                                        {{ field.label || field.name }} {{ 'gis.quotation.is_required' | translate }}
+                                    </div>
+                                    <div *ngIf="errors['pattern']">
+                                        {{ field.label || field.name }} {{ 'gis.quotation.format_is_invalid' | translate
+                                        }}
+                                    </div>
+                                    <div *ngIf="errors['min']">
+                                        {{ field.label || field.name }} must be at least {{ field.min }}
+                                    </div>
+                                    <div *ngIf="errors['max']">
+                                        {{ field.label || field.name }} must be at most {{ field.max }}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body my-4 mx-4">
+            <h6 class="subheading mt-2 mb-3">{{ 'gis.policy.policy_details' | translate }}</h6>
+            <!-- Dynamic Product Policy Other Fields -->
+            <form [formGroup]="policyDetailsForm" *ngIf="policyOtherFormFields.length > 0">
+                <div class="row">
+                    <ng-container *ngFor="let field of policyOtherFormFields; let i = index">
+                        <div class="col-sm-6 col-lg-4 mb-4" *ngIf="field.isHidden !== 'Y' && isFieldVisible(field)">
+                            <div class="form-group form-group-sm">
+                                <label *ngIf="field.name" [attr.for]="i + field.name" id="quote-label"
+                                    [ngClass]="{ 'required': field.isMandatory === 'Y' }">
+                                    {{ field.label || field.name }}
+                                </label>
+
+                                <!-- Text Input -->
+                                <ng-container
+                                    *ngIf="field.type === 'text' && !radioFields.includes(field.name) && policyDetailsForm.contains(field.name)">
+                                    <input type="text" class="form-control" [formControlName]="field.name" />
+                                </ng-container>
+
+                                <!-- Radio Input for specific text fields -->
+                                <ng-container
+                                    *ngIf="field.type === 'text' && radioFields.includes(field.name) && policyDetailsForm.contains(field.name)">
+                                    <div class="d-flex gap-3 align-items-center mt-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" [formControlName]="field.name"
+                                                [id]="i + field.name + 'Y'" value="Y"
+                                                (change)="onFieldChange(field.name, $event)">
+                                            <label class="form-check-label"
+                                                [attr.for]="i + field.name + 'Y'">Yes</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" [formControlName]="field.name"
+                                                [id]="i + field.name + 'N'" value="N"
+                                                (change)="onFieldChange(field.name, $event)">
+                                            <label class="form-check-label" [attr.for]="i + field.name + 'N'">No</label>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                                <!-- Number Input - Standard -->
+                                <ng-container *ngIf="field.type === 'number' && !['currencyFixedRate', 'currencyRate', 'exchangeRate'].includes(field.name) && policyDetailsForm.contains(field.name)">
+                                    <input type="number" class="form-control" [formControlName]="field.name" />
+                                </ng-container>
+
+                                <!-- Number Input - Currency Fields with currencyMask -->
+                                <ng-container *ngIf="field.type === 'number' && ['currencyFixedRate', 'currencyRate', 'exchangeRate'].includes(field.name) && policyDetailsForm.contains(field.name)">
+                                    <input type="text" class="form-control" currencyMask [options]="currencyObj" [formControlName]="field.name" />
+                                </ng-container>
+
+                                <!-- Select/Dropdown -->
+                                <ng-container *ngIf="field.type === 'select' && policyDetailsForm.contains(field.name)">
+                                    <p-dropdown [formControlName]="field.name" [options]="getSelectOptions(field)"
+                                        optionLabel="label" optionValue="value" [filter]="true" filterBy="label"
+                                        [showClear]="true" placeholder=""
+                                        (onChange)="onFieldChange(field.name, $event)">
+                                    </p-dropdown>
+                                </ng-container>
+
+                                <!-- Date Input -->
+                                <ng-container *ngIf="field.type === 'date' && policyDetailsForm.contains(field.name)">
+                                    <p-calendar [formControlName]="field.name" [dateFormat]="primeNgDateFormat"
+                                        inputStyleClass="form-control form-control-sm" [showButtonBar]="true"
+                                        [dataType]="'string'" [showIcon]="true" styleClass="w-100">
+                                    </p-calendar>
+                                </ng-container>
+
+                                <!-- Textarea -->
+                                <ng-container
+                                    *ngIf="field.type === 'textarea' && policyDetailsForm.contains(field.name)">
+                                    <textarea class="form-control" [formControlName]="field.name" rows="3"></textarea>
+                                </ng-container>
+
+                                <!-- Checkbox -->
+                                <ng-container
+                                    *ngIf="field.type === 'checkbox' && policyDetailsForm.contains(field.name)">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" [formControlName]="field.name"
+                                            [id]="i + field.name" />
+                                    </div>
+                                </ng-container>
+
+                                <!-- Validation Errors -->
+                                <div *ngIf="policyDetailsForm.get(field.name)?.touched && policyDetailsForm.get(field.name)?.errors as errors"
+                                    class="text-danger small mt-1">
+                                    <div *ngIf="errors['required']">
+                                        {{ field.label || field.name }} {{ 'gis.quotation.is_required' | translate }}
+                                    </div>
+                                    <div *ngIf="errors['pattern']">
+                                        {{ field.label || field.name }} {{ 'gis.quotation.format_is_invalid' | translate
+                                        }}
+                                    </div>
+                                    <div *ngIf="errors['min']">
+                                        {{ field.label || field.name }} must be at least {{ field.min }}
+                                    </div>
+                                    <div *ngIf="errors['max']">
+                                        {{ field.label || field.name }} must be at most {{ field.max }}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </form>
+
+
+
+        </div>
+    </div>
+
+</div>

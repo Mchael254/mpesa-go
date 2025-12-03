@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection, CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates, EditPolicyClause, EditRequiredDocuments, SubclassesClauses, RiskPeril, ClientDDdetails, ExternalClaimExp, AddPolicyClauses, InternalClaimExp } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection, CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates, EditPolicyClause, EditRequiredDocuments, SubclassesClauses, RiskPeril, ClientDDdetails, ExternalClaimExp, AddPolicyClauses, InternalClaimExp, ProductPolicyField } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 import { Remarks } from '../../../data/policies-dto';
@@ -57,13 +57,13 @@ export class PolicyService {
     return this.api.GET<any>(`/v2/policies?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
-getAllPolicy(page: number = 0, size: number = 10, policyNumber?: string): Observable<any> {
-  let url = `v2/policies?pageNo=${page}&pageSize=${size}`;
-  if (policyNumber) {
-    url += `&policyNumber=${policyNumber}`;
+  getAllPolicy(page: number = 0, size: number = 10, policyNumber?: string): Observable<any> {
+    let url = `v2/policies?pageNo=${page}&pageSize=${size}`;
+    if (policyNumber) {
+      url += `&policyNumber=${policyNumber}`;
+    }
+    return this.api.GET<any>(url, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
   }
-  return this.api.GET<any>(url, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
-}
 
 
 
@@ -440,6 +440,22 @@ getAllPolicy(page: number = 0, size: number = 10, policyNumber?: string): Observ
     return this.api.GET<InternalClaimExp[]>(`api/v2/internal-claims-experience?`, API_CONFIG.GIS_CLAIMS_BASE_URL, params);
 
   }
+
+  getProductPolicyFields(): Observable<ProductPolicyField[]> {
+    return this.api.GET<ProductPolicyField[]>(
+      `api/v1/forms?shortDescription=product-policy-details`,
+      API_CONFIG.GIS_SETUPS_BASE_URL
+    );
+  }
+
+  getProductPolicyOtherFields(): Observable<ProductPolicyField[]> {
+    return this.api.GET<ProductPolicyField[]>(
+      `api/v1/forms?shortDescription=policy-other-details`,
+      API_CONFIG.GIS_SETUPS_BASE_URL
+    );
+  }
+
+
 
 
 
