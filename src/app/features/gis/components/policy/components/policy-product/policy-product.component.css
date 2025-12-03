@@ -1,0 +1,103 @@
+/* Dropdown styling to match risk-details */
+::ng-deep .p-dropdown {
+  height: 33px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  border-radius: 4px;
+}
+
+::ng-deep .p-dropdown .p-dropdown-label.p-placeholder {
+  padding: 3px;
+}
+
+::ng-deep .p-dropdown .p-dropdown-label {
+  padding: 3px;
+  font-size: 14px;
+  color: #000;
+}
+
+::ng-deep .p-dropdown-filter {
+  width: 100%;
+  height: 30px;
+  border-radius: 4px;
+}
+
+::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  font-size: 14px;
+  color: #000;
+  padding: 3px 20px;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+/* Highlighted/focused item state */
+::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+  background-color: #e9ecef;
+  color: #000;
+}
+
+/* Focus state */
+::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item:focus {
+  background-color: #e9ecef;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Calendar styling to match input field widths */
+::ng-deep .p-calendar {
+  width: 100%;
+  position: relative;
+}
+
+::ng-deep .p-calendar .p-inputtext {
+  width: 100%;
+  height: 33px;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  border-radius: 4px;
+  padding-right: 2.5rem; /* Add space for the icon */
+}
+
+::ng-deep .p-calendar .p-datepicker-trigger {
+  position: absolute;
+  top: 50%;
+  right: 0.01rem;
+  transform: translateY(-50%);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #00529B; /* Blue icon */
+  padding: 0;
+  z-index: 2;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+::ng-deep .p-calendar .p-datepicker-trigger .p-button-icon {
+  font-size: 1.2rem;
+}
+
+#quote-label {
+  color: #000;
+  font-family: Roboto;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  margin-bottom: 10px;
+}
+
+.form-control {
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  height: 35px;
+  font-size: 14px;
+}
+
+.form-control.form-group-sm {
+  height: auto;
+}
