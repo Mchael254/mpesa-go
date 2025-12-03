@@ -32,6 +32,7 @@ import { ExternalClaimsComponent } from './components/external-claims/external-c
 import { ServiceProvidersComponent } from './components/service-providers/service-providers.component';
 import { InternalClaimsComponent } from './components/internal-claims/internal-claims.component';
 import { ReasonsForPendingComponent } from './components/reasons-for-pending/reasons-for-pending.component';
+import { NgxCurrencyDirective } from 'ngx-currency';
 @NgModule({
   declarations: [
     ListPoliciesComponent,
@@ -69,8 +70,8 @@ import { ReasonsForPendingComponent } from './components/reasons-for-pending/rea
     PanelMenuModule,
     TreeModule,
     TabViewModule,
-    InputTextareaModule
-
+    InputTextareaModule,
+    NgxCurrencyDirective
   ]
 })
 export class PolicyModule { }
