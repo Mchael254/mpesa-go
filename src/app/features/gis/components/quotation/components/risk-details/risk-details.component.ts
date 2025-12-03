@@ -3537,13 +3537,13 @@ export class RiskDetailsComponent {
         code: section.code || null,
         calcGroup: 1,
         compute: "Y",
-        description: rate?.sectionDescription,
-        freeLimit: rate?.freeLimit,
+        description: section.sectionShortDescription ?? rate?.sectionDescription,
+        freeLimit: rate?.freeLimit ?? 0,
         multiplierDivisionFactor: rate?.multiplierDivisionFactor,
         multiplierRate: rate?.multiplierRate ?? 1,
         premiumAmount: rate?.premiumMinimumAmount || 0,
         premiumRate: section.selectedRate ?? rate?.rate,
-        minimumPremium: rate?.premiumMinimumAmount,
+        minimumPremium: rate?.premiumMinimumAmount ?? 0,
         rateDivisionFactor: rate?.divisionFactor,
         rateType: rate?.rateType || "FXD",
         rowNumber: limitsToSave.length + 1,
@@ -3552,7 +3552,7 @@ export class RiskDetailsComponent {
         sumInsuredRate: rate?.sumInsuredRate,
         sectionShortDescription: section.sectionShortDescription,
         sectionCode: section.sectionCode,
-        limitAmount: rate.limitAmount,
+        limitAmount: rate.limitAmount ?? 0,
       });
     }
 
@@ -6781,34 +6781,34 @@ export class RiskDetailsComponent {
             minimumPremiumUsed: risk.minimumPremiumUsed || 'N',
 
             coverTypeDetails: {
-              code: coverType.code || 0,
-              subclassCode: coverType.subclassCode || 0,
-              description: coverType.description || '',
-              coverTypeCode: coverType.coverTypeCode || 0,
-              minimumAnnualPremium: coverType.minimumAnnualPremium || 0,
-              minimumPremium: coverType.minimumPremium || 0,
-              coverTypeShortDescription: coverType.coverTypeShortDescription || '',
-              coverTypeDescription: coverType.coverTypeDescription || '',
+              code: coverType.code,
+              subclassCode: coverType.subclassCode,
+              description: coverType.description,
+              coverTypeCode: coverType.coverTypeCode,
+              minimumAnnualPremium: coverType.minimumAnnualPremium,
+              minimumPremium: coverType.minimumPremium,
+              coverTypeShortDescription: coverType.coverTypeShortDescription,
+              coverTypeDescription: coverType.coverTypeDescription,
               limits: coverType.limits || [],
               limitPremium: coverType.limitPremium?.map((limit: any) => ({
-                sectCode: limit.sectCode || 0,
-                premium: limit.premium || 0
+                sectCode: limit.sectCode,
+                premium: limit.premium
               })) || [],
               taxComputation: coverType.taxComputation?.map((tax: any) => ({
-                code: tax.code || 0,
-                premium: tax.premium || 0,
-                description: tax.description || ''
+                code: tax.code,
+                premium: tax.premium,
+                description: tax.description
               })) || []
             },
 
             limitPremiumDtos: coverType.limitPremium?.map((limit: any) => ({
-              sectCode: limit.sectCode || 0,
-              premium: limit.premium || 0
+              sectCode: limit.sectCode,
+              premium: limit.premium
             })) || [],
 
             taxComputation: coverType.taxComputation?.map((tax: any) => ({
-              code: tax.code || 0,
-              premium: tax.premium || 0,
+              code: tax.code,
+              premium: tax.premium,
               description: tax.description || ''
             })) || []
           };
@@ -6816,9 +6816,9 @@ export class RiskDetailsComponent {
 
         taxes:
           product.taxes?.map((tax: any) => ({
-            code: tax.code || 0,
-            premium: tax.premium || 0,
-            description: tax.description || ''
+            code: tax.code,
+            premium: tax.premium,
+            description: tax.description
           })) ||
           [] // from top-level taxComputation if available
       };
