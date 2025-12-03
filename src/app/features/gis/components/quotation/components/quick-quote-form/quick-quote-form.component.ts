@@ -1737,27 +1737,98 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     const mandatorysections = applicableLimits.filter(sec => sec.isMandatory === 'Y')
     log.debug("madatory sections", mandatorysections)
 
-    return applicableLimits
-      .filter(sec => sec.isMandatory === "Y")
-      .map(sec => {
-        const rate = sec.applicableRates?.[0]; // Pick first rate safely
-        // Determine limit amount based on rules:
-        let limitAmount = 0;
+    // return applicableLimits
+    //   .filter(sec => sec.isMandatory === "Y")
+    //   .map(sec => {
+    //     const rate = sec.applicableRates?.[0];
 
+    //     let limitAmount = 0;
+
+
+    //     const isSumInsuredSection =
+    //       sec.sectionDescription?.toUpperCase().includes('SUM INSURED') ||
+    //       sec.sectionShortDescription?.toUpperCase().includes('SUM INSURED');
+
+
+    //     if (isSumInsuredSection) {
+    //       // Rule 1: Sum Insured uses risk values
+    //       limitAmount = risk?.selfDeclaredValue || risk?.value || 0;
+    //     } else if (rate?.freeLimit) {
+    //       // Rule 2: Other sections use free limit if available
+    //       limitAmount = rate.freeLimit;
+    //     } else {
+    //       // Rule 3: Otherwise use limit amount from rate
+    //       limitAmount = rate?.limitAmount ?? 0;
+    //     }
+
+    //     return {
+    //       description: sec.sectionShortDescription,
+    //       code: sec.code,
+    //       calculationGroup: rate?.grpCode ?? 0,
+    //       declarationSection: "Y",
+    //       rowNumber: 1,
+    //       rateDivisionFactor: rate?.divisionFactor,
+    //       premiumRate: sec.selectedRate ?? rate?.rate,
+    //       rateType: rate?.rateType ?? "FXD",
+    //       sectionType: rate?.sectionType ?? null,
+    //       firstLoss: "Y",
+    //       firstLossAmountPercent: "",
+    //       firstLossValue: 0,
+
+    //       limitAmount: limitAmount,             // <– final computed limit
+    //       freeLimit: rate?.freeLimit ?? 0,
+
+    //       topLocRate: 0,
+    //       topLocDivFact: 0,
+    //       emlPercentage: 0,
+    //       compute: "Y",
+
+    //       section: {
+    //         code: sec.sectionCode,
+    //         description: sec.sectionShortDescription,
+    //         limitAmount: limitAmount,
+    //         isMandatory: sec.isMandatory
+    //       },
+
+    //       multiplierRate: rate?.multiplierRate ?? 1,
+    //       multiplierDivisionFactor: rate?.multiplierDivisionFactor ?? 1,
+    //       minimumPremium: rate?.premiumMinimumAmount ?? 0,
+    //       annualPremium: 0,
+    //       premiumAmount: 0,
+
+    //       dualBasis: "Y",
+    //       shortDescription: sec.sectionShortDescription,
+    //       sumInsuredRate: rate?.sumInsuredRate ?? 1,
+    //       limitPeriod: 0,
+    //       indemFstPeriod: 0,
+    //       indemPeriod: 0,
+    //       indemFstPeriodPercentage: 0,
+    //       indemRemPeriodPercentage: 0
+    //     };
+    //   });
+    return applicableLimits
+      .filter(sec =>
+        sec.isMandatory === "Y" &&
+        Array.isArray(sec.applicableRates) &&
+        sec.applicableRates.length > 0   // <-- REMOVE SECTIONS WITH EMPTY applicableRates
+      )
+      .map(sec => {
+        const rate = sec.applicableRates?.[0];
+
+        let limitAmount = 0;
 
         const isSumInsuredSection =
           sec.sectionDescription?.toUpperCase().includes('SUM INSURED') ||
           sec.sectionShortDescription?.toUpperCase().includes('SUM INSURED');
 
-
         if (isSumInsuredSection) {
-          // Rule 1: Sum Insured uses risk values
+
           limitAmount = risk?.selfDeclaredValue || risk?.value || 0;
         } else if (rate?.freeLimit) {
-          // Rule 2: Other sections use free limit if available
+
           limitAmount = rate.freeLimit;
         } else {
-          // Rule 3: Otherwise use limit amount from rate
+
           limitAmount = rate?.limitAmount ?? 0;
         }
 
@@ -1775,7 +1846,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           firstLossAmountPercent: "",
           firstLossValue: 0,
 
-          limitAmount: limitAmount,             // <– final computed limit
+          limitAmount: limitAmount,
           freeLimit: rate?.freeLimit ?? 0,
 
           topLocRate: 0,
@@ -1806,6 +1877,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           indemRemPeriodPercentage: 0
         };
       });
+
   }
 
   /**
@@ -2368,7 +2440,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       }),
       untilDestroyed(this)
     ).subscribe(([taxes, coverTypeSections]) => {
-      this.taxList = taxes._embedded as Tax[]
+      this.taxList = taxes?._embedded as Tax[]
       log.debug("Taxes-list:::", this.taxList)
 
       log.debug("CoverTypeSections-log", coverTypeSections)
