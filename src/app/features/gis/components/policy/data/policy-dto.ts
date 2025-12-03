@@ -775,6 +775,67 @@ export interface InternalClaimExp {
   netPaid: number;
 }
 
+// DTOs for product policy fields
+export interface SelectOption {
+  id: number;
+  value: string;
+  text: string;
+  isSelected?: string;
+  isHidden?: string;
+  isEnabled?: string;
+}
+
+export interface ValidationRule {
+  validation: string;
+  value: string;
+  message: string;
+}
+
+export interface Option {
+  code: string;
+  description: string;
+}
+
+export interface FormField {
+  id: number;
+  defaultValue?: string;
+  name?: string;
+  min?: number;
+  isMandatory?: string;
+  label?: string;
+  max?: number;
+  placeholder?: string;
+  toolTip?: string;
+  regexPattern?: string;
+  type?: string;
+  formId?: number;
+  isEnabled?: string;
+  isHidden?: string;
+  isReadOnly?: string;
+  order?: number;
+  optionsUrl?: string;
+  dependsOn?: string;
+  isPriority?: string;
+  scheduleLevel?: string;
+  applicableLevel?: string;
+  dataSource?: string;
+  dataSourceType?: string;
+  dataSourceField?: string;
+  selectOptions?: SelectOption[];
+  validationRules?: ValidationRule[];
+  options?: Option[];
+}
+
+export interface ProductPolicyField {
+  id: number;
+  screenName?: string;
+  shortDescription?: string;
+  description?: string;
+  targetSystem?: number;
+  screenFields?: any;
+  fields?: FormField[];
+}
+
 
 
 
