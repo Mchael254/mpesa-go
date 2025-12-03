@@ -2060,7 +2060,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const dateFieldPatterns = [
       'date', 'Date', 'DATE',
       'wef', 'wet',
-      'cover',
+      'coverFrom', 'coverTo',
       'created', 'updated', ,
       'timestamp', 'time'
     ];
@@ -4981,9 +4981,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   //   return this.exceptionsData.every(item => item.isAuthorized === 'Y');
   // }
   get allAuthorized() {
-    console.log('exceptionsData:', this.exceptionsData);
-    const result = this.exceptionsData.every(item => item.isAuthorized === 'Y');
-    console.log('allAuthorized result:', result);
+    log.debug('exceptionsData:', this.exceptionsData);
+    const result = this.exceptionsData.every(item => item?.isAuthorized === 'Y');
+    log.debug('allAuthorized result:', result);
     return result;
   }
 
