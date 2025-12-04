@@ -136,6 +136,18 @@ export class DepositComponent {
       );
       return;
     }
+    // Validate File Type
+    const allowedTypes = [
+         'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ]
+    if (!allowedTypes.includes(file.type)) {
+    this.globalMessagingService.displayErrorMessage(
+      'Invalid File Type',
+      'This file format is not allowed. Please upload PDF or DOCX files only.'
+    );
+    return; 
+  }
     // If validation passes, update the component state
     this.uploadedFile = file;
     this.maximumFiles = true;
