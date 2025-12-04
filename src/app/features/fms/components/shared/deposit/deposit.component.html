@@ -113,6 +113,7 @@
                   <input
                     type="file"
                     #fileInput
+                    accept=".pdf,.doc,.docx"
                     class="d-none"
                     (change)="onFileSelected($event)"
                     [disabled]="maximumFiles"
