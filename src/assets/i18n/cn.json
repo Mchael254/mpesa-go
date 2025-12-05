@@ -1655,7 +1655,8 @@
       "client_information": "客户信息",
       "commission": "佣金",
       "view": "查看",
-      "edit": "编辑"
+      "edit": "编辑",
+      "coinsurance":"共同保险"
     },
     "claims": {
       "opening": {

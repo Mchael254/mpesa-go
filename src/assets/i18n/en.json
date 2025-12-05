@@ -1826,7 +1826,8 @@
       "exchange_rate": "Exchange rate",
       "new_policy":"New Policy",
       "view": "View",
-      "edit": "Edit"
+      "edit": "Edit",
+      "coinsurance":"Coinsurance"
     },
     "claims": {
       "opening": {

@@ -1654,7 +1654,8 @@
       "client_information": "Taarifa za mteja",
       "commission": "Kamisheni",
       "view": "Tazama",
-      "edit": "Hariri"
+      "edit": "Hariri",
+      "coinsurance":"Bima ya Pamoja"
     },
     "claims": {
       "opening": {
