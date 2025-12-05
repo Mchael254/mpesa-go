@@ -1006,9 +1006,22 @@
                                                 id="scheduleLabel">{{'gis.quotation.premium_rate' | translate}}:</label>
 
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput" style="width:300px"
+                                                <!-- <input type="number" id="scheduleInput" style="width:300px"
                                                     class="form-control form-control-sm mb-1"
-                                                    formControlName="premiumRate">
+                                                    formControlName="premiumRate"> -->
+                                                <!-- <p-dropdown formControlName="premiumRate"
+                                                    [options]="applicablePremiumRates"
+                                                    [(ngModel)]="selectedRiskSection.selectedRate" [editable]="true"
+                                                    appendTo="body" [overlayOptions]="{ 
+                                                                                                            autoZIndex: true, 
+                                                                                                            baseZIndex: 1050 
+                                                                                                        }">
+                                                </p-dropdown> -->
+                                                <p-dropdown formControlName="premiumRate"
+                                                    [options]="applicablePremiumRates" [editable]="true" appendTo="body"
+                                                    [overlayOptions]="{ autoZIndex: true, baseZIndex: 1050 }">
+                                                </p-dropdown>
+
                                             </div>
                                         </div>
                                     </div>

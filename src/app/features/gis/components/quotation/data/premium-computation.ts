@@ -44,7 +44,6 @@ export interface Risk {
   useOfProperty?: string
   taxes: Tax[];
   code: string
-  binderCode: number
   sumInsured: number
   withEffectFrom: string;
   withEffectTo: string;
