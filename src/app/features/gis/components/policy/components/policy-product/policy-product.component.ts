@@ -28,6 +28,8 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
   dateFormat: string = 'dd-MM-yyyy'; // Default format
   primeNgDateFormat: string = 'dd-mm-yy'; // PrimeNG format
   public currencyObj: NgxCurrencyConfig;
+  productPolicyCoinsuranceFields: ProductPolicyField[] = [];
+  policyCoinsuranceFormFields: FormField[] = [];
 
   constructor(
     private policyService: PolicyService,
@@ -69,6 +71,7 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
 
     this.fetchProductPolicyFields();
     this.fetchProductPolicyOtherFields();
+    this.fetchProductPolicyCoinsuranceFields();
   }
   ngOnDestroy(): void { }
   ngAfterViewInit(): void { }
@@ -149,7 +152,10 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  radioFields = ['jointAccount', 'openPolicy', 'policyLevelDebt', 'multiAgency', 'coInsurancePolicy', 'schemePolicy'];
+  radioFields = ['jointAccount', 'openPolicy', 'policyLevelDebt', 'multiAgency', 'coInsurancePolicy', 'schemePolicy','coInsuranceLeader',
+  'coInsuranceGrossSumInsured',
+  'coInsuranceLeaderCombined',
+  'facultativeSession'];
 
   /**
    * Build dynamic product policy form controls
@@ -266,5 +272,90 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  fetchProductPolicyCoinsuranceFields(): void {
+    this.policyService.getProductPolicyCoinsuranceFields().subscribe({
+      next: (data: ProductPolicyField[]) => {
+        this.productPolicyCoinsuranceFields = data || [];
+        log.debug('Coinsurance Fields:', this.productPolicyCoinsuranceFields);
+        
+        
+        if (this.productPolicyCoinsuranceFields.length > 0 && 
+            this.productPolicyCoinsuranceFields[0].fields) {
+          this.policyCoinsuranceFormFields = this.productPolicyCoinsuranceFields[0].fields;
+          this.prepareCoinsuranceFieldOptions();
+          this.buildDynamicCoinsuranceFormControls();
+        }
+      },
+      error: (err) => {
+        log.error('Failed to load coinsurance fields', err);
+      }
+    });
+  }
+
+
+
+   prepareCoinsuranceFieldOptions(): void {
+    this.policyCoinsuranceFormFields.forEach(field => {
+      if (field.type === 'select') {
+        if (field.selectOptions && field.selectOptions.length > 0) {
+          this.fieldOptions[field.name] = field.selectOptions.map(option => ({
+            label: option.text || option.value,
+            value: option.value
+          }));
+        } else if (field.options && field.options.length > 0) {
+          this.fieldOptions[field.name] = field.options.map(option => ({
+            label: option.description,
+            value: option.code
+          }));
+        } else {
+          this.fieldOptions[field.name] = [];
+        }
+      }
+    });
+  }
+
+
+  buildDynamicCoinsuranceFormControls(): void {
+    this.policyCoinsuranceFormFields.forEach(field => {
+      if (field.name && !this.policyDetailsForm.get(field.name)) {
+        const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
+        if (field.regexPattern) {
+          validators.push(Validators.pattern(field.regexPattern));
+        }
+
+        
+        if (field.type === 'number') {
+          if (field.min !== undefined) validators.push(Validators.min(field.min));
+          if (field.max !== undefined) validators.push(Validators.max(field.max));
+        }
+
+        
+        let defaultVal: any = field.defaultValue !== undefined && field.defaultValue !== null 
+          ? field.defaultValue 
+          : '';
+      
+       if (field.name === 'coInsuranceLeader' || field.name === 'facultativeSession') {
+        defaultVal = 'Y'; 
+       } 
+    
+      else if (field.type === 'radio' || this.radioFields.includes(field.name)) {
+        defaultVal = '';
+      }
+
+        const control = new FormControl(defaultVal, validators);
+        this.policyDetailsForm.addControl(field.name, control);
+      }
+    });
+  }
+
+  
+  isCoinsuranceSectionVisible(): boolean {
+    return this.policyDetailsForm.get('coInsurancePolicy')?.value === 'Y';
+  }
+
+
+
+
 
 }
