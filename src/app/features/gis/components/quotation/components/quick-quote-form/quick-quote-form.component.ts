@@ -1584,7 +1584,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
       riskPayload.push({
         code: risk.riskCode,
-        binderCode: risk?.applicableBinder?.code,
         sumInsured: risk?.selfDeclaredValue || risk?.value,
         useOfProperty: risk?.useOfProperty?.description,
         withEffectFrom: this.formatDate(validEffectiveDate),
@@ -1834,7 +1833,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         return {
           description: sec.sectionShortDescription,
-          code: sec.code,
+          code: sec.sectionCode,
           calculationGroup: rate?.grpCode ?? 0,
           declarationSection: "Y",
           rowNumber: 1,
@@ -1858,7 +1857,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
             code: sec.sectionCode,
             description: sec.sectionShortDescription,
             limitAmount: limitAmount,
-            isMandatory: sec.isMandatory
+            isMandatory: "Y"
           },
 
           multiplierRate: rate?.multiplierRate ?? 1,

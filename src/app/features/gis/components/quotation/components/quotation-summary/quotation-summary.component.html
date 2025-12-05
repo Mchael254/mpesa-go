@@ -2284,7 +2284,7 @@
 
         </div>
         <div *ngIf="changeToPolicyButtons" class="d-flex gap-2 flex-wrap">
-          <button type="button" class="btn btn-primary" [disabled]="afterRejectQuote">
+          <button type="button" class="btn btn-primary" [disabled]="afterRejectQuote" (click)="convertQuoteToPolicy()">
             Convert to policy
           </button>
 
