@@ -267,15 +267,7 @@ export class QuotationsService {
     return this.api.GET<Introducer[]>(`api/v1/introducers?page=${page}&size=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL);
   }
 
-  /**
-   * Computes the premium for a given quotation code using an HTTP POST request.
-   * @method computePremium
-   * @param {string} quotationCode - The quotation code for which to compute the premium.
-   * @return {Observable<any>} - An observable of the response containing the computed premium data.
-   */
-  computePremium(computationDetails): Observable<any> {
-    return this.http.post<any>(`/${this.computationUrl}/api/v1/premium-computation`, computationDetails)
-  }
+
 
   /**
 
