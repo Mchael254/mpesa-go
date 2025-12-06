@@ -2012,7 +2012,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         rawDate = new Date(date);
       }
 
-      log.debug('raw doc created date', rawDate);
 
       // Check if valid
       if (isNaN(rawDate.getTime())) {
@@ -4986,6 +4985,43 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     log.debug('allAuthorized result:', result);
     return result;
   }
+  convertQuoteToPolicy() {
+    log.debug("Quote details- convert to pilicy", this.quotationDetails)
+    const products = this.quotationDetails.quotationProducts;
+    const conversionFlag = true;
+    sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
 
+    const convertNextProduct = (index: number) => {
+      if (index >= products.length) {
+        // All done, navigate to summary
+        // this.router.navigate(['/home/gis/policy/policy-summary']);
+        return;
+      }
+
+      const quoteProductCode = products[index].code;
+
+      this.quotationService.convertQuoteToPolicy(this.quotationCode, quoteProductCode).subscribe({
+        next: (data: any) => {
+          log.debug(`Converted product ${quoteProductCode}:`, data);
+
+          if (index === 0) {
+            // Store batchNo from the first response
+            const batchNo = data._embedded.batchNo;
+            sessionStorage.setItem('convertedQuoteBatchNo', JSON.stringify(batchNo));
+          }
+
+          convertNextProduct(index + 1); // Convert next product
+        },
+        error: (err) => {
+          log.debug('Error converting quote to policy:', err);
+          this.globalMessagingService.displayErrorMessage('error', `Failed to convert product ${quoteProductCode}.`);
+          // Optionally continue with next product even on error
+          convertNextProduct(index + 1);
+        }
+      });
+    };
+
+    convertNextProduct(0); // Start conversion
+  }
 }
 

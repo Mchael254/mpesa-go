@@ -1682,7 +1682,8 @@
       "client_information": "Información del cliente",
       "commission": "Comisión",
       "view": "Ver",
-      "edit": "Editar"
+      "edit": "Editar",
+      "coinsurance":"Coaseguro"
     },
     "claims": {
       "opening": {

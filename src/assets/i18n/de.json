@@ -1653,7 +1653,8 @@
       "client_information": "Kundeninformationen",
       "commission": "Provision",
       "view": "Anzeigen",
-      "edit": "Bearbeiten"
+      "edit": "Bearbeiten",
+      "coinsurance":"Mitversicherung"
     },
     "claims": {
       "opening": {

@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { EntityService } from "../../../../entities/services/entity/entity.service";
 import { Logger, UtilService } from "../../../../../shared/services";
 import { QuotationsService } from 'src/app/features/gis/components/quotation/services/quotations/quotations.service';
+import { PolicyService } from 'src/app/features/gis/components/policy/services/policy.service';
 
 const log = new Logger("HeaderSubMenuComponent")
 
@@ -37,6 +38,10 @@ export class DefaultSubMenuComponent implements OnInit {
   showResults: boolean = false;
   recentSearches: any[] = [];
   showRecents: boolean = false;
+  policies: any[] = [];
+  recentPolicySearches: any[] = [];
+  showPolicyRecents = false;
+
 
 
   constructor(
@@ -45,7 +50,8 @@ export class DefaultSubMenuComponent implements OnInit {
     private fb: FormBuilder,
     private entityService: EntityService,
     private utilService: UtilService,
-    private quotationService: QuotationsService
+    private quotationService: QuotationsService,
+    private policyService:PolicyService
   ) {
     this.defaultSidebar = { name: 'Summary', value: "DEFAULT", link: '/home/dashboard' }
   }
@@ -185,6 +191,49 @@ goToNewPolicy() {
   
    this.router.navigate(['/home/gis/policy/policy-product']);
 }
+
+onPolicySearch(): void {
+  const term = this.idSearchTermPolicy?.trim();
+  if (!term) return;
+
+
+  this.policyService.getAllPolicy(0, 10, term).subscribe({
+    next: (res: any) => {
+      const policies = res?.content || [];
+      this.policies = policies; 
+      this.saveRecentPolicySearches(policies, term);
+      this.idSearchTermPolicy = '';
+    },
+    error: (err) => {
+      log.debug('Policy search error:', err);
+      this.policies = [];
+    }
+  });
+}
+
+saveRecentPolicySearches(policies: any[], term: string): void {
+  const stored = JSON.parse(sessionStorage.getItem('recentPolicies') || '[]');
+
+  
+  const newEntry = { policyNumber: term };
+  const merged = [newEntry, ...stored].reduce((acc: any[], curr: any) => {
+    if (!acc.find(p => p.policyNumber === curr.policyNumber)) {
+      acc.push(curr);
+    }
+    return acc;
+  }, []);
+
+  
+  sessionStorage.setItem('recentPolicies', JSON.stringify(merged.slice(0, 5)));
+  this.recentPolicySearches = merged.slice(0, 5);
+}
+
+showRecentPolicies(): void {
+  const stored = JSON.parse(sessionStorage.getItem('recentPolicies') || '[]');
+  this.recentPolicySearches = stored.slice(0, 5);
+  this.showPolicyRecents = true;
+}
+
 
 
 
