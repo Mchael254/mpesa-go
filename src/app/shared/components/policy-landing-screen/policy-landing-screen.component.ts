@@ -10,6 +10,8 @@ import { NgxCurrencyConfig } from 'ngx-currency';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { BankService } from '../../services/setups/bank/bank.service';
 import { CurrencyDTO } from '../../data/common/currency-dto';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 const log = new Logger('QuotationDetailsComponent');
 
@@ -52,6 +54,17 @@ export class PolicyLandingScreenComponent implements OnInit {
   defaultCurrency: CurrencyDTO;
   currency: CurrencyDTO[];
 
+  // Pagination properties
+  totalRecords: number = 0;
+  totalPages: number = 0;
+  currentPage: number = 0;
+  pageSize: number = 50;
+  rowsPerPageOptions: number[] = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500];
+  first: number = 0;
+
+  // Search properties
+  private searchSubject = new Subject<{ field: string, value: string }>();
+
 
   constructor(
     private session_service: SessionStorageService,
@@ -81,6 +94,20 @@ export class PolicyLandingScreenComponent implements OnInit {
     this.primeNgDateFormat = this.dateFormat.replace('yyyy', 'yy').replace('MM', 'mm');
 
     this.loadSystemsAssignedToUser();
+    this.setupSearchSubscription();
+  }
+
+  setupSearchSubscription() {
+    this.searchSubject.pipe(
+      debounceTime(500), // Wait 500ms after last event
+      distinctUntilChanged((prev, curr) => prev.field === curr.field && prev.value === curr.value)
+    ).subscribe(searchParams => {
+      this.searchPolicy(searchParams.field, searchParams.value);
+    });
+  }
+
+  onSearchInput(value: string, field: string) {
+    this.searchSubject.next({ field, value });
   }
 
   /**
@@ -153,7 +180,7 @@ export class PolicyLandingScreenComponent implements OnInit {
       // If General insurance system is present, load policies
       const hasGeneral = this.assignedSystems.some(sys => sys.systemName === 'GENERAL INSURANCE SYSTEM');
       if (hasGeneral) {
-        this.loadGeneralPolicies(0, 500, true);
+        this.loadGeneralPolicies(0, this.pageSize, true);
       }
       this.cdr.detectChanges();
     });
@@ -163,26 +190,43 @@ export class PolicyLandingScreenComponent implements OnInit {
   /**
    * Load policies and return a Promise that resolves when loading completes.
    */
-  loadGeneralPolicies(page: number = 0, size: number = 500, showSpinner: boolean = true, policyNumber?: string): Promise<void> {
+  loadGeneralPolicies(page: number = 0, size: number = 50, showSpinner: boolean = true, filterField?: string, filterValue?: string): Promise<void> {
     this.policiesLoading = true;
     this.policiesLoaded = false;
-    
+
     if (showSpinner) {
       this.spinner.show();
     }
 
     return new Promise((resolve, reject) => {
-      this.policyService.getAllPolicy(page, size,policyNumber).subscribe(
+      this.policyService.getAllPolicy(page, size, filterField, filterValue).subscribe(
         (resp: any) => {
           if (resp && Array.isArray(resp.content)) {
             this.policies = resp.content;
+
+            // Store pagination metadata from response
+            this.totalRecords = resp.totalElements || 0;
+            this.totalPages = resp.totalPages || 0;
+            this.currentPage = resp.number || 0;
+            this.pageSize = resp.size || size;
+            this.first = this.currentPage * this.pageSize;
+
             log.debug('loaded policies', this.policies);
+            log.debug('pagination info', {
+              totalRecords: this.totalRecords,
+              totalPages: this.totalPages,
+              currentPage: this.currentPage,
+              pageSize: this.pageSize
+            });
+
             if (this.policies.length > 0) {
               this.setPolicyColumns(this.policies[0]);
             }
           } else {
             log.warn('Unexpected policy response shape, expected { content: [] }', resp);
             this.policies = [];
+            this.totalRecords = 0;
+            this.totalPages = 0;
           }
 
           if (showSpinner) {
@@ -196,6 +240,8 @@ export class PolicyLandingScreenComponent implements OnInit {
         (err: any) => {
           log.error('Failed to load policies', err);
           this.policies = [];
+          this.totalRecords = 0;
+          this.totalPages = 0;
           if (showSpinner) {
             this.spinner.hide();
           }
@@ -216,9 +262,28 @@ export class PolicyLandingScreenComponent implements OnInit {
     const selectedTab = this.visibleTabs[selectedIndex];
     if (selectedTab && selectedTab.content === 'general') {
       if (!this.policiesLoaded && !this.policiesLoading) {
-        this.loadGeneralPolicies(0, 500, true).catch(() => { });
+        this.loadGeneralPolicies(0, this.pageSize, true).catch(() => { });
       }
     }
+  }
+
+  /**
+   * Handler for pagination events from PrimeNG table.
+   
+   */
+  onPageChange(event: any): void {
+    const page = Math.floor(event.first / event.rows);
+    const size = event.rows;
+
+    log.debug('Page change event:', {
+      first: event.first,
+      rows: event.rows,
+      calculatedPage: page
+    });
+
+    this.pageSize = size;
+    this.first = event.first;
+    this.loadGeneralPolicies(page, size, true).catch(() => { });
   }
 
   // dynamic policy columns 
@@ -343,15 +408,17 @@ export class PolicyLandingScreenComponent implements OnInit {
     );
   }
 
-searchPolicy(policyNumber: string) {
-  const trimmedPolicyNumber = policyNumber.trim();
-  if (trimmedPolicyNumber) {
-    const decodedPolicyNumber = decodeURIComponent(trimmedPolicyNumber);
-    this.loadGeneralPolicies(0, 10, true, decodedPolicyNumber);
-  } else {
-    this.loadGeneralPolicies(0, 10, true);
+  searchPolicy(field: string, value: string) {
+    const trimmedValue = value.trim();
+    // Reset to first page when searching
+    this.first = 0;
+    if (trimmedValue) {
+      const decodedValue = decodeURIComponent(trimmedValue);
+      this.loadGeneralPolicies(0, this.pageSize, true, field, decodedValue);
+    } else {
+      this.loadGeneralPolicies(0, this.pageSize, true);
+    }
   }
-}
 
 
 
