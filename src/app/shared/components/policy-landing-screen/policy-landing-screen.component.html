@@ -205,12 +205,16 @@
         <!-- GIS policy table -->
         <div class="position-relative">
           <!-- Column Selector Toggle -->
-          <div class="d-flex justify-content-end align-items-center gap-2 mb-2" *ngIf="policiesLoaded && policies?.length > 0">
+          <div class="d-flex justify-content-end align-items-center gap-2 mb-2"
+            *ngIf="policiesLoaded && policies?.length > 0">
             <div class="mb-0">
               <button class="btn btn-primary btn-sm">{{'gis.policy.new_policy' | translate}}</button>
             </div>
-            <button #policyColumnIcon type="button" class="btn btn-outline-secondary btn-sm" (click)="togglePolicyColumns(policyColumnIcon)" aria-label="Select columns" title="Select Columns">
-              <i class="pi" [ngClass]="{ 'pi-caret-down': showPolicyColumnModal, 'pi-caret-up': !showPolicyColumnModal }" style="font-size: 0.9rem;"></i>
+            <button #policyColumnIcon type="button" class="btn btn-outline-secondary btn-sm"
+              (click)="togglePolicyColumns(policyColumnIcon)" aria-label="Select columns" title="Select Columns">
+              <i class="pi"
+                [ngClass]="{ 'pi-caret-down': showPolicyColumnModal, 'pi-caret-up': !showPolicyColumnModal }"
+                style="font-size: 0.9rem;"></i>
             </button>
           </div>
 
@@ -237,16 +241,17 @@
 
           <!-- Dynamic Policy Table -->
           <div *ngIf="policiesLoaded && policies?.length > 0" class="table-responsive">
-            <p-table #policyTable [value]="policies" [paginator]="policies?.length > 10"
-              [rowsPerPageOptions]="[5, 10, 20]" [rows]="10" [scrollable]="true" scrollHeight="500px"
-              [tableStyle]="{'min-width': '50rem'}">
-
+            <p-table #policyTable [value]="policies" [paginator]="true" [lazy]="true"
+              [rowsPerPageOptions]="rowsPerPageOptions" [rows]="pageSize" [totalRecords]="totalRecords" [first]="first"
+              (onPage)="onPageChange($event)" [scrollable]="true" scrollHeight="500px"
+              [tableStyle]="{'min-width': '50rem'}" [showCurrentPageReport]="true"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records | Page {currentPage} of {totalPages}">
               <!-- Table Header -->
               <ng-template pTemplate="header">
                 <tr>
-                  <th *ngFor="let col of policyColumns" [hidden]="!col.visible" 
-                      [pSortableColumn]="col.sortable ? col.field : null"
-                      [ngStyle]="{'text-align': col.field === 'actions' ? 'center' : 'left'}">
+                  <th *ngFor="let col of policyColumns" [hidden]="!col.visible"
+                    [pSortableColumn]="col.sortable ? col.field : null"
+                    [ngStyle]="{'text-align': col.field === 'actions' ? 'center' : 'left'}">
                     {{ col.header }}
                     <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
                   </th>
@@ -254,8 +259,7 @@
                 <tr class="filter-row">
                   <td *ngFor="let col of policyColumns" [hidden]="!col.visible">
                     <input *ngIf="col.filterable" class="form-control form-control-sm" pInputText type="text"
-                      (input)="policyTable.filter($event.target['value'], col.field, 'contains')" 
-                      (keydown.enter)="col.field === 'policyNumber' && searchPolicy($any($event.target).value)"/>
+                      (input)="onSearchInput($any($event.target).value, col.field)" />
                   </td>
                 </tr>
               </ng-template>
@@ -313,10 +317,12 @@
             No policies available.
           </div>
 
-          <div *ngIf="!policiesLoaded" class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
-            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
+          <div *ngIf="!policiesLoaded" class="d-flex justify-content-center align-items-center"
+            style="min-height: 300px;">
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium"
+              bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
           </div>
-          
+
         </div>
       </ng-container>
     </ng-container>

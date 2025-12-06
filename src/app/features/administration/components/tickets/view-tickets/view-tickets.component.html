@@ -59,10 +59,12 @@
         bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
 
       <p-table #dt (onLazyLoad)="lazyLoadTickets($event)" [lazy]="true" [value]="springTickets.content"
-        [(selection)]="selectedSpringTickets" [paginator]="true" [rows]="10" [rowHover]="true" [autoLayout]="true"
-        [totalRecords]="springTickets.totalElements" [rowsPerPageOptions]="[ 10, 20, 30, 50, 100]"
-        currentPageReportTemplate="{first} - {last} of {totalRecords}" [scrollable]="true" responsiveLayout="scroll"
-        [resizableColumns]="true" [globalFilterFields]="globalFilterFields">
+        [(selection)]="selectedSpringTickets" [paginator]="true" [rows]="pageSize" [rowHover]="true" [autoLayout]="true"
+        [totalRecords]="totalRecords" [rowsPerPageOptions]="rowsPerPageOptions" [first]="first"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records | Page {currentPage} of {totalPages}"
+        [scrollable]="true" scrollHeight="500px" responsiveLayout="scroll" [resizableColumns]="true"
+        [globalFilterFields]="globalFilterFields">
         <ng-template pTemplate="header">
           <tr>
             <th class="head">

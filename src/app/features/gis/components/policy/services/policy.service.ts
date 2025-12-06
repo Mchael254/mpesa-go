@@ -57,10 +57,10 @@ export class PolicyService {
     return this.api.GET<any>(`/v2/policies?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
-  getAllPolicy(page: number = 0, size: number = 10, policyNumber?: string): Observable<any> {
+  getAllPolicy(page: number = 0, size: number = 10, filterField?: string, filterValue?: string): Observable<any> {
     let url = `v2/policies?pageNo=${page}&pageSize=${size}`;
-    if (policyNumber) {
-      url += `&policyNumber=${policyNumber}`;
+    if (filterField && filterValue) {
+      url += `&${filterField}=${filterValue}`;
     }
     return this.api.GET<any>(url, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
   }
@@ -453,6 +453,16 @@ export class PolicyService {
       `api/v1/forms?shortDescription=policy-other-details`,
       API_CONFIG.GIS_SETUPS_BASE_URL
     );
+  }
+
+  /**
+   * Fetch user organization details by userId
+   * This provides on-demand retrieval of user's organization information
+   * @param userId - The user ID to fetch organization for
+   * @returns Observable containing user and organization details
+   */
+  getUserOrgId(userId: number): Observable<any> {
+    return this.api.GET<Observable<any>>(`users/${userId}`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL);
   }
 
 
