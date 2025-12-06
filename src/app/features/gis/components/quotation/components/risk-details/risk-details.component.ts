@@ -172,7 +172,7 @@ export class RiskDetailsComponent {
   sectionDetailsForm: FormGroup;
   riskSectionList: riskSection[] = [];
 
-  selectedRiskSection: any;
+  selectedRiskSection: riskSection;
   inputErrors: { [key: string]: boolean } = {};
   private typingTimer: any;// Timer reference
   passedSections: any[] = [];
@@ -428,7 +428,8 @@ export class RiskDetailsComponent {
   premiumComputed: boolean = false;
   premiums: { net: number; gross: number; sumInsured: number };
   levelNumber: number;
-
+  allPremiumRates: NewPremiums[];
+  applicablePremiumRates: { label: string, value: number }[] = []
   constructor(
     public subclassService: SubclassesService,
     private subclassCoverTypesService: SubClassCoverTypesService,
@@ -2072,6 +2073,8 @@ export class RiskDetailsComponent {
           //     }
           //     return premium;
           //   });
+          this.allPremiumRates = premiumRates
+
           const sectionPremiums = premiumRates
             // Exclude premiums already in sectionDetails
             .filter(premium =>
@@ -2259,6 +2262,7 @@ export class RiskDetailsComponent {
 
           // this.quotationDetails = quoteDetails
           // log.debug("Quotation List-risk creation method:", this.quotationDetails);
+          this.allPremiumRates = premiumRates
 
           const sectionPremiums = premiumRates
             // Exclude premiums already in sectionDetails
@@ -2390,7 +2394,7 @@ export class RiskDetailsComponent {
         productCode: this.selectedProductCode,
       },
       coverDays: null,
-      butCharge: this.riskDetailsForm.value.butCharge || 0
+      butCharge: this.riskDetailsForm.value.butCharge || null
     };
 
     // let risk = {
@@ -2968,7 +2972,7 @@ export class RiskDetailsComponent {
       next: ({ premiumRates, scheduleLevels }) => {
         console.log('Premium rates:', premiumRates);
         console.log('Schedule levels:', scheduleLevels);
-
+        this.allPremiumRates = premiumRates
         // const sectionPremiums = premiumRates
         //   .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
         //   .map(premium => {
@@ -3369,7 +3373,7 @@ export class RiskDetailsComponent {
           productCode: this.selectedProductCode,
         },
         coverDays: this.selectedRisk.coverDays,
-        butCharge: 0
+        butCharge: null
       };
       return [riskPayload]
     }
@@ -3542,7 +3546,7 @@ export class RiskDetailsComponent {
         multiplierDivisionFactor: rate?.multiplierDivisionFactor,
         multiplierRate: rate?.multiplierRate ?? 1,
         premiumAmount: rate?.premiumMinimumAmount || 0,
-        premiumRate: section.selectedRate ?? rate?.rate,
+        premiumRate: section.selectedRate || rate?.rate,
         minimumPremium: rate?.premiumMinimumAmount ?? 0,
         rateDivisionFactor: rate?.divisionFactor,
         rateType: rate?.rateType || "FXD",
@@ -3552,12 +3556,25 @@ export class RiskDetailsComponent {
         sumInsuredRate: rate?.sumInsuredRate,
         sectionShortDescription: section.sectionShortDescription,
         sectionCode: section.sectionCode,
-        limitAmount: rate.limitAmount ?? 0,
+        limitAmount: section.limitAmount ?? rate.limitAmount ?? 0,
       });
     }
 
     return limitsToSave;
   }
+  onPremiumRateChange(event: any) {
+    let value = event.value;
+
+    // If user typed a number (string), convert to number
+    if (typeof value === 'string' && !isNaN(Number(value))) {
+      value = Number(value);
+    }
+
+    this.sectionDetailsForm.get('premiumRate')?.setValue(value);
+    console.log("Form value:", this.sectionDetailsForm.value);
+  }
+
+
   updateRiskLimitPayload() {
     let limitsToSave: any[] = [];
     log.debug("Slected section-coming up with the payload:", this.updatedSelectedSections)
@@ -3571,7 +3588,7 @@ export class RiskDetailsComponent {
         multiplierDivisionFactor: section.multiplierDivisionFactor,
         multiplierRate: section.multiplierRate ?? 1,
         premiumAmount: section.premiumAmount || 0,
-        premiumRate: section.premiumRate,
+        premiumRate: section.selectedRate || section.premiumRate,
         rateDivisionFactor: section.rateDivisionFactor,
         rateType: section.rateType || "FXD",
         rowNumber: 1,
@@ -3644,6 +3661,20 @@ export class RiskDetailsComponent {
   onSelectSection(event: any) {
     this.selectedRiskSection = event;
     log.info("Patched section", this.selectedRiskSection)
+    log.info("Premium sections", this.allPremiumRates)
+    const selectedPremium = this.allPremiumRates.filter(prem => prem.sectionCode == this.selectedRiskSection.sectionCode)
+    log.info("Filtered SELECTED PREMIUM", selectedPremium)
+    const applicablePremiumRates = selectedPremium.flatMap(item =>
+      (item.applicableRates ?? []).map(rateObj => ({
+        label: rateObj.rate.toString(),
+        value: rateObj.rate
+      }))
+    );
+
+
+    log.debug("applicable Premium rates:", applicablePremiumRates);
+    this.applicablePremiumRates = applicablePremiumRates
+
     this.sectionDetailsForm.patchValue(this.selectedRiskSection)
   }
 
@@ -3823,6 +3854,8 @@ export class RiskDetailsComponent {
           //     }
           //     return premium;
           //   });
+          this.allPremiumRates = result
+
           const sectionPremiums = result
             // Exclude premiums already in sectionDetails
             .filter(premium =>
@@ -6415,7 +6448,7 @@ export class RiskDetailsComponent {
 
     const payload = this.generatePremiumComputationPayload(this.quotationDetails);
 
-    this.quotationService.computePremium(payload).pipe(
+    this.quotationService.premiumComputationEngine(payload).pipe(
       switchMap((response) => {
         log.debug("Response after computing premium:", response);
 
@@ -6607,7 +6640,7 @@ export class RiskDetailsComponent {
       quotationStatus: "Draft",
 
       products: quotationData.quotationProducts?.map(product => ({
-        code: product.code,
+        code: product.productCode,
         expiryPeriod: "Y",
         description: product.productName,
         withEffectFrom: product.wef,
@@ -6626,7 +6659,7 @@ export class RiskDetailsComponent {
           },
 
           baseCurrencyCode: quotationData.currencyCode,
-          prorata: "S",
+          prorata: "F",
           itemDescription: risk.itemDesc,
           emlBasedOn: null,
           noClaimDiscountLevel: risk.ncdLevel || 0,
@@ -6638,15 +6671,20 @@ export class RiskDetailsComponent {
             minimumPremium: risk.riskLimits?.[0]?.minimumPremium || 0,
             coverTypeShortDescription: risk.coverTypeShortDescription,
             coverTypeDescription: risk.coverTypeDescription,
-
-            // ✅ limitAmount uses risk.value if freeLimit = 0
             limits: risk.riskLimits?.map(limit => {
+              const desc = limit.sectionShortDescription?.toUpperCase() ?? '';
+
+              const isSumInsuredSection =
+                desc.includes('SUM INSURED') || desc.includes('SI');
+
               const limitAmount =
-                (limit?.freeLimit || 0) === 0 ? risk?.value : limit?.limitAmount;
+                (limit?.freeLimit || 0) === 0 && isSumInsuredSection
+                  ? risk?.value
+                  : limit?.limitAmount;
 
               return {
-                description: limit.sectionShortDescription,
-                code: limit.code,
+                description: limit.sectionShortDescription || limit.description,
+                code: limit.sectionCode,
                 riskCode: risk.code,
                 calculationGroup: limit.calcGroup,
                 rowNumber: limit.rowNumber,
@@ -6654,8 +6692,14 @@ export class RiskDetailsComponent {
                 premiumRate: limit.premiumRate,
                 rateType: limit.rateType,
                 sectionType: limit.sectionType,
+                firstLoss: null,
+                firstLossAmountPercent: null,
+                firstLossValue: 0,
                 limitAmount,
                 freeLimit: limit.freeLimit,
+                topLocRate: 1,
+                topLocDivFact: 1,
+                emlPercentage: 0,
                 compute: limit.compute,
                 section: {
                   code: limit.sectionCode,
@@ -6665,40 +6709,57 @@ export class RiskDetailsComponent {
                 },
                 minimumPremium: limit.minimumPremium,
                 multiplierRate: limit.multiplierRate ?? 1,
-                limitPeriod: 0,
                 multiplierDivisionFactor: limit.multiplierDivisionFactor,
+                annualPremium: limit.annualPremium,
+                premiumAmount: limit.premiumAmount,
+                limitPeriod: 0,
+
                 dualBasis: limit.dualBasis,
-                shortDescription: limit.sectionShortDescription
+                shortDescription: limit.sectionShortDescription,
+                indemFstPeriod: limit.indemnityFirstPeriod,
+                indemPeriod: limit.indemnityPeriod,
+                indemFstPeriodPercentage: limit.indemnityFirstPeriodPct,
+                indemRemPeriodPercentage: limit.indemnityRemainingPeriodPct
+
+
               };
             }) || [],
 
-            // ✅ match logic in limitPremium
-            limitPremium: risk.riskLimits?.map(limit => {
-              const limitAmount =
-                (limit?.freeLimit || 0) === 0 ? risk?.value : limit?.limitAmount;
 
-              return {
-                sectCode: limit.sectionCode,
-                premium: limit.premiumAmount || 0,
-                description: limit.sectionShortDescription,
-                limitAmount,
-                isMandatory: null,
-                calculationGroup: limit.calcGroup,
-                compute: limit.compute,
-                dualBasis: limit.dualBasis,
-                rateDivisionFactor: limit.rateDivisionFactor,
-                rateType: limit.rateType,
-                rowNumber: limit.rowNumber,
-                premiumRate: limit.premiumRate,
-                freeLimit: limit.freeLimit,
-                sectionType: limit.sectionType,
-                multiplierRate: limit.multiplierRate ?? 1,
-                shortDescription: limit.sectionShortDescription
-              };
-            }) || []
+            // limitPremium: risk.riskLimits?.map(limit => {
+            //   const desc = limit.sectionShortDescription?.toUpperCase() ?? '';
+
+            //   const isSumInsuredSection =
+            //     desc.includes('SUM INSURED') || desc.includes('SI');
+
+            //   const limitAmount =
+            //     (limit?.freeLimit || 0) === 0 && isSumInsuredSection
+            //       ? risk?.value
+            //       : limit?.limitAmount;
+
+            //   return {
+            //     sectCode: limit.sectionCode,
+            //     premium: limit.premiumAmount || 0,
+            //     description: limit.sectionShortDescription,
+            //     limitAmount,
+            //     isMandatory: null,
+            //     calculationGroup: limit.calcGroup,
+            //     compute: limit.compute,
+            //     dualBasis: limit.dualBasis,
+            //     rateDivisionFactor: limit.rateDivisionFactor,
+            //     rateType: limit.rateType,
+            //     rowNumber: limit.rowNumber,
+            //     premiumRate: limit.premiumRate,
+            //     freeLimit: limit.freeLimit,
+            //     sectionType: limit.sectionType,
+            //     multiplierRate: limit.multiplierRate ?? 1,
+            //     shortDescription: limit.sectionShortDescription
+            //   };
+            // }) || []
+
           }],
 
-          enforceCovertypeMinimumPremium: "Y",
+          enforceCovertypeMinimumPremium: "N",
           commissionRate: risk.commissionRate || 0,
           sumInsured: risk.value,
           useOfProperty: risk.subclass?.description || "",
@@ -6710,7 +6771,7 @@ export class RiskDetailsComponent {
             applicationLevel: null,
             code: tax.code || 0,
             divisionFactor: 1,
-            taxRate: tax.rate || 0,
+            taxRate: tax.rate || 1,
             rangeTo: 0,
             rangeFrom: 0,
             rateDescription: tax.rateDescription || "",

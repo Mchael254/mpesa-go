@@ -95,6 +95,7 @@ export interface riskSection {
   code: number;
   quotationCode: number;
   minimumPremium: number
+  selectedRate?: number
 }
 
 export interface QuotationDetails {

@@ -465,6 +465,13 @@ export class PolicyService {
     return this.api.GET<Observable<any>>(`users/${userId}`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL);
   }
 
+  getProductPolicyCoinsuranceFields(): Observable<ProductPolicyField[]> {
+    return this.api.GET<ProductPolicyField[]>(
+      `api/v1/forms?shortDescription=coinsurance`,
+      API_CONFIG.GIS_SETUPS_BASE_URL
+    );
+  }
+
 
 
 
