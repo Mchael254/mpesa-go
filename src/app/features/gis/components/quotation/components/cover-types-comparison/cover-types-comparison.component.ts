@@ -444,7 +444,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
         log.debug('additional benefits', this.additionalBenefits)
         this.selectedCover.additionalBenefits = applicablePremiumRates
           ?.filter(sec => sec.applicableRates && sec.applicableRates.length > 0)
-          .map(section => {
+          ?.map(section => {
             const matchingSection = limitPremiums.find(limit => limit.sectCode === section.sectionCode);
             log.debug("Matching section", matchingSection)
             section.rateOptions = section.applicableRates.map(r => ({
