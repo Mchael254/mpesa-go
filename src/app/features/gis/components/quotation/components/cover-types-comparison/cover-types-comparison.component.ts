@@ -423,15 +423,15 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
     log.debug("I selected this cover limit premium  >>>", limitPremiums)
     const coverTypeCode = selectedCover.coverTypeCode
     forkJoin(([
-      // this.quotationService.getClauses(this.selectedSubclassCode, coverTypeCode),
+      this.quotationService.getClauses(this.selectedSubclassCode, coverTypeCode),
       this.quotationService.getExcesses(this.selectedSubclassCode),
       this.quotationService.getLimitsOfLiability(this.selectedSubclassCode),
       this.premiumRateService.getCoverTypePremiums(this.selectedSubclassCode, this.selectedBinderCode, coverTypeCode)
     ])).pipe(
       untilDestroyed(this)
     )
-      .subscribe(([excesses, limitOfLiabilities, applicablePremiumRates]) => {
-        // this.clauseList = clauses._embedded ?? []
+      .subscribe(([clauses, excesses, limitOfLiabilities, applicablePremiumRates]) => {
+        this.clauseList = clauses._embedded ?? []
         this.excessesList = excesses ?? []
         this.limitsOfLiabilityList = limitOfLiabilities ?? []
 
