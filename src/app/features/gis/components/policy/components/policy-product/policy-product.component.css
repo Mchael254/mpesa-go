@@ -101,3 +101,49 @@
 .form-control.form-group-sm {
   height: auto;
 }
+
+.card {
+  border: none;
+  border-radius: 5px;
+}
+
+.subheading {
+  font-family: Roboto;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 19.89px;
+  letter-spacing: 0%;
+  color: #00529B;
+}
+
+.method-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; 
+  cursor: pointer;
+
+}
+
+.combined-date-input {
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  border-radius: 4px;
+  height: 35px;
+  padding: 0 5px;
+  background-color: #fff;
+}
+
+
+::ng-deep .combined-date-input .p-calendar {
+    width: 100%;
+}
+
+::ng-deep .combined-date-input .p-calendar .p-inputtext {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 2px 5px;
+    height: 33px; 
+}
+
+
+
+

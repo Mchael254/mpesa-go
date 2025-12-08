@@ -136,6 +136,7 @@ export class TicketsService {
 
     return this.api.GET<Pagination<TicketsDTO>>(`api/v1/tickets?${params}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
+  
   searchAllTickets(
     pageNo: number = 0,
     pageSize: number,
