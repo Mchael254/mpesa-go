@@ -430,6 +430,12 @@ export class RiskDetailsComponent {
   levelNumber: number;
   allPremiumRates: NewPremiums[];
   applicablePremiumRates: { label: string, value: number }[] = []
+
+  agentCode: number;
+  accountCode: number;
+  addedCommissions: any[] = [];
+
+
   constructor(
     public subclassService: SubclassesService,
     private subclassCoverTypesService: SubClassCoverTypesService,
@@ -1854,7 +1860,7 @@ export class RiskDetailsComponent {
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-          this.regexPattern = response._embedded?.riskIdFormat;
+          this.regexPattern = response?._embedded;
           log.debug('New Regex Pattern', this.regexPattern);
 
           this.dynamicRegexPattern = this.regexPattern;
@@ -1869,6 +1875,8 @@ export class RiskDetailsComponent {
             ]);
 
             control.updateValueAndValidity();
+            log.debug("fetch regex risk details after adding patterns:", control.validator)
+
           }
         },
         error: (error) => {
@@ -3178,6 +3186,7 @@ export class RiskDetailsComponent {
       'calcGroup',
       'sectionShortDescription',
       'limitAmount',
+      'premiumAmount',
       'premiumRate',
       'rateType'
     ];
@@ -5959,11 +5968,6 @@ export class RiskDetailsComponent {
   }
 
 
-  //commissions
-  agentCode: number;
-  accountCode: number;
-  addedCommissions: any[] = [];
-
 
   saveCommissionsColumnsToSession(): void {
     if (this.commissionsColumns) {
@@ -6640,7 +6644,7 @@ export class RiskDetailsComponent {
       quotationStatus: "Draft",
 
       products: quotationData.quotationProducts?.map(product => ({
-        code: product.productCode,
+        code: product.code || product.productCode,
         expiryPeriod: "Y",
         description: product.productName,
         withEffectFrom: product.wef,
@@ -8251,8 +8255,8 @@ export class RiskDetailsComponent {
             model => data.vehicle_model.toLowerCase().includes(model.name.toLowerCase())
           );
 
-          this.riskDetailsForm.patchValue({ vehicleModel: uploadedVehicleModel?.code });
-          this.riskDetailsForm.patchValue({ vehicleMake: uploadedVehicleMake?.code });
+          this.riskDetailsForm.patchValue({ vehicleModel: uploadedVehicleModel?.name });
+          this.riskDetailsForm.patchValue({ vehicleMake: uploadedVehicleMake?.name });
 
           this.selectedVehicleModelName = uploadedVehicleModel?.name;
           this.selectedVehicleMakeName = uploadedVehicleMake?.name;
@@ -8278,17 +8282,18 @@ export class RiskDetailsComponent {
       color => data.color.toLowerCase().includes(color.description.toLowerCase())
     );
 
-    let uploadedBodyType = this.bodytypesList.find(
-      bodyType => data.body_type.toLowerCase().includes(bodyType.description.toLowerCase())
-    );
+    // let uploadedBodyType = this.bodytypesList.find(
+    //   bodyType => data.body_type.toLowerCase().includes(bodyType.description.toLowerCase())
+    // );
 
-    if (!uploadedBodyType) {
-      const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
-      uploadedBodyType = this.bodytypesList.find(
-        bodyType => normalize(data.body_type).includes(normalize(bodyType.description))
-      );
-    }
-
+    // if (!uploadedBodyType) {
+    //   const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    //   uploadedBodyType = this.bodytypesList.find(
+    //     bodyType => normalize(data.body_type).includes(normalize(bodyType.description))
+    //   );
+    // }
+    const uploadedBodyType = this.matchUploadedBodyType(data)
+    log.debug("Body type topatch:", uploadedBodyType)
     this.riskDetailsForm.patchValue({
       registrationNumber: data?.reg_number,
       value: data?.vehicle_value,
@@ -8301,6 +8306,111 @@ export class RiskDetailsComponent {
       engineNumber: data?.engine_number
     });
   }
+  matchUploadedBodyType(data: any) {
+    log.debug("body type:", this.bodytypesList)
+    // --- Helper functions ---
+    const normalize = (str: any) =>
+      (str ?? "")
+        .toString()
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+
+    const tokenize = (str: any) =>
+      (str ?? "")
+        .toString()
+        .toLowerCase()
+        .replace(/[^a-z0-9 ]/g, "")
+        .split(/\s+/)
+        .filter(t => t.length > 2);
+
+    const normalizeToken = (token: string) =>
+      token.replace(/[^a-z0-9]/g, "").toLowerCase();
+
+    const tokenOverlapNormalized = (a: string[], b: string[]) => {
+      const aNorm = a.map(normalizeToken);
+      const bNorm = b.map(normalizeToken);
+
+      const matches = aNorm.filter(aT =>
+        bNorm.some(bT => bT.includes(aT) || aT.includes(bT))
+      );
+
+      return matches.length / Math.max(aNorm.length, bNorm.length);
+    };
+
+    // --- Uploaded value ---
+    const uploaded = (data?.body_type ?? "").toString();
+    const normUploaded = normalize(uploaded);
+    const tokensUploaded = tokenize(uploaded);
+
+    log.debug("----- MATCH BODYTYPE START -----");
+    log.debug("Uploaded:", uploaded);
+    log.debug("Normalized:", normUploaded);
+    log.debug("Tokens:", tokensUploaded);
+
+    let found;
+
+    // 1️⃣ Exact includes
+    log.debug("Check 1: Exact includes match...");
+    found = this.bodytypesList.find(bt =>
+      uploaded.toLowerCase().includes((bt?.description ?? "").toLowerCase())
+    );
+    if (found) {
+      log.debug("✔ Matched at Check 1 (Exact includes):", found);
+      return found;
+    }
+
+    // 2️⃣ Normalized includes
+    log.debug("Check 2: Normalized includes match...");
+    found = this.bodytypesList.find(bt =>
+      normUploaded.includes(normalize(bt?.description))
+    );
+    if (found) {
+      log.debug("✔ Matched at Check 2 (Normalized includes):", found);
+      return found;
+    }
+
+    // 3️⃣ Token intersection
+    log.debug("Check 3: Token-based intersection...");
+    found = this.bodytypesList.find(bt => {
+      const btTokens = tokenize(bt?.description);
+      const hasMatch = btTokens.some(token => tokensUploaded.includes(token));
+
+      if (hasMatch) {
+        log.debug(
+          `✔ Token match found`,
+          { bodyType: bt.description, tokens: btTokens }
+        );
+      }
+
+      return hasMatch;
+    });
+    if (found) {
+      log.debug("✔ Matched at Check 3 (Token intersection):", found);
+      return found;
+    }
+
+    // 4️⃣ Fuzzy token-based overlap (robust fallback)
+    log.debug("Check 4: Fuzzy token overlap...");
+    found = this.bodytypesList.find(bt => {
+      const btTokens = tokenize(bt?.description);
+      const score = tokenOverlapNormalized(tokensUploaded, btTokens);
+
+      log.debug(`Token Overlap(${uploaded} → ${bt.description}):`, score);
+      return score >= 0.3;
+    });
+
+    if (found) {
+      log.debug("✔ Matched at Check 4 (Fuzzy token overlap):", found);
+    } else {
+      log.debug("❌ No match found after all 4 checks");
+    }
+
+    log.debug("----- MATCH BODYTYPE END -----");
+
+    return found || null;
+  }
+
+
   addRiskDocuments(selectedFile: any) {
     log.debug("Selected risk", this.quotationDetails)
     log.debug("Selected file", this.selectedFile)
