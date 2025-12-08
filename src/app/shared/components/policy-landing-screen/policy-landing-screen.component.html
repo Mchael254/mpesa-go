@@ -208,7 +208,7 @@
           <div class="d-flex justify-content-end align-items-center gap-2 mb-2"
             *ngIf="policiesLoaded && policies?.length > 0">
             <div class="mb-0">
-              <button class="btn btn-primary btn-sm">{{'gis.policy.new_policy' | translate}}</button>
+              <button class="btn btn-primary btn-sm" (click)="goToNewPolicy()">{{'gis.policy.new_policy' | translate}}</button>
             </div>
             <button #policyColumnIcon type="button" class="btn btn-outline-secondary btn-sm"
               (click)="togglePolicyColumns(policyColumnIcon)" aria-label="Select columns" title="Select Columns">
