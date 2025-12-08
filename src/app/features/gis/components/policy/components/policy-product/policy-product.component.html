@@ -139,9 +139,47 @@
                                     {{ field.label || field.name }}
                                 </label>
 
+                                <!-- coveragePeriod -->
+                                <ng-container *ngIf="field.name === 'coveragePeriod'">
+                                    <div class="combined-date-input d-flex align-items-center">
+                                        <div class="flex-grow-1 position-relative">
+                                            <p-calendar formControlName="coverFrom" [dateFormat]="primeNgDateFormat"
+                                                inputStyleClass="border-0 w-100 bg-transparent shadow-none"
+                                                [showButtonBar]="true" [dataType]="'string'" [showIcon]="true"
+                                                styleClass="w-100" placeholder="From" (onSelect)="updateCoverFrom()">
+                                            </p-calendar>
+                                        </div>
+                                        <span class="mx-2 text-muted">-</span>
+                                        <div class="flex-grow-1 position-relative">
+                                            <p-calendar formControlName="coverTo" [dateFormat]="primeNgDateFormat"
+                                                inputStyleClass="border-0 w-100 bg-transparent shadow-none"
+                                                [showButtonBar]="true" [dataType]="'string'" [showIcon]="true"
+                                                styleClass="w-100" placeholder="To"
+                                                [disabled]="!policyDetailsForm.get('coverFrom')?.value"
+                                                [minDate]="minDate" (onSelect)="calculateCoverDays()">
+                                            </p-calendar>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                                <!-- coverDays -->
+                                <ng-container *ngIf="field.name === 'coverDays'">
+                                    <input type="number" class="form-control" [formControlName]="field.name" readonly/>
+                                </ng-container>
+
+                                <!-- Currency Select -->
+                                <ng-container
+                                    *ngIf="field.name === 'currency' && policyDetailsForm.contains(field.name)">
+                                    <p-dropdown [formControlName]="field.name" [options]="fieldOptions['currency']"
+                                        optionLabel="label" optionValue="value" [filter]="true" filterBy="label"
+                                        [showClear]="true" placeholder="Select Currency"
+                                        (onChange)="onFieldChange(field.name, $event)">
+                                    </p-dropdown>
+                                </ng-container>
+
                                 <!-- Text Input -->
                                 <ng-container
-                                    *ngIf="field.type === 'text' && !radioFields.includes(field.name) && policyDetailsForm.contains(field.name)">
+                                    *ngIf="field.type === 'text' && !radioFields.includes(field.name) && field.name !== 'coveragePeriod' && field.name !== 'currency' && policyDetailsForm.contains(field.name)">
                                     <input type="text" class="form-control" [formControlName]="field.name" />
                                 </ng-container>
 
@@ -166,13 +204,16 @@
                                 </ng-container>
 
                                 <!-- Number Input - Standard -->
-                                <ng-container *ngIf="field.type === 'number' && !['currencyFixedRate', 'currencyRate', 'exchangeRate'].includes(field.name) && policyDetailsForm.contains(field.name)">
+                                <ng-container
+                                    *ngIf="field.type === 'number' && !['currencyFixedRate', 'currencyRate', 'exchangeRate', 'coverDays', 'currency'].includes(field.name) && policyDetailsForm.contains(field.name)">
                                     <input type="number" class="form-control" [formControlName]="field.name" />
                                 </ng-container>
 
                                 <!-- Number Input - Currency Fields with currencyMask -->
-                                <ng-container *ngIf="field.type === 'number' && ['currencyFixedRate', 'currencyRate', 'exchangeRate'].includes(field.name) && policyDetailsForm.contains(field.name)">
-                                    <input type="text" class="form-control" currencyMask [options]="currencyObj" [formControlName]="field.name" />
+                                <ng-container
+                                    *ngIf="field.type === 'number' && ['currencyFixedRate', 'currencyRate', 'exchangeRate'].includes(field.name) && policyDetailsForm.contains(field.name)">
+                                    <input type="text" class="form-control" currencyMask [options]="currencyObj"
+                                        [formControlName]="field.name" />
                                 </ng-container>
 
                                 <!-- Select/Dropdown -->
@@ -185,7 +226,8 @@
                                 </ng-container>
 
                                 <!-- Date Input -->
-                                <ng-container *ngIf="field.type === 'date' && policyDetailsForm.contains(field.name)">
+                                <ng-container
+                                    *ngIf="field.type === 'date' && field.name !== 'coveragePeriod' && policyDetailsForm.contains(field.name)">
                                     <p-calendar [formControlName]="field.name" [dateFormat]="primeNgDateFormat"
                                         inputStyleClass="form-control form-control-sm" [showButtonBar]="true"
                                         [dataType]="'string'" [showIcon]="true" styleClass="w-100">

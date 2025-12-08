@@ -52,8 +52,15 @@ export class ViewTicketsComponent implements OnInit {
   private allSpringTickets: TicketsDTO[] = [];
   private modals: { [key: string]: bootstrap.Modal } = {};
 
-  pageSize: 100;
+  pageSize: number = 50;
   ticketModules: TicketModuleDTO[] = [];
+
+  // Pagination properties
+  totalRecords: number = 0;
+  totalPages: number = 0;
+  currentPage: number = 0;
+  rowsPerPageOptions: number[] = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500];
+  first: number = 0;
 
   showReassignTicketsModal: boolean;
 
@@ -178,8 +185,24 @@ export class ViewTicketsComponent implements OnInit {
       this.ticketsService
         .getAllTickets(0, ticketFilter?.totalTickets, this.dateFrom || null, this.dateToday || null, '', '', 'name', ticketFilter?.activityName)
         .subscribe({
-          next: (data) => {
-            this.springTickets = data;
+          next: (data: any) => {
+            // Handle response structure where content is in 'results'
+            const content = data.results || data.content || [];
+            const totalElements = data.totalElements || (data.totalPages * data.size) || 0;
+
+            this.springTickets = {
+              ...data,
+              content: content,
+              totalElements: totalElements
+            };
+
+            // Store pagination metadata from response
+            this.totalRecords = totalElements;
+            this.totalPages = data.totalPages || 0;
+            this.currentPage = data.number || 0;
+            this.pageSize = data.size || this.pageSize;
+            this.first = this.currentPage * this.pageSize;
+
             this.spinner.hide();
             log.info("ticket subsc", this.ticketsService.ticketFilterObject());
             this.ticketsService.ticketFilterObject = signal({});
@@ -324,6 +347,7 @@ export class ViewTicketsComponent implements OnInit {
 
 
   }
+  
   getAllTickets(
     pageIndex: number,
     pageSize: number,
@@ -361,7 +385,9 @@ export class ViewTicketsComponent implements OnInit {
     const pageIndex = event.first / event.rows;
     const queryColumn = event.sortField;
     const sort = event.sortOrder === 1 ? 'asc' : 'desc';
-    const pageSize = 100;
+    const pageSize = event.rows;
+    this.pageSize = pageSize;
+    this.first = event.first;
     const sortField = 'createdDate'
     log.info('Sort field:', queryColumn);
 
@@ -383,29 +409,28 @@ export class ViewTicketsComponent implements OnInit {
     )
       .pipe(untilDestroyed(this))
       .subscribe(
-        (data: any[]) => {
+        (data: any) => {
 
-          // Wrap data into a Pagination<TicketsDTO> object
-          // this.springTickets = {
-          //   content: data,
-          //   totalElements: data.length,
-          //   totalPages: 1,
-          //   size: data.length,
-          //   number: pageIndex,
-          //   first: true,
-          //   last: true,
-          //   numberOfElements: data.length,
-          // };
+          // Handle response structure where content is in 'results'
+          const content = data.results || data.content || [];
+          const totalElements = data.totalElements || (data.totalPages * data.size) || 0;
+
           this.springTickets = {
-            content: data.slice(event.first, event.first + event.rows), // only show current page
-            totalElements: data.length, // total count of all tickets (if you fetched them all once)
-            totalPages: Math.ceil(data.length / 10),
-            size: event.rows,
-            number: event.first / event.rows,
-            first: event.first === 0,
-            last: event.first + event.rows >= data.length,
-            numberOfElements: data.length,
+            content: content,
+            totalElements: totalElements,
+            totalPages: data.totalPages || 0,
+            size: data.size || pageSize,
+            number: data.number || pageIndex,
+            first: data.first || (pageIndex === 0),
+            last: data.last || false,
+            numberOfElements: data.numberOfElements || content.length,
           };
+
+          // Update pagination properties
+          this.totalRecords = this.springTickets.totalElements;
+          this.totalPages = this.springTickets.totalPages;
+          this.currentPage = this.springTickets.number;
+
           log.debug('spring tickets:', this.springTickets)
 
           // Notify Angular of data changes
