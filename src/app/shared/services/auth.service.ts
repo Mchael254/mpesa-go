@@ -9,7 +9,7 @@ import {WebAdmin} from '../data/web-admin';
 import {JwtService} from './jwt/jwt.service';
 import {AppConfigService} from '../../core/config/app-config-service';
 import {Router} from '@angular/router';
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Message} from 'primeng/api';
 import {UserCredential, AuthenticationResponse} from 'src/app/features/base/util';
 // import "./http/http.service";
@@ -27,6 +27,7 @@ import {Profile} from '../data/auth/profile';
 import {SESSION_KEY} from "../../features/lms/util/session_storage_enum";
 import {OrganizationService} from "../../features/crm/services/organization.service";
 import {OrganizationDTO} from "../../features/crm/data/organization-dto";
+import {API_CONFIG} from "../../../environments/api_service_config";
 
 
 const log = new Logger('AuthService');
@@ -101,23 +102,13 @@ export class AuthService implements OnDestroy {
     // if JWT detected, attempt to get & store user's info
     if (this.jwtService.getToken()) {
       const token = this.jwtService.getToken();
-      const headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: `Bearer ${token}`,
+      this.api.GET<Profile>(
+        `users/entity-profile`,
+        API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
+      ).subscribe({
+        next: (data: Profile) => this.setAuth(data),
+        error: (err) => this.purgeAuth(),
       });
-
-      const baseUrl = this.appConfigService.config.contextPath.users_services;
-      this.http
-        .get<Profile>(
-          `/${baseUrl}/administration/users/entity-profile`,
-          {headers: headers},
-        )
-        .subscribe(
-          (data: Profile) =>
-            this.setAuth(data),
-          (err) => this.purgeAuth(),
-        );
     } else {
       // remove any potential remnants of previous auth states
       this.purgeAuth();
@@ -142,22 +133,22 @@ export class AuthService implements OnDestroy {
     if (this.jwtService.getToken()) {
       const token = this.jwtService.getToken();
       const refreshToken = this.jwtService.getRefreshToken();
-      const headers = new HttpHeaders({
+      /*const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: `Bearer ${token}`,
         'refresh_token': refreshToken
-      });
+      });*/
 
       // destroy user logged in
-      this.destroyUser();
+      // this.destroyUser();
       const baseUrl = this.appConfigService.config.contextPath.auth_services;
-      this.http
+      /*this.http
         .get(`/${baseUrl}/revoke-token`, {headers: headers})
         .subscribe(
           (_) => {
             this.jwtService.destroyRefreshToken();
-            // localStorage.clear(); /** TODO: Find better way to handle local/session storage*/
+            // localStorage.clear(); /!** TODO: Find better way to handle local/session storage*!/
             if (expiredSession) {
               this.sessionExpiredSubject.next(true);
               this.router.navigate(['/auth'],
@@ -178,7 +169,35 @@ export class AuthService implements OnDestroy {
 
           },
           (error) => this.destroyUser(),
-        );
+        );*/
+      this.api.GET<any>(
+        `revoke-token`,
+        API_CONFIG.GATEWAY_SERVICE
+      ).subscribe({
+        next: (_) => {
+          this.jwtService.destroyRefreshToken();
+          // localStorage.clear(); /** TODO: Find better way to handle local/session storage*/
+          if (expiredSession) {
+            this.sessionExpiredSubject.next(true);
+            this.router.navigate(['/auth'],
+              //   { queryParams: { 'userType': this.browserStorage.getObj('activeUser') } }).then(r => {
+              // }
+            );
+            // location.reload();
+          }
+          // else {
+          //   this.router
+          //     .navigateByUrl('/')
+          //     .then((onfulfilled) => {
+          //       log.info(`Redirecting to home.`);
+          //       location.reload();
+          //     })
+          //     .catch((error) => log.error(error));
+          // }
+
+        },
+        error: (error) => this.destroyUser(),
+      });
     } else {
       // destroy user logged in
       this.destroyUser();
@@ -190,12 +209,6 @@ export class AuthService implements OnDestroy {
    */
   attemptRefreshToken() {
     this.isLoadingUserSubject.next(true);
-    let headers: HttpHeaders;
-    headers = new HttpHeaders({
-      Accept: 'application/json',
-      entityType: this.session_storage.get(SESSION_KEY.ENTITY_TYPE),
-      'X-TenantId': this.session_storage.get(SESSION_KEY.API_TENANT_ID)
-    });
 
     let refresh_token: string = this.jwtService.getRefreshToken();
     // formData.append('grant_type', 'refresh_token');
@@ -204,7 +217,7 @@ export class AuthService implements OnDestroy {
 
     // destroy user logged in
     this.destroyUser();
-    this.refreshAuthToken(refresh_token, headers);
+    this.refreshAuthToken(refresh_token);
   }
 
   /**
@@ -261,7 +274,7 @@ export class AuthService implements OnDestroy {
       'X-TenantId': this.session_storage.get(SESSION_KEY.API_TENANT_ID)
     });
 
-    this.getAuthVerification(credentials, headers, (data) => {
+    this.getAuthVerification(credentials, (data) => {
       log.info(`User Authentication data: ${data}`);
       if (AuthenticationResponse) {
         AuthenticationResponse(data);
@@ -292,18 +305,12 @@ export class AuthService implements OnDestroy {
     userCredential: UserCredential,
     AuthenticationResponse?: (data) => void,
   ) {
-    const baseUrl = this.appConfigService.config.contextPath.auth_services;
-    let headers: HttpHeaders;
-    headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
 
-    this.http.post(`/${baseUrl}/fetch-user-tenants`, JSON.stringify(userCredential), {
-      headers: headers,
-      withCredentials: true
-    })
-      .pipe(take(1))
+    this.api.POST<any>(
+      `fetch-user-tenants`,
+      JSON.stringify(userCredential),
+      API_CONFIG.GATEWAY_SERVICE
+    ).pipe(take(1))
       .subscribe({
         next: (data: AuthenticationResponse) => {
           return AuthenticationResponse(data);
@@ -311,7 +318,7 @@ export class AuthService implements OnDestroy {
         error: (err) => {
           log.info(`error >>>`, err)
         }
-      })
+      });
 
   }
 
@@ -323,15 +330,11 @@ export class AuthService implements OnDestroy {
    * @return {Observable<boolean>} The response
    */
   sentVerificationOtp(username: string, channel: string): Observable<boolean> {
-    const headers = new HttpHeaders({
-      Accept: 'application/json',
-      'Content-Type': 'application/json;charset=utf8',
-    });
-    const baseUrl = this.appConfigService.config.contextPath.auth_services;
-    return this.http
-      .post<boolean>(`/${baseUrl}/generate-otp?username=${username}&channel=${channel}`, {
-        headers: headers,
-      });
+    return this.api.POST<boolean>(
+      `generate-otp?username=${username}&channel=${channel}`,
+      null,
+      API_CONFIG.GATEWAY_SERVICE
+    );
   }
 
   /**
@@ -341,17 +344,16 @@ export class AuthService implements OnDestroy {
    * @return {Observable<AccountVerifiedResponse>} The response
    */
   verifyAccount(username: string, phoneNo: string): Observable<AccountVerifiedResponse> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
-    const baseUrl = this.appConfigService.config.contextPath.auth_services;
-
     const body = {
       email: username,
       phoneNo: phoneNo
     }
-    return this.http.post<AccountVerifiedResponse>(`/${(baseUrl)}/verify-account`, JSON.stringify(body), {headers: headers})
+
+    return this.api.POST<AccountVerifiedResponse>(
+      `verify-account`,
+      JSON.stringify(body),
+      API_CONFIG.GATEWAY_SERVICE
+    )
   }
 
   /**
@@ -362,30 +364,17 @@ export class AuthService implements OnDestroy {
    * @return {Observable<boolean>} The response
    */
   verifyResetOtp(username: string, otp: number, email: string = null): Observable<boolean> {
-    let url: string = '';
-    const headers = new HttpHeaders({
-      Accept: 'application/json',
-      'Content-Type': 'application/json;charset=utf8',
-    });
-    const baseUrl = this.appConfigService.config.contextPath.auth_services;
+   const params = new HttpParams()
+      .set('username', `${username}`)
+      .set('otp', `${otp}`)
+      .set('email', `${email}`);
 
-    // const params = new HttpParams()
-    //   .set('username', `${username}`)
-    //   .set('otp', `${otp}`)
-    //   .set('email', `${email}`);
-    //
-    // let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
-
-    if (username)
-      url = `/${baseUrl}/verify-reset-otp?username=${username}&otp=${otp}`;
-
-    if (email)
-      url = `/${baseUrl}/verify-reset-otp?email=${email}&otp=${otp}`;
-
-    return this.http
-      .post<boolean>(url, {
-        headers: headers,
-      });
+    return this.api.POST<boolean>(
+      `verify-reset-otp`,
+      null,
+      API_CONFIG.GATEWAY_SERVICE,
+      params
+    );
   }
 
   // verifyOtp(username: string, otp: number ): Observable<string>{
@@ -464,38 +453,41 @@ export class AuthService implements OnDestroy {
     headers: HttpHeaders,
     errorCallback?: (errMsg: string) => void,
   ) {
-    const baseUrl = this.appConfigService.config.contextPath.auth_services;
-    const userBaseUrl = this.appConfigService.config.contextPath.users_services;
-
-    this.http.post<OauthToken>(`/${baseUrl}/login`, userCredential, {
-      headers,
-      withCredentials: true,
-    })
-      .pipe(
-        concatMap((token: OauthToken) => {
-          this.jwtService.saveToken(token);
-          return this.http.get<Profile>(`/${userBaseUrl}/administration/users/entity-profile`, {headers});
-        }),
-        concatMap((profile: Profile) => {
-          this.setAuth(profile);
-          this.session_storage.set('memberProfile', profile);
-          const entityCode = profile.code;
-          const entityIdNo = profile.idNo;
-          const entityType = headers.get('entityType');
-          return this.http.get<any>(`/${userBaseUrl}/administration/users/${entityCode}`).pipe(
-            concatMap((userDetails) => {
-              log.info('User details:', userDetails);
-              const organizationId = userDetails.organizationId;
-              return this.organizationService.getOrganizationByID(organizationId).pipe(
-                tap((orgDetails: OrganizationDTO) => {
-                  this.session_storage.setItem("organizationDetails", orgDetails)
-                  this.gotToDashboard(entityType, entityCode, entityIdNo);
-                })
-              )
-            })
-          );
-        })
-      )
+    this.api.POST<OauthToken>(
+      `login`,
+      userCredential,
+      API_CONFIG.GATEWAY_SERVICE
+    ).pipe(
+      concatMap((token: OauthToken) => {
+        this.jwtService.saveToken(token);
+        return this.api.GET<Profile>(
+          `users/entity-profile`,
+          API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
+        );
+      }),
+      concatMap((profile: Profile) => {
+        this.setAuth(profile);
+        this.session_storage.set('memberProfile', profile);
+        const entityCode = profile.code;
+        const entityIdNo = profile.idNo;
+        const entityType = headers.get('entityType');
+        return this.api.GET<any>(
+          `users/${entityCode}`,
+          API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
+        ).pipe(
+          concatMap((userDetails) => {
+            log.info('User details:', userDetails);
+            const organizationId = userDetails.organizationId;
+            return this.organizationService.getOrganizationByID(organizationId).pipe(
+              tap((orgDetails: OrganizationDTO) => {
+                this.session_storage.setItem("organizationDetails", orgDetails)
+                this.gotToDashboard(entityType, entityCode, entityIdNo);
+              })
+            )
+          })
+        );
+      })
+    )
       .subscribe({
         next: () => {
         },
@@ -536,23 +528,20 @@ export class AuthService implements OnDestroy {
    */
   private getAuthVerification(
     userCredential: UserCredential,
-    headers: HttpHeaders,
     AuthenticationResponse?: (data) => void,
     errorCallback?: (errMsg) => void,
   ) {
-    const baseUrl = this.appConfigService.config.contextPath.auth_services;
-    this.http.post(`/${baseUrl}/authenticate-user`, JSON.stringify(userCredential),
-      {
-        headers: headers,
-        withCredentials: true,
-      })
-      .pipe(untilDestroyed(this))
-      .subscribe(
-        (data: AuthenticationResponse) => {
+    this.api.POST<any>(
+      `authenticate-user`,
+      JSON.stringify(userCredential),
+      API_CONFIG.GATEWAY_SERVICE
+    ).pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data: AuthenticationResponse) => {
           log.debug('Response Data->:', data)
           return AuthenticationResponse(data);
         },
-        (error) => {
+        error: (error) => {
           if (errorCallback && error instanceof HttpErrorResponse) {
             errorCallback(
               error.error['error_description'] || error.error['message'],
@@ -561,7 +550,7 @@ export class AuthService implements OnDestroy {
             errorCallback(error);
           }
         },
-      );
+      });
   }
 
   /**
@@ -616,11 +605,6 @@ export class AuthService implements OnDestroy {
    * @return {Observable<boolean>} The response
    */
   resetPassword(username: string, newPassword: string, validateOldPassword: string, email: string = null) {
-    const baseUrl = this.appConfigService.config.contextPath.auth_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
     const body = {
       username: username,
       email: email,
@@ -628,7 +612,11 @@ export class AuthService implements OnDestroy {
       newPassword: newPassword,
       validateOldPassword: validateOldPassword
     }
-    return this.http.post<boolean>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers: headers});
+    return this.api.POST<any>(
+      `new-password`,
+      JSON.stringify(body),
+      API_CONFIG.GATEWAY_SERVICE
+    );
   }
 
   /**
@@ -639,18 +627,17 @@ export class AuthService implements OnDestroy {
    * @param confirmPassword
    */
   changePassword(username: string, validateOldPassword: string, newPassword: string, confirmPassword: string) {
-    const baseUrl = this.appConfigService.config.contextPath.auth_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
     const body = {
       newPassword: newPassword,
       password: confirmPassword,
       username: username,
       validateOldPassword: validateOldPassword
     }
-    return this.http.post<string>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers: headers});
+    return this.api.POST<any>(
+      `new-password`,
+      JSON.stringify(body),
+      API_CONFIG.GATEWAY_SERVICE
+    );
   }
 
   /**
@@ -659,12 +646,11 @@ export class AuthService implements OnDestroy {
    * @return {Observable<string>} The response
    */
   updateUserProfile(userData: UserDetailsDTO) {
-    const baseUrl = this.appConfigService.config.contextPath.users_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
-    return this.http.post<string>(`/${(baseUrl)}/administration/users/entity-profile`, JSON.stringify(userData), {headers: headers});
+    return this.api.POST<any>(
+      `users/entity-profile`,
+      JSON.stringify(userData),
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
+    );
   }
 
   /**
@@ -676,49 +662,47 @@ export class AuthService implements OnDestroy {
    */
   private refreshAuthToken(
     refresh_token: string,
-    headers: HttpHeaders,
     errorCallback?: (errMsg) => void,
   ) {
-    const baseUrl = this.appConfigService.config.contextPath.auth_services;
-    const userBaseUrl = this.appConfigService.config.contextPath.users_services;
     const refreshToken = {
       "refresh_token": refresh_token
     };
 
-    this.http
-      .post(`/${baseUrl}/refresh`, refreshToken, {
-        headers: headers,
-        withCredentials: true,
-      })
-      .pipe(
-        concatMap((data: OauthToken) => {
-          // save the token
-          this.jwtService.saveToken(data);
-          return this.http.get<Profile>(`/${userBaseUrl}/administration/users/entity-profile`, {headers});
-        }),
-      )
-      .subscribe(
-        (data: Profile) => {
-          this.setAuth(data);
+    this.api.POST<any>(
+      `refresh`,
+      JSON.stringify(refreshToken),
+      API_CONFIG.GATEWAY_SERVICE
+    ).pipe(
+      concatMap((data: OauthToken) => {
+        // save the token
+        this.jwtService.saveToken(data);
+        return this.api.GET<Profile>(
+          `users/entity-profile`,
+          API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
+        );
+      }),
+    ).subscribe({
+      next: (data: Profile) => {
+        this.setAuth(data);
 
-          this.router
-            .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
-            .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
-            .catch((error) => log.error(error));
-        },
-        (error) => {
-          this.destroyUser();
-          log.debug('Login error response:', error)
+        this.router
+          .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
+          .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
+          .catch((error) => log.error(error));
+      },
+      error: (error) => {
+        this.destroyUser();
+        log.debug('Login error response:', error)
 
-          if (errorCallback && error instanceof HttpErrorResponse) {
-            errorCallback(
-              error.error['error_description'] || error.error['message'],
-            );
-          } else {
-            errorCallback(error);
-          }
-        },
-      );
+        if (errorCallback && error instanceof HttpErrorResponse) {
+          errorCallback(
+            error.error['error_description'] || error.error['message'],
+          );
+        } else {
+          errorCallback(error);
+        }
+      },
+    });
   }
 
 
