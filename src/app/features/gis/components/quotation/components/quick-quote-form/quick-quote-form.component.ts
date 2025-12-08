@@ -1378,7 +1378,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         const prevLimits = existing.riskLevelPremiums
           .flatMap(r => r.coverTypeDetails)
           .flatMap(ct => ct.limitPremium || [])
-          .map(lp => ({
+          ?.map(lp => ({
             sectCode: lp.sectCode,
             limitAmount: lp.limitAmount
           }));
@@ -1386,7 +1386,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         const currentLimits = (p.risks || [])
           .flatMap(r => r.subclassCoverTypeDto || [])
           .flatMap(ct => ct.limits || [])
-          .map(l => ({
+          ?.map(l => ({
             sectCode: l.section?.code,
             limitAmount: l.limitAmount
           }));
@@ -1396,7 +1396,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           return !prev || prev.limitAmount !== curr.limitAmount;
         });
 
-        const prevRiskCodes = existing.riskLevelPremiums.map(r => r.code);
+        const prevRiskCodes = existing?.riskLevelPremiums?.map(r => r.code);
         const newRisks = (p.risks || []).filter(
           r => !prevRiskCodes.includes(r.riskCode)
         );
@@ -1593,7 +1593,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         subclassSection: {
           code: risk?.useOfProperty?.code
         },
-        taxes: risk.applicableTaxes.map((tax) => ({
+        taxes: risk?.applicableTaxes?.map((tax) => ({
           taxRate: tax.taxRate,
           code: tax.code,
           taxCode: tax.taxCode,
@@ -1602,7 +1602,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           taxRateType: tax.taxRateType,
           rateDescription: tax.description,
           transactionCode: tax.trntCode
-        })),
+        })) || [],
         itemDescription: risk.description,
         noClaimDiscountLevel: 0,
         enforceCovertypeMinimumPremium: "N",
