@@ -45,6 +45,7 @@ export interface FormGroupsDto {
   groupId: string;
   originalLabel: string;
   label: MultilingualText,
+  addButtonTextLabel?: MultilingualText,
   order: number;
   screenCode: number;
   subModuleCode: number;

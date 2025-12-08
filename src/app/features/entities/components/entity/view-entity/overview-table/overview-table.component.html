@@ -1,20 +1,20 @@
 
-
 <div class="row my-3">
   <div class="col-sm-8" >
     <span
       class="text-primary fw-bold"
       *ngIf="shouldShowTableLabel"
     >
-      {{ subGroup.label[language] | titlecase }}
+      {{ subGroup?.label[language] | titlecase }}
     </span>
   </div>
   <div class="col-sm-4 text-end">
     <button
       class="btn btn-primary btn-sm"
       (click)="onEditButtonClick({})"
+      *ngIf="addButtonText"
     >
-      {{ subGroup.addButtonTextLabel[language] | titlecase }}
+      {{ (group ? addButtonText[language] : subGroup?.addButtonTextLabel[language]) | titlecase }}
     </button>
     <span class="p-1 mx-2 caret border" (click)="columnDialogVisible = true">
       <i class="fa fa-caret-down text-primary"></i>
@@ -22,7 +22,12 @@
   </div>
 </div>
 
-<p-dialog [header]="subGroup.label[language]" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '330px'}">
+<p-dialog
+  [header]="group ? group?.label[language] : subGroup?.label[language]"
+  [(visible)]="columnDialogVisible"
+  [modal]="true"
+  [style]="{width: '330px'}"
+>
   <div *ngFor="let col of table?.cols">
     <div class="form-check">
       <input class="form-check-input" type="checkbox" value="" id="checkChecked" [checked]="col.visible" [(ngModel)]="col.visible">

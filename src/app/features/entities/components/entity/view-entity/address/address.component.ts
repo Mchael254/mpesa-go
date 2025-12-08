@@ -19,6 +19,7 @@ import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-in
 import {EntityUtilService} from "../../../../services/entity-util.service";
 import {PartyAccountsDetails} from "../../../../data/accountDTO";
 import {AccountReqPartyId} from "../../../../data/entityDto";
+import {IntermediaryService} from "../../../../services/intermediary/intermediary.service";
 
 const log = new Logger('AddressComponent');
 
@@ -34,11 +35,11 @@ export class AddressComponent implements OnInit {
 
   @Input() partyAccountDetails: PartyAccountsDetails;
   @Input() entityAccountIdDetails: AccountReqPartyId[];
-
   @Input() clientDetails: ClientDTO;
   @Input() entityDetails: any;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
+
   addressDetails: AddressModel;
   branchDetails: Branch[];
   selectedBranch: Branch;
@@ -82,6 +83,7 @@ export class AddressComponent implements OnInit {
     private globalMessagingService: GlobalMessagingService,
     private clientService: ClientService,
     private entityUtilService: EntityUtilService,
+    private intermediaryService: IntermediaryService,
   ) {
     this.utilService.currentLanguage.subscribe(lang => this.language = lang);
   }
@@ -157,13 +159,12 @@ export class AddressComponent implements OnInit {
 
 
   setAgentAddressDetails() {
-    log.info('entity details >>> ', this.entityDetails);
     return {
       overview_country: this.addressDetails.countryName,
       overview_county: this.addressDetails.stateName,
       overview_city: this.addressDetails.townName,
       overview_physical_address: this.addressDetails.physicalAddress,
-      overview_postal_address: '[   ]',
+      overview_postal_address: this.addressDetails.residentialAddress,
       overview_postal_code: this.addressDetails.postalCode,
     };
   }
@@ -297,9 +298,9 @@ export class AddressComponent implements OnInit {
       let stateId: number;
 
       if (this.saveAction === SaveAction.SAVE_BRANCH || SaveAction.EDIT_BRANCH) {
-        stateId = this.selectedBranch.stateId;
+        stateId = this.selectedBranch?.stateId;
       } else if (this.saveAction === SaveAction.EDIT_ADDRESS_DETAILS) {
-        stateId = this.clientDetails.address.stateId;
+        stateId = this.entityDetails?.address.stateId;
       }
       log.info('stateId ', stateId);
       this.fetchTowns(stateId);
@@ -400,7 +401,7 @@ export class AddressComponent implements OnInit {
     let patchDropdowns = {};
     if (this.saveAction === SaveAction.EDIT_ADDRESS_DETAILS) {
       const address: AddressModel = this.entityDetails.address;
-      log.info('address details >>> ', address)
+
       patchDropdowns = {
         overview_country: this.entityDetails.address.countryId,
         overview_head_office_country: address.countryId,
@@ -449,7 +450,25 @@ export class AddressComponent implements OnInit {
 
   editAddressDetails(): void {
     const formValues = this.editForm.getRawValue();
+    log.info('form values ', formValues);
 
+    this.partyTypeShtDesc = (this.entityAccountIdDetails[0]?.partyType?.partyTypeShtDesc).toUpperCase();
+
+    switch (this.partyTypeShtDesc) {
+      case 'C':
+        this.editClientAddressDetails(formValues);
+        break;
+      case 'A':
+        this.editAgentAddressDetails(formValues);
+        break;
+      default:
+      //
+    }
+
+    this.closeButton.nativeElement.click();
+  }
+
+  editClientAddressDetails(formValues): void {
     const address = {
       ...this.addressDetails,
       countryId: /*formValues.overview_country || */formValues.overview_head_office_country,
@@ -457,11 +476,9 @@ export class AddressComponent implements OnInit {
       townId: formValues.overview_head_office_city,
       physicalAddress: formValues.overview_head_office_physical_address,
       residentialAddress: formValues.overview_postal_address,
-      // postalAddress: formValues.residentialAddress || formValues.postalAddress,
       postalCode: formValues.overview_head_office_postal_code,
-      // townId: formValues.town,
-      road: formValues.road,
-      houseNumber: formValues.houseNumber,
+      road: formValues.overview_road,
+      houseNumber: formValues.overview_house_name_no,
     }
 
     const client = {
@@ -472,16 +489,55 @@ export class AddressComponent implements OnInit {
     };
 
     this.updateClientSection(this.clientDetails.clientCode, client);
-
-    this.closeButton.nativeElement.click();
   }
 
-  updateClientSection(clientCode, client): void {
+  editAgentAddressDetails(formValues): void {
+    const address = {
+      ...this.addressDetails,
+      countryName:formValues.overview_country,
+      countryId:formValues.overview_country,
+      stateName: formValues.overview_county,
+      stateId: formValues.overview_county,
+      townId: formValues.overview_city,
+      physicalAddress: formValues.overview_physical_address,
+      residentialAddress: formValues.overview_postal_address,
+      postalCode: formValues.overview_postal_code,
+    }
+
+    const accountCode = this.partyAccountDetails.accountCode;
+    const agentPayload = {
+      accountCode: this.partyAccountDetails.accountCode,
+      partyAccountCode: this.entityDetails.partyAccountCode,
+      partyId: this.entityDetails.partyId,
+      address,
+    };
+
+    this.updateAgentSection(accountCode, agentPayload);
+  }
+
+  updateClientSection(clientCode: number, client): void {
     this.clientService.updateClientSection(clientCode, client).subscribe({
       next: data => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
-        this.clientDetails = data;
+        this.globalMessagingService.displaySuccessMessage('Success', 'Entity details updated successfully');
+        this.entityDetails = data;
         this.branchDetails = data.branches;
+        this.prepareDataDisplay();
+        this.closeButton.nativeElement.click();
+      },
+      error: err => {
+        const errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.closeButton.nativeElement.click();
+      }
+    });
+  }
+
+
+  updateAgentSection(accountCode: number, agentPayload): void {
+    this.intermediaryService.updateAgentSection(accountCode, agentPayload).subscribe({
+      next: data => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Entity details updated successfully');
+        this.entityDetails = data;
         this.prepareDataDisplay();
         this.closeButton.nativeElement.click();
       },
