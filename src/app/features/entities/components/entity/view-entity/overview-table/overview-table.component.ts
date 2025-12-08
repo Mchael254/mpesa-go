@@ -1,5 +1,9 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
-import {FormSubGroupsDto} from "../../../../../../shared/data/common/dynamic-screens-dto";
+import {
+  FormGroupsDto,
+  FormSubGroupsDto,
+  MultilingualText
+} from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {Logger} from "../../../../../../shared/services";
 
 const log = new Logger('OverViewTableComponent');
@@ -12,7 +16,9 @@ const log = new Logger('OverViewTableComponent');
 export class OverviewTableComponent {
 
   @Input() subGroup: FormSubGroupsDto;
+  @Input() group: FormGroupsDto;
   @Input() table;
+  @Input() buttons: {};
   @Input() language: string;
   @Input() category: string
   @Output() rowClicked = new EventEmitter<any>();
@@ -24,12 +30,14 @@ export class OverviewTableComponent {
 
   visible: boolean = false;
   shouldShowTableLabel: boolean = true;
+  addButtonText: MultilingualText;
 
   constructor(
     private cdr: ChangeDetectorRef,
   ) {
     setTimeout(() => {
-      if (this.category?.toLowerCase() === 'individual') this.shouldShowTableLabel = false
+      if (this.category?.toLowerCase() === 'individual') this.shouldShowTableLabel = false;
+      this.addButtonText = this.buttons['overview_add_contact'].label;
     }, 1000)
   }
 
