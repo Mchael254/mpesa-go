@@ -84,12 +84,16 @@
         </ng-container>
 
         <ng-container *ngIf="
-            clientDetails &&
-            tab.originalLabel==='Contact Details'"
+           (clientDetails || entityDetails) &&
+           entityAccountIdDetails &&
+           tab.originalLabel==='Contact Details'"
         >
           <app-contact
             #contactRef
+            [partyAccountDetails]="partyAccountDetails"
+            [entityAccountIdDetails]="entityAccountIdDetails"
             [clientDetails]="clientDetails"
+            [entityDetails]="entityDetails"
             [group]="tab"
             [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
           ></app-contact>

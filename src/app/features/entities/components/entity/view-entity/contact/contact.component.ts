@@ -17,6 +17,8 @@ import {
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {ClientDTO, ContactDetails, ContactPerson} from "../../../../data/ClientDTO";
 import {EntityUtilService} from "../../../../services/entity-util.service";
+import {PartyAccountsDetails} from "../../../../data/accountDTO";
+import {AccountReqPartyId} from "../../../../data/entityDto";
 
 const log = new Logger('ContactComponent');
 
@@ -30,7 +32,10 @@ export class ContactComponent implements OnInit {
   @ViewChild('editButton') editButton!: ElementRef<HTMLButtonElement>;
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
 
+  @Input() partyAccountDetails: PartyAccountsDetails;
+  @Input() entityAccountIdDetails: AccountReqPartyId[];
   @Input() clientDetails: ClientDTO;
+  @Input() entityDetails: any;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
 
@@ -48,7 +53,6 @@ export class ContactComponent implements OnInit {
   selectedBranch: OrganizationBranchDto;
   contactChannels: AccountsEnum[];
 
-  // protected readonly CountryISO = CountryISO;
   countryISO: CountryISO = 'ng' as CountryISO;
   protected readonly SearchCountryField = SearchCountryField;
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
@@ -66,13 +70,15 @@ export class ContactComponent implements OnInit {
   Save_Action = SaveAction;
   saveAction: SaveAction;
 
+  partyTypeShtDesc: string;
+  buttons: {} = {};
+
   constructor(
     private utilService: UtilService,
     private clientService: ClientService,
     private branchService: BranchService,
     private accountService: AccountService,
     private globalMessagingService: GlobalMessagingService,
-    private fb: FormBuilder,
     private entityUtilService: EntityUtilService,
     ) {
     this.utilService?.currentLanguage.subscribe(lang => {this.language = lang;});
@@ -85,26 +91,22 @@ export class ContactComponent implements OnInit {
   prepareDataDisplay(): void {
     setTimeout(() => {
       this.subGroups = this.group.subGroup;
-      this.contactDetails = this.clientDetails.contactDetails;
-      this.contactPersons = this.clientDetails.contactPersons ?? this.contactPersons;
+      this.contactDetails = this.entityDetails.contactDetails;
+      this.contactPersons = this.entityDetails.contactPersons ?? this.contactPersons;
+      this.partyTypeShtDesc = (this.entityAccountIdDetails[0]?.partyType?.partyTypeShtDesc).toUpperCase();
 
-      const displayContactDetails  = {
-        overview_title: this.contactDetails?.title?.description,
-        overview_contact_person_full_name: this.contactDetails?.principalContactName,
-        overview_contact_details_email: this.contactDetails?.emailAddress,
-        overview_contact_person_doc_id_no: null,
-        overview_website_url: this.contactDetails?.websiteUrl,
-        overview_tel_no: this.contactDetails?.phoneNumber,
-        overview_contact_person_email: this.contactDetails?.emailAddress,
-        overview_pref_contact_channel: this.contactDetails?.contactChannel,
-        overview_social_media: this.contactDetails?.socialMediaUrl,
-        overview_contact_person_mobile_no: this.contactDetails?.phoneNumber,
-        overview_wef: null,
-        overview_wet: null,
-        overview_branch: this.contactDetails?.branchName,
-        overview_sms_number: this.contactDetails?.smsNumber,
-        overview_telephone_number: this.contactDetails?.phoneNumber,
-        overview_email: this.contactDetails?.emailAddress,
+
+      let displayContactDetails: {};
+
+      switch (this.partyTypeShtDesc) {
+        case 'C':
+          displayContactDetails = this.setClientContactDetails();
+          break;
+        case 'A':
+          displayContactDetails = this.contactDetails;
+          break;
+        default:
+        //
       }
 
       if (this.group.subGroup.length === 0) {
@@ -115,16 +117,39 @@ export class ContactComponent implements OnInit {
     }, 1000);
   }
 
+  setClientContactDetails() {
+    return {
+      overview_title: this.contactDetails?.title?.description,
+      overview_contact_person_full_name: this.contactDetails?.principalContactName,
+      overview_contact_details_email: this.contactDetails?.emailAddress,
+      overview_contact_person_doc_id_no: null,
+      overview_website_url: this.contactDetails?.websiteUrl,
+      overview_tel_no: this.contactDetails?.phoneNumber,
+      overview_contact_person_email: this.contactDetails?.emailAddress,
+      overview_pref_contact_channel: this.contactDetails?.contactChannel,
+      overview_social_media: this.contactDetails?.socialMediaUrl,
+      overview_contact_person_mobile_no: this.contactDetails?.phoneNumber,
+      overview_wef: null,
+      overview_wet: null,
+      overview_branch: this.contactDetails?.branchName,
+      overview_sms_number: this.contactDetails?.smsNumber,
+      overview_telephone_number: this.contactDetails?.phoneNumber,
+      overview_email: this.contactDetails?.emailAddress,
+    };
+  }
 
   /**
    * prepares fields and table details for display when address details has no subgroup
    * @param displayContactDetails
    */
   prepareGroupDetails(displayContactDetails: any): void {
-    if ((this.group.presentationType === this.PRESENTATION_TYPE.fields) || (this.group.subGroup.length === 0)) {
+    if (
+      ((this.group.presentationType === this.PRESENTATION_TYPE.fields) || (this.group.subGroup.length === 0)) &&
+      (this.group.presentationType !== this.PRESENTATION_TYPE.table_columns)
+    ) {
       this.fields = this.createFieldDisplay(displayContactDetails);
     } else {
-      this.createTableDisplay();
+      this.createTableDisplay(this.group, null);
     }
   }
 
@@ -148,27 +173,62 @@ export class ContactComponent implements OnInit {
 
   /**
    * create the structured info (column headings and row data) for displaying table
+   * @param group
    * @param subGroup
    */
-  createTableDisplay(subGroup?: FormSubGroupsDto) {
-    const headerFields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formSubGroupingId === subGroup.subGroupId);
+  createTableDisplay(group?: FormGroupsDto, subGroup?: FormSubGroupsDto) {
+
+    let headerFields = [];
+
+    if (group) {
+      headerFields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === group.groupId);
+    } else if (subGroup) {
+      headerFields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formSubGroupingId === subGroup.subGroupId);
+    }
+
     headerFields.sort((a, b) => a.order - b.order);
+
+    headerFields.forEach(field => {
+      if (field.type === 'button') {
+        this.buttons[field.fieldId] = field;
+        field.visible = false;
+      }
+    })
+
     this.tableHeaders = headerFields;
 
     const tableData = [];
-    this.contactPersons.forEach(person => {
-      const p = {
-        contactPersonId: person.code,
-        overview_title: person.clientTitle.description,
-        overview_contact_person_full_name: person.name,
-        overview_contact_person_doc_id_no: person.idNumber,
-        overview_contact_person_email: person.email,
-        overview_contact_person_mobile_no: person.mobileNumber,
-        overview_wef: person.wef,
-        overview_wet: person.wet,
-      };
-      tableData.push(p);
-    });
+
+    if (subGroup) {
+      this.contactPersons.forEach(person => {
+        const p = {
+          contactPersonId: person.code,
+          overview_title: person.clientTitle.description,
+          overview_contact_person_full_name: person.name,
+          overview_contact_person_doc_id_no: person.idNumber,
+          overview_contact_person_email: person.email,
+          overview_contact_person_mobile_no: person.mobileNumber,
+          overview_wef: person.wef,
+          overview_wet: person.wet,
+        };
+        tableData.push(p);
+      });
+    }
+
+    if (group) {
+      this.entityDetails.contactDetails.forEach(person => {
+        const p = {
+          overview_title: person.title.description,
+          overview_primary_contact_no: person.phoneNumber,
+          overview_email_address: person.emailAddress,
+          overview_mobile_no: person.smsNumber,
+          overview_whatsapp_no: person.whatsappNumber,
+          overview_sms_no: person.smsNumber,
+          overview_preferred_contact_channel: person.contactChannel,
+        };
+        tableData.push(p);
+      });
+    }
 
     this.table = {
       cols: this.tableHeaders,
@@ -186,7 +246,7 @@ export class ContactComponent implements OnInit {
       if (subGroup.presentationType === this.PRESENTATION_TYPE.fields) {
         subGroup.fields = this.createFieldDisplay(displayContactDetails);
       } else {
-        this.createTableDisplay(subGroup);
+        this.createTableDisplay(null, subGroup);
       }
     });
   }
