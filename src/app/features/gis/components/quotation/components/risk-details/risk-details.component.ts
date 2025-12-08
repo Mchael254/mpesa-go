@@ -6769,7 +6769,7 @@ export class RiskDetailsComponent {
           taxes: product.taxInformation?.map(tax => ({
             taxRateType: tax.taxType || tax.rateType,
             applicationLevel: null,
-            code: tax.code || 0,
+            code: tax.code,
             divisionFactor: 1,
             taxRate: tax.rate || 1,
             rangeTo: 0,
@@ -6777,7 +6777,7 @@ export class RiskDetailsComponent {
             rateDescription: tax.rateDescription || "",
             taxCode: tax.code || "",
             minPremium: 0,
-            sumInsured: 0,
+            sumInsured: risk?.value,
             premium: 0,
             quotationProductCode: product.code
           })) || []
