@@ -1816,9 +1816,34 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         let limitAmount = 0;
 
-        const isSumInsuredSection =
-          sec.sectionDescription?.toUpperCase().includes('SUM INSURED') ||
-          sec.sectionShortDescription?.toUpperCase().includes('SUM INSURED');
+        // const isSumInsuredSection =
+        //   sec.sectionDescription?.toUpperCase().includes('SUM INSURED') ||
+        //   sec.sectionShortDescription?.toUpperCase().includes('SUM INSURED');
+        const isSumInsuredSection = (() => {
+          const keywords = ['SUM INSURED', 'SI', 'BUILDING'];
+
+          const desc = sec.sectionDescription?.toUpperCase() || '';
+          const short = sec.sectionShortDescription?.toUpperCase() || '';
+
+          const text = `${desc} ${short}`.trim();
+
+          // Split into words for whole-word matching
+          const words = text.split(/\s+/);
+
+          return keywords.some(keyword => {
+            const k = keyword.toUpperCase();
+
+            // Multi-word keyword → substring match
+            if (k.includes(' ')) {
+              return text.includes(k);
+            }
+
+            // Single-word keyword → whole-word match
+            return words.includes(k);
+          });
+        })();
+
+
 
         if (isSumInsuredSection) {
 
@@ -2848,28 +2873,28 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   getProductTaxesPayload(product: any): TaxInformation[] {
-    const applicableTaxes = product.risks.flatMap(risk => risk.applicableTaxes);
+    const applicableTaxes = product?.risks?.flatMap(risk => risk.applicableTaxes);
     log.debug("All applicable taxes >>>", applicableTaxes)
     const computedTaxes = this.selectedProductCovers
-      .filter(value => value.code === product.code)
-      .flatMap(value => value.riskLevelPremiums
-        .flatMap(premium => premium.selectCoverType.taxComputation));
+      ?.filter(value => value.code === product.code)
+      ?.flatMap(value => value.riskLevelPremiums
+        ?.flatMap(premium => premium.selectCoverType.taxComputation));
 
     const groupedMap = new Map<number, number>();
     for (const item of computedTaxes) {
-      const currentSum = groupedMap.get(item.code) || 0;
-      groupedMap.set(item.code, currentSum + item.premium);
+      const currentSum = groupedMap?.get(item?.code) || null;
+      groupedMap?.set(item?.code, currentSum + item?.premium);
     }
     return Array.from(groupedMap.entries()).map(([code, taxAmount]) => {
-      const original = applicableTaxes.find(t => t.code === code);
+      const original = applicableTaxes?.find(t => t?.code === code);
       return {
         quotationRate: original?.taxRate,
         taxAmount: taxAmount,
         code,
-        rateDescription: original.description,
+        rateDescription: original?.description,
         rateType: original?.taxRateType,
         quotationCode: null,
-        transactionCode: original.trntCode,
+        transactionCode: original?.trntCode,
         renewalEndorsement: null,
         taxRateCode: null,//original?.taxCode,
         levelCode: original?.applicationLevel,
@@ -2877,7 +2902,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         riskProductLevel: original?.applicationLevel,
         rate: original?.taxRate,
       };
-    })
+    }) || []
   }
 
   getProductRisksPayload(formRisks: any, product: ProductPremium, quotationProduct: QuotationProduct): RiskInformation[] {

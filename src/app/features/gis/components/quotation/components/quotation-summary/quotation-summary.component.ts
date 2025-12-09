@@ -1516,7 +1516,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.getLimitsofLiability(subclassCode, quotationProductCode, 'L');
     this.getLimitsofLiability(subclassCode, quotationProductCode, 'E')
-
+    this.onDocumetTabSelect(this.selectedRisk)
   }
 
   handleProductClick(data: QuotationProduct) {
@@ -4585,8 +4585,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           log.info(`document uploaded successfully!`, res);
           this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
           this.fetchRiskDoc(this.selectedRisk?.code)
-          const modal = bootstrap.Modal.getInstance(this.addRiskDocModalRef.nativeElement);
-          modal.hide();
+          this.closeModal()
+
         },
         error: (err) => {
           log.info(`upload failed!`, err)
@@ -4594,6 +4594,40 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       });
     }
     reader.readAsDataURL(file);
+  }
+  // openModal() {
+  //   const modalEl = this.addRiskDocModalRef.nativeElement;
+  //   let modalInstance = bootstrap.Modal.getInstance(modalEl);
+  //   if (!modalInstance) {
+  //     modalInstance = new bootstrap.Modal(modalEl);
+  //   }
+  //   modalInstance.show();
+  //   log.debug("Modal shown:")
+  // }
+  openModalForRisk(risk: any) {
+    this.selectedRisk = risk;
+    this.selectedFile = null;
+    // this.documentType = null;
+
+    const modalEl = this.addRiskDocModalRef.nativeElement;
+
+    // Dispose old modal if exists
+    const oldModal = bootstrap.Modal.getInstance(modalEl);
+    if (oldModal) oldModal.dispose();
+
+    // Create and show new modal
+    const modalInstance = new bootstrap.Modal(modalEl);
+    modalInstance.show();
+
+    log.debug("Modal shown for risk:", this.selectedRisk.propertyId);
+  }
+
+  closeModal() {
+    const modalEl = this.addRiskDocModalRef.nativeElement;
+    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+    if (modalInstance) {
+      modalInstance.hide();
+    }
   }
   saveRiskDoc() {
     this.selectedFile && this.addRiskDocuments(this.selectedFile);
