@@ -10,7 +10,7 @@ const log = new Logger('PolicyProductComponent');
 import { NgxCurrencyConfig } from "ngx-currency";
 import { BankService } from '../../../../../../shared/services/setups/bank/bank.service';
 import { CurrencyDTO } from '../../../../../../shared/data/common/currency-dto';
-import { ReceiptService } from '../../../../../fms/services/receipt.service';
+import { QuotationsService } from '../../../quotation/services/quotations/quotations.service';
 import { mergeMap } from 'rxjs/operators';
 import { LocalStorageService } from '../../../../../../shared/services/local-storage/local-storage.service';
 
@@ -55,7 +55,7 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private bankService: BankService,
     private cdr: ChangeDetectorRef,
-    private receiptService: ReceiptService,
+    private quotationService: QuotationsService,
     private localStorageService: LocalStorageService
 
   ) {
@@ -150,11 +150,10 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
             this.initializeCurrency();
             this.cdr.detectChanges();
 
-            // Patch currency field if it exists
+            // Patch currency field if it exists and fetch exchange rate
+            // Note: Exchange rate will be fetched after form controls are built
             if (this.policyDetailsForm.get('currency')) {
               this.policyDetailsForm.get('currency')?.setValue(this.defaultCurrencySymbol);
-              // Fetch exchange rate for default currency
-              this.fetchExchangeRate(this.defaultCurrencySymbol);
             }
           }
         },
@@ -186,6 +185,13 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
           log.debug(this.userOrgDetails)
 
           this.cdr.detectChanges();
+
+          // Check if there's a pending exchange rate fetch
+          const pendingCurrency = sessionStorage.getItem('pendingExchangeRateCurrency');
+          if (pendingCurrency && this.organizationId) {
+            log.debug('Organization ID now available, fetching pending exchange rate for:', pendingCurrency);
+            this.fetchExchangeRate(pendingCurrency);
+          }
         },
         error: (error) => {
           log.error('❌ Error fetching user organization details:', error);
@@ -272,10 +278,11 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  radioFields = ['jointAccount', 'openPolicy', 'policyLevelDebt', 'multiAgency', 'coInsurancePolicy', 'schemePolicy','coInsuranceLeader',
-  'coInsuranceGrossSumInsured',
-  'coInsuranceLeaderCombined',
-  'facultativeSession'];
+  radioFields = ['jointAccount', 'openPolicy', 'policyLevelDebt', 'multiAgency', 'coInsurancePolicy', 'schemePolicy', 'coInsuranceLeader',
+    'coInsuranceGrossSumInsured',
+    'coInsuranceLeaderCombined',
+    'facultativeSession',
+    'currencyFixedRate'];
 
 
   /**
@@ -285,9 +292,9 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
     this.policyFormFields.forEach(field => {
 
       if (field.name === 'client') {
-      log.debug('⏭️ Skipping client field - will be handled by search modal');
-      return;
-    }
+        log.debug('⏭️ Skipping client field - will be handled by search modal');
+        return;
+      }
       if (field.name && !this.policyDetailsForm.get(field.name)) {
         const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
 
@@ -383,6 +390,15 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    // After all form controls are built, fetch exchange rate for default currency
+    if (this.defaultCurrencySymbol && this.policyDetailsForm.get('currency')) {
+      const currencyValue = this.policyDetailsForm.get('currency')?.value;
+      if (currencyValue) {
+        log.debug('Fetching exchange rate for initialized currency:', currencyValue);
+        this.fetchExchangeRate(currencyValue);
+      }
+    }
   }
 
   minDate: Date;
@@ -482,8 +498,8 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
 
     // Log source field changes
     if (fieldName === 'source') {
-      console.log('🔍 Source Field Changed:', value);
-      console.log('📋 Full event object:', event);
+      log.debug('🔍 Source Field Changed:', value);
+      log.debug('📋 Full event object:', event);
       const sourceVal = typeof value === 'string' ? value.toLowerCase() : '';
 
     }
@@ -492,13 +508,13 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
     if (fieldName === 'source') {
       const sourceVal = typeof value === 'string' ? value.toLowerCase() : '';
       if (sourceVal === 'walk in' || sourceVal === 'walkin' || sourceVal === 'walk-in') {
-        console.log('✅ Matched walk-in pattern, setting policyType to DB');
+
         this.policyDetailsForm.get('policyType')?.setValue('DB');
       } else if (sourceVal === 'agent') {
-        console.log('✅ Matched agent pattern, setting policyType to IB');
+
         this.policyDetailsForm.get('policyType')?.setValue('IB');
       } else {
-        console.log('⚠️ No match found for source value:', sourceVal);
+        log.debug('⚠️ No match found for source value:', sourceVal);
       }
     }
 
@@ -513,8 +529,15 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
    * Fetch exchange rate for selected currency
    */
   fetchExchangeRate(currencySymbol: string): void {
-    if (!currencySymbol || !this.organizationId) {
-      log.debug('Cannot fetch exchange rate: missing currency symbol or organization ID');
+    if (!currencySymbol) {
+      log.debug('Cannot fetch exchange rate: missing currency symbol');
+      return;
+    }
+
+    if (!this.organizationId) {
+      log.debug('Organization ID not yet available, will retry when available');
+
+      sessionStorage.setItem('pendingExchangeRateCurrency', currencySymbol);
       return;
     }
 
@@ -525,19 +548,26 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
       return;
     }
 
-    log.debug('Fetching exchange rate for currency:', selectedCurrency);
+    log.debug('Fetching exchange rate for currency:', selectedCurrency, 'with organizationId:', this.organizationId);
 
-    this.receiptService.getExchangeRate(selectedCurrency.id, this.organizationId)
+    this.quotationService.getExchangeRates(selectedCurrency.id, this.organizationId)
       .subscribe({
         next: (response: any) => {
-          const exchangeRate = response?.data || response?.message;
-          log.debug('Exchange rate fetched:', exchangeRate);
+          const exchangeRate = response?.rate;
+          log.debug('Exchange rate API response:', response);
+          log.debug('Exchange rate extracted:', exchangeRate);
 
           // Patch the exchange rate to the form
           if (this.policyDetailsForm.get('exchangeRate')) {
             this.policyDetailsForm.get('exchangeRate')?.setValue(exchangeRate);
             log.debug('Exchange rate patched to form:', exchangeRate);
+            this.cdr.detectChanges();
+          } else {
+            log.warn('exchangeRate form control not found');
           }
+
+          // Clear pending flag
+          sessionStorage.removeItem('pendingExchangeRateCurrency');
         },
         error: (error) => {
           log.error('Error fetching exchange rate:', error);
@@ -550,10 +580,10 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
       next: (data: ProductPolicyField[]) => {
         this.productPolicyCoinsuranceFields = data || [];
         log.debug('Coinsurance Fields:', this.productPolicyCoinsuranceFields);
-        
-        
-        if (this.productPolicyCoinsuranceFields.length > 0 && 
-            this.productPolicyCoinsuranceFields[0].fields) {
+
+
+        if (this.productPolicyCoinsuranceFields.length > 0 &&
+          this.productPolicyCoinsuranceFields[0].fields) {
           this.policyCoinsuranceFormFields = this.productPolicyCoinsuranceFields[0].fields;
           this.prepareCoinsuranceFieldOptions();
           this.buildDynamicCoinsuranceFormControls();
@@ -567,7 +597,7 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
 
 
 
-   prepareCoinsuranceFieldOptions(): void {
+  prepareCoinsuranceFieldOptions(): void {
     this.policyCoinsuranceFormFields.forEach(field => {
       if (field.type === 'select') {
         if (field.selectOptions && field.selectOptions.length > 0) {
@@ -596,24 +626,24 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
           validators.push(Validators.pattern(field.regexPattern));
         }
 
-        
+
         if (field.type === 'number') {
           if (field.min !== undefined) validators.push(Validators.min(field.min));
           if (field.max !== undefined) validators.push(Validators.max(field.max));
         }
 
-        
-        let defaultVal: any = field.defaultValue !== undefined && field.defaultValue !== null 
-          ? field.defaultValue 
+
+        let defaultVal: any = field.defaultValue !== undefined && field.defaultValue !== null
+          ? field.defaultValue
           : '';
-      
-       if (field.name === 'coInsuranceLeader' || field.name === 'facultativeSession') {
-        defaultVal = 'Y'; 
-       } 
-    
-      else if (field.type === 'radio' || this.radioFields.includes(field.name)) {
-        defaultVal = '';
-      }
+
+        if (field.name === 'coInsuranceLeader' || field.name === 'facultativeSession') {
+          defaultVal = 'Y';
+        }
+
+        else if (field.type === 'radio' || this.radioFields.includes(field.name)) {
+          defaultVal = '';
+        }
 
         const control = new FormControl(defaultVal, validators);
         this.policyDetailsForm.addControl(field.name, control);
@@ -621,80 +651,80 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  
+
   isCoinsuranceSectionVisible(): boolean {
     return this.policyDetailsForm.get('coInsurancePolicy')?.value === 'Y';
   }
 
 
 
-handleSaveClient(eventData: any): void {
-  log.debug('Event received from Client search comp', eventData);
-  
-  if (!eventData || !eventData.id) {
-    log.warn('Invalid client data received');
-    return;
+  handleSaveClient(eventData: any): void {
+    log.debug('Event received from Client search comp', eventData);
+
+    if (!eventData || !eventData.id) {
+      log.warn('Invalid client data received');
+      return;
+    }
+
+
+    sessionStorage.setItem("SelectedClientDetails", JSON.stringify(eventData));
+
+    const clientCode = eventData.id;
+
+
+    const clientName = [eventData.firstName, eventData.lastName]
+      .filter(Boolean)
+      .join(' ')
+      .trim() ||
+      eventData.shortDescription ||
+      `Client-${clientCode}`;
+
+
+    this.selectedClientCode = clientCode;
+    this.selectedClientName = clientName;
+    this.selectedClient = {
+      id: clientCode,
+      name: clientName,
+      email: eventData.emailAddress || '',
+      ...eventData
+    };
+
+    // Store in session storage
+    sessionStorage.setItem("SelectedClientName", clientName);
+    sessionStorage.setItem("SelectedClientCode", JSON.stringify(clientCode));
+    sessionStorage.setItem("selectedClient", JSON.stringify(this.selectedClient));
+
+
+    if (this.policyDetailsForm.contains('client')) {
+      this.policyDetailsForm.get('client')?.setValue(clientCode);
+      log.debug('Client form control updated:', clientCode);
+    } else {
+      log.debug('Client form control does not exist (expected - handled separately)');
+    }
+
+
+    if (this.policyDetailsForm.contains('clientId')) {
+      this.policyDetailsForm.get('clientId')?.setValue(clientCode);
+      log.debug('ClientId form control updated:', clientCode);
+    }
+
+    // Close modal
+    this.showClientSearchModal = false;
+
+    // Blur active element to prevent issues
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
+    // Trigger change detection
+    this.cdr.detectChanges();
+
+    log.debug('Client selection complete:', {
+      clientCode,
+      clientName,
+      selectedClient: this.selectedClient
+    });
   }
-
-
-  sessionStorage.setItem("SelectedClientDetails", JSON.stringify(eventData));
-
-  const clientCode = eventData.id;
-  
-  
-  const clientName = [eventData.firstName, eventData.lastName]
-    .filter(Boolean)
-    .join(' ')
-    .trim() ||
-    eventData.shortDescription ||
-    `Client-${clientCode}`;
-
-
-  this.selectedClientCode = clientCode;
-  this.selectedClientName = clientName;
-  this.selectedClient = {
-    id: clientCode,
-    name: clientName,
-    email: eventData.emailAddress || '',
-    ...eventData
-  };
-
-  // Store in session storage
-  sessionStorage.setItem("SelectedClientName", clientName);
-  sessionStorage.setItem("SelectedClientCode", JSON.stringify(clientCode));
-  sessionStorage.setItem("selectedClient", JSON.stringify(this.selectedClient));
-
-  
-  if (this.policyDetailsForm.contains('client')) {
-    this.policyDetailsForm.get('client')?.setValue(clientCode);
-    log.debug('Client form control updated:', clientCode);
-  } else {
-    log.debug('Client form control does not exist (expected - handled separately)');
-  }
-
-  
-  if (this.policyDetailsForm.contains('clientId')) {
-    this.policyDetailsForm.get('clientId')?.setValue(clientCode);
-    log.debug('ClientId form control updated:', clientCode);
-  }
-
-  // Close modal
-  this.showClientSearchModal = false;
-
-  // Blur active element to prevent issues
-  if (document.activeElement instanceof HTMLElement) {
-    document.activeElement.blur();
-  }
-
-  // Trigger change detection
-  this.cdr.detectChanges();
-  
-  log.debug('Client selection complete:', {
-    clientCode,
-    clientName,
-    selectedClient: this.selectedClient
-  });
-}
 
 
 

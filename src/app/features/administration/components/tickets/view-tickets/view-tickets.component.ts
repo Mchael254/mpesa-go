@@ -410,8 +410,6 @@ export class ViewTicketsComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(
         (data: any) => {
-
-          // Handle response structure where content is in 'results'
           const content = data.results || data.content || [];
           const totalElements = data.totalElements || (data.totalPages * data.size) || 0;
 
@@ -433,22 +431,12 @@ export class ViewTicketsComponent implements OnInit {
 
           log.debug('spring tickets:', this.springTickets)
 
-          // Notify Angular of data changes
           this.cdr.detectChanges();
 
-          // Update shared ticket state
           this.ticketsService.setCurrentTickets(this.springTickets.content);
 
-          // Hide spinner
           this.spinner.hide();
 
-          // // ✅ Extract sysModule values from nested ticket object
-          // const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
-
-          // // ✅ Process the codes as needed
-          // const result = codeValues.map((code) => this.getTicketCode(code));
-
-          // log.info('Ticket Codes Extracted:', result);
         },
         (error) => {
           log.error('Error fetching tickets:', error);

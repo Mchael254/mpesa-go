@@ -56,7 +56,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   //   rows: [], // Initially empty array for rows
   //   totalElements: 0 // Default total count
   // };
-  pageSize: number = 5;
+  pageSize: number = 50;
   // quotationSubMenuList: SidebarMenu[];
   sortField: string = '';
   sortOrder: number = 1;
@@ -175,6 +175,12 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   quoteType: string;
   isAgentSearchModalVisible: boolean = false;
 
+  // Pagination properties
+  totalRecords: number = 0;
+  totalPages: number = 0;
+  currentPage: number = 0;
+  rowsPerPageOptions: number[] = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500];
+  first: number = 0;
 
 
   constructor(
@@ -929,8 +935,8 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
     this.quotationService
       .searchQuotations(
-        0,
-        100,
+        this.currentPage,
+        this.pageSize || 100,
         clientType,
         clientCode,
         productCode,
@@ -945,7 +951,14 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       .subscribe({
         next: (response: any) => {
 
-          this.gisQuotationList = response._embedded;
+          this.gisQuotationList = response._embedded.results;
+
+          // Calculate totalRecords from totalPages * size since totalElements is not provided
+          const embedded = response._embedded;
+          this.totalPages = embedded?.totalPages || 0;
+          this.pageSize = embedded?.size || 50;
+          this.totalRecords = this.totalPages * this.pageSize;
+          this.first = this.currentPage * this.pageSize;
 
           // Store a copy of the original list when first fetching
           if (this.originalQuotationList.length === 0) {
@@ -956,9 +969,16 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
           this.actionsCache.clear();
 
           log.debug("LIST OF GIS QUOTATIONS ", this.gisQuotationList);
-          setTimeout(() => {
-            this.quotationTable?.reset(); // forces table to re-render
-          }, 0);
+          log.debug('Pagination info', {
+            totalRecords: this.totalRecords,
+            totalPages: this.totalPages,
+            currentPage: this.currentPage,
+            pageSize: this.pageSize,
+            first: this.first
+          });
+
+          // Trigger change detection to update the view
+          this.cdr.detectChanges();
         },
         error: (error) => {
           console.error("erro fetching quotations", error);
@@ -966,6 +986,26 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
         }
       }
       );
+  }
+
+  /**
+   * Handler for pagination events from PrimeNG table.
+   */
+  onPageChange(event: any): void {
+    const page = Math.floor(event.first / event.rows);
+    const size = event.rows;
+
+    log.debug('Page change event:', {
+      first: event.first,
+      rows: event.rows,
+      calculatedPage: page
+    });
+
+    this.currentPage = page;  
+    this.pageSize = size;
+    this.first = event.first;
+    
+    this.fetchGISQuotations();
   }
 
   inputQuotationNo(event) {
