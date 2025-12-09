@@ -9,8 +9,8 @@
       </div>
     </div>
     <div class="tableScroll">
-      <div *ngIf="!ticketCount?.length; else showTicketTable">
-        <table class="table table-borderless">
+      <div>
+        <!-- <table class="table table-borderless">
           <thead>
           <tr>
             <th>{{'base.tickets' | translate}}</th>
@@ -39,22 +39,43 @@
               <td style="text-align: center;">0</td>
             </tr>
           </tbody>
+        </table> -->
+        <table class="table table-borderless">
+          <thead>
+            <tr>
+              <th>{{ 'base.tickets' | translate }}</th>
+              <th class="align-center">{{ 'base.no_of_tickets' | translate }}</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let item of ticketSummary">
+              <td>{{ item.taskName }}</td>
+              <td style="text-align: center;">{{ item.taskCount }}</td>
+            </tr>
+
+            <!-- If empty -->
+            <tr *ngIf="ticketSummary.length === 0">
+              <td colspan="2" class="text-center text-muted">No Tickets Found</td>
+            </tr>
+          </tbody>
         </table>
+
       </div>
       <ng-template #showTicketTable>
         <table class="table table-borderless">
           <thead>
-          <tr>
-            <th>{{'base.tickets' | translate}}</th>
-            <th class="align-center">{{'base.no_of_tickets' | translate}}</th>
-          </tr>
+            <tr>
+              <th>{{'base.tickets' | translate}}</th>
+              <th class="align-center">{{'base.no_of_tickets' | translate}}</th>
+            </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let ticketCountPerModule of ticketCount">
-            <td>{{ticketCountPerModule.activityName}}</td>
-            <td class="ticketCount" style="text-align: center;"
-                (click)="displayTicketDetails(ticketCountPerModule)">{{ticketCountPerModule.totalTickets}}</td>
-          </tr>
+            <tr *ngFor="let ticketCountPerModule of ticketCount">
+              <td>{{ticketCountPerModule.activityName}}</td>
+              <td class="ticketCount" style="text-align: center;" (click)="displayTicketDetails(ticketCountPerModule)">
+                {{ticketCountPerModule.totalTickets}}</td>
+            </tr>
           </tbody>
         </table>
       </ng-template>
@@ -62,7 +83,7 @@
 
   </div>
   <div class="card-footer border-top-0" style="background-color: #ffffff">
-    <a class="float-start text-start-dispatch" (click)="goToDispatch()" >{{'base.dispatch' | translate | uppercase }}</a>
-    <a class="float-end text-end-view" (click)="goToViewTickets()" >{{'base.view_all' | translate | uppercase }}</a>
+    <a class="float-start text-start-dispatch" (click)="goToDispatch()">{{'base.dispatch' | translate | uppercase }}</a>
+    <a class="float-end text-end-view" (click)="goToViewTickets()">{{'base.view_all' | translate | uppercase }}</a>
   </div>
 </div>
