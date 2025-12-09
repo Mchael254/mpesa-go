@@ -90,6 +90,8 @@
       </div>
     </div>
   </p-tabPanel>
+
+  <!-- Group Life -->
   <p-tabPanel header="Group Life" *ngIf="visibleTabs.LMS_ORD">
     <div>
       <div class="row grp-quote-filter-row">
@@ -220,6 +222,8 @@
       </div>
     </div>
   </p-tabPanel>
+
+  <!-- General -->
   <p-tabPanel header="General" *ngIf="visibleTabs.GIS">
     <ng-container *ngTemplateOutlet="gisTableTemplate"></ng-container>
   </p-tabPanel>
@@ -231,6 +235,8 @@
 <ng-container *ngIf="!showTabs && visibleTabs.GIS">
   <ng-container *ngTemplateOutlet="gisTableTemplate"></ng-container>
 </ng-container>
+
+
 <!-- GIS Table Template -->
 <ng-template #gisTableTemplate>
   <div class="row">
@@ -248,10 +254,11 @@
     <div style=" position: relative;">
       <div>
 
-        <p-table #quotationTable [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true"
-          scrollDirection="horizontal" [showCurrentPageReport]="true"
-          currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
-          [reorderableColumns]="true" [rowsPerPageOptions]="[5, 10, 20]"
+        <p-table #quotationTable [value]="gisQuotationList" [paginator]="true" [lazy]="true"
+          [rowsPerPageOptions]="rowsPerPageOptions" [rows]="pageSize" [totalRecords]="totalRecords" [first]="first"
+          (onPage)="onPageChange($event)" [scrollable]="true" scrollHeight="500px" scrollDirection="horizontal"
+          [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records"
+          [responsiveLayout]="'scroll'" [reorderableColumns]="true"
           [globalFilterFields]="['quotationNumber','clientName', 'premium','agentShortDescription']">
           <ng-template pTemplate="header">
             <tr>
@@ -455,6 +462,7 @@
     </div>
   </div>
 </ng-template>
+
 <!-- Reassign Quotation Modal 1 -->
 <div class="modal fade" id="reassignQuotation" #reassignQuotationModal tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="min-width:200px">
