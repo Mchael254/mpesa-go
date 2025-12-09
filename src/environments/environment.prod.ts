@@ -44,6 +44,7 @@ export const environment = {
     [API_CONFIG.AI_DOCUMENT_SERVICE, '/aireader'],
     [API_CONFIG.GIS_TICKETING_SERVICE, '/gis/ticketing/api'],
     [API_CONFIG.GIS_COMMONS_SERVICE, '/gis/commons/api'],
+    [API_CONFIG.GATEWAY_SERVICE, '/oauth']
 
 
   ]),
