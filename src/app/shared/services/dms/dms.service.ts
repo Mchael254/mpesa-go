@@ -254,10 +254,21 @@ export class DmsService {
       API_CONFIG.DMS_SERVICE
     );
   }
+   /**
+   * Uploads a single finance document.
+   * @param request The single document request object.
+   */
+  uploadSingleFile(request: ReceiptUploadRequest): Observable<any> {
+    return this.api.POST<any>(
+      'uploadAllFinanceDocument', 
+      request,
+      API_CONFIG.DMS_SERVICE
+    );
+  }
   uploadFiles(requests: ReceiptUploadRequest[]): Observable<any> {
     return this.api.POST<any>(
       `uploadAllFinanceDocument`,
-      JSON.stringify(requests),
+    requests,
       API_CONFIG.DMS_SERVICE
     );
   }
