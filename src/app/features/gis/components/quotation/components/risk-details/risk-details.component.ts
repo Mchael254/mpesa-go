@@ -2099,16 +2099,40 @@ export class RiskDetailsComponent {
 
               // ---- Mandatory logic ----
               if (premium.isMandatory && premium.isMandatory.includes('Y')) {
-                if (
-                  premium.sectionShortDescription &&
-                  premium.sectionShortDescription.toLowerCase().includes('sum insured')
-                ) {
-                  return {
-                    ...premium,
-                    rateOptions,
-                    limitAmount: this.sumInsured
-                  };
+
+
+                if (premium.sectionShortDescription) {
+                  const short = premium.sectionShortDescription.toUpperCase();
+
+
+
+                  const keywords = ['SUM INSURED', 'SI', 'BUILDING'];
+
+                  // Split into words for whole-word matching
+                  const words = short.split(/\s+/);
+
+                  const isMatch = keywords.some(keyword => {
+                    const k = keyword.toUpperCase();
+
+                    // Multi-word keyword → substring match
+                    if (k.includes(' ')) {
+                      return short.includes(k);
+                    }
+
+                    // Single-word keyword → whole-word match
+                    return words.includes(k);
+                  });
+
+
+                  if (isMatch) {
+                    return {
+                      ...premium,
+                      rateOptions,
+                      limitAmount: this.sumInsured
+                    };
+                  }
                 }
+
 
                 return {
                   ...premium,
@@ -2288,16 +2312,38 @@ export class RiskDetailsComponent {
 
               // ---- Mandatory logic ----
               if (premium.isMandatory && premium.isMandatory.includes('Y')) {
-                if (
-                  premium.sectionShortDescription &&
-                  premium.sectionShortDescription.toLowerCase().includes('sum insured')
-                ) {
-                  return {
-                    ...premium,
-                    rateOptions,
-                    limitAmount: this.sumInsured
-                  };
+
+                if (premium.sectionShortDescription) {
+                  const short = premium.sectionShortDescription.toUpperCase();
+
+
+                  const keywords = ['SUM INSURED', 'SI', 'BUILDING'];
+
+                  // Split into words for whole-word matching
+                  const words = short.split(/\s+/);
+
+                  const isMatch = keywords.some(keyword => {
+                    const k = keyword.toUpperCase();
+
+                    // Multi-word keyword → substring match
+                    if (k.includes(' ')) {
+                      return short.includes(k);
+                    }
+
+                    // Single-word keyword → whole-word match
+                    return words.includes(k);
+                  });
+
+
+                  if (isMatch) {
+                    return {
+                      ...premium,
+                      rateOptions,
+                      limitAmount: this.sumInsured
+                    };
+                  }
                 }
+
 
                 return {
                   ...premium,
@@ -3009,15 +3055,37 @@ export class RiskDetailsComponent {
 
             // ---- Mandatory logic ----
             if (premium.isMandatory && premium.isMandatory.includes('Y')) {
-              if (
-                premium.sectionShortDescription &&
-                premium.sectionShortDescription.toLowerCase().includes('sum insured')
-              ) {
-                return {
-                  ...premium,
-                  rateOptions,
-                  limitAmount: this.sumInsured
-                };
+              const keywords = ['SUM INSURED', 'SI', 'BUILDING'];
+
+              if (premium.sectionShortDescription) {
+                const short = premium.sectionShortDescription.toUpperCase();
+
+
+                const keywords = ['SUM INSURED', 'SI', 'BUILDING'];
+
+                // Split into words for whole-word matching
+                const words = short.split(/\s+/);
+
+                const isMatch = keywords.some(keyword => {
+                  const k = keyword.toUpperCase();
+
+                  // Multi-word keyword → substring match
+                  if (k.includes(' ')) {
+                    return short.includes(k);
+                  }
+
+                  // Single-word keyword → whole-word match
+                  return words.includes(k);
+                });
+
+
+                if (isMatch) {
+                  return {
+                    ...premium,
+                    rateOptions,
+                    limitAmount: this.sumInsured
+                  };
+                }
               }
 
               return {
@@ -3881,15 +3949,48 @@ export class RiskDetailsComponent {
 
               // ---- Mandatory logic ----
               if (premium.isMandatory && premium.isMandatory.includes('Y')) {
-                if (
-                  premium.sectionShortDescription &&
-                  premium.sectionShortDescription.toLowerCase().includes('sum insured')
-                ) {
-                  return {
-                    ...premium,
-                    rateOptions,
-                    limitAmount: this.sumInsured
-                  };
+                // if (
+                //   premium.sectionShortDescription &&
+                //   premium.sectionShortDescription.toLowerCase().includes('sum insured')
+                // ) {
+                //   return {
+                //     ...premium,
+                //     rateOptions,
+                //     limitAmount: this.sumInsured
+                //   };
+                // }
+
+                if (premium.sectionShortDescription) {
+                  const short = premium.sectionShortDescription.toUpperCase();
+
+
+
+                  const keywords = ['SUM INSURED', 'SI', 'BUILDING'];
+
+                  // Split into words for whole-word matching
+                  const words = short.split(/\s+/);
+
+                  const isMatch = keywords.some(keyword => {
+                    const k = keyword.toUpperCase();
+
+                    // Multi-word keyword → substring match
+                    if (k.includes(' ')) {
+                      return short.includes(k);
+                    }
+
+                    // Single-word keyword → whole-word match
+                    return words.includes(k);
+                  });
+
+
+
+                  if (isMatch) {
+                    return {
+                      ...premium,
+                      rateOptions,
+                      limitAmount: this.sumInsured
+                    };
+                  }
                 }
 
                 return {
@@ -6061,7 +6162,7 @@ export class RiskDetailsComponent {
 
   loadCommissions(): void {
     const subclassCode = this.selectedSubclassCode;
-    
+
     // Get agent data from quotation_agent in sessionStorage
     const quotationAgentRaw = sessionStorage.getItem('quotation_agent');
     const quotationAgent = quotationAgentRaw ? JSON.parse(quotationAgentRaw) : null;
@@ -6678,10 +6779,29 @@ export class RiskDetailsComponent {
             coverTypeShortDescription: risk.coverTypeShortDescription,
             coverTypeDescription: risk.coverTypeDescription,
             limits: risk.riskLimits?.map(limit => {
-              const desc = limit.sectionShortDescription?.toUpperCase() ?? '';
+              // const desc = limit.sectionShortDescription?.toUpperCase() ?? '';
 
-              const isSumInsuredSection =
-                desc.includes('SUM INSURED') || desc.includes('SI');
+              // const isSumInsuredSection =
+              //   desc.includes('SUM INSURED') || desc.includes('SI');
+              const desc = (limit.sectionShortDescription ?? '').toUpperCase();
+
+              const keywords = ['SUM INSURED', 'SI', 'BUILDING'];
+
+              // Split into words for whole-word matching
+              const words = desc.split(/\s+/);
+
+              const isSumInsuredSection = keywords.some(keyword => {
+                const k = keyword.toUpperCase();
+
+                // Multi-word keyword → substring match
+                if (k.includes(' ')) {
+                  return desc.includes(k);
+                }
+
+                // Single-word keyword → whole-word match
+                return words.includes(k);
+              });
+
 
               const limitAmount =
                 (limit?.freeLimit || 0) === 0 && isSumInsuredSection

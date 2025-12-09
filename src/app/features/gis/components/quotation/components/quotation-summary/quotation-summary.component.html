@@ -1671,10 +1671,12 @@
                           tabindex="0">
                           <!-- ADD Document BUTTON ROW -->
                           <div class="col-12 d-flex justify-content-end">
-                            <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                            <!-- <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                               data-bs-target="#addRiskDocumentModal">
                               Add document
-                            </button>
+                            </button> -->
+                            <button class="btn btn-primary btn-sm" (click)="openModalForRisk(selectedRisk)">Add
+                              document</button>
 
                             <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
                               [ngClass]="{ 'pi-caret-down': showRiskDoc, 'pi-caret-up': !showRiskDoc }"
@@ -1771,164 +1773,7 @@
                             </ng-template>
 
                           </p-table>
-                          <!-- Add Risk Doc  Modal -->
-                          <div class="modal fade" #addRiskDocumentModal id="addRiskDocumentModal" tabindex="-1"
-                            role="dialog" aria-labelledby="addSectionLabel">
-                            <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
-                              <div class="modal-content" id="addRiskDocumentModal">
-                                <div class="modal-body">
-                                  <h5 class="modal-title mt-2" id="addDocumentsLabel">
-                                    Add document
-                                    <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
-                                      aria-label="Close"></button>
-                                  </h5>
-                                  <div class="upload-area mt-2 mb-1" (click)="fileInput.click()"
-                                    [class.dragover]="isDragging" (drop)="onDrop($event)"
-                                    (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
 
-                                    <div class="upload-content">
-                                      <i class="pi pi-upload upload-icon"></i>
-
-                                      <p class="upload-text">Click this area to upload file</p>
-
-
-                                    </div>
-
-                                    <input #fileInput type="file" (change)="onFileSelected($event)"
-                                      accept=".pdf,.doc,.docx,.txt,.log,.jpg,.jpeg,.png" style="display: none;">
-                                    <div class="selected-file" *ngIf="selectedFile">
-                                      <i [ngClass]="getFileIcon(selectedFile.name)" class="file-icon"></i>
-                                      <span class="file-name">{{ selectedFile.name }}</span>
-
-                                      <button class="remove-btn" (click)="removeFile()" aria-label="Remove">
-                                        <i class="pi pi-trash"></i>
-                                      </button>
-                                    </div>
-
-
-                                  </div>
-                                  <div class="mt-3 d-flex flex-column">
-                                    <label for="documentType" class="mb-1 ">Document type</label>
-                                    <p-dropdown [options]="" optionLabel="" optionValue="" class="form-control-sm"
-                                      [style]="{ width: 'auto', minWidth: '180px' }"></p-dropdown>
-                                  </div>
-
-
-
-                                  <div class="mt-4 d-flex justify-content-end ">
-                                    <button type="button" class="btn btn-outline-primary me-2"
-                                      data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" class="btn btn-primary " id="saveDetails"
-                                      (click)="saveRiskDoc()">{{'gis.quotation.save' |
-                                      translate}}</button>
-                                  </div>
-                                </div>
-
-                              </div>
-                            </div>
-                          </div>
-                          <!-- Delete Client Doc   Modal -->
-                          <div class="modal fade" id="deleteRiskDocModal" tabindex="-1"
-                            aria-labelledby="deleteRiskDocLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered ">
-                              <div class="modal-content">
-                                <div class="modal-header" style="border-bottom: none;">
-                                  <h5 class="delete-title" id="exampleModalLabel">
-                                    Delete document
-                                  </h5>
-                                  <button type="button" class="btn-close red-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                  <p class="d-flex justify-content-center" id="deleteLabel">
-                                    Are you sure you want to delete document?
-                                  <div class="d-flex justify-content-center gap-3">
-
-
-                                    <button type="button" class="btn btn-outline-primary" id="deleteNo"
-                                      data-bs-dismiss="modal">
-                                      {{ 'gis.quotation.cancel' | translate }}
-                                    </button>
-
-                                    <button type="button" class="btn btn-primary" id="deleteYes" data-bs-dismiss="modal"
-                                      (click)="deleteRiskDoc()">
-                                      {{ 'gis.quotation.delete' | translate }}
-                                    </button>
-
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <!-- Preview Client Doc Modal -->
-                          <div class="modal fade" id="previewDocModal" tabindex="-1"
-                            aria-labelledby="previewDocModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg modal-dialog-centered">
-                              <div class="modal-content">
-                                <div
-                                  class="modal-header d-flex justify-content-center align-items-center position-relative"
-                                  style="border-bottom: none;">
-                                  <!-- Centered Title -->
-                                  <h5 class="modal-title text-center m-0" id="previewDocModalLabel"
-                                    style="position: absolute; left: 50%; transform: translateX(-50%);">
-                                    {{ previewRiskDoc?.name }}
-                                  </h5>
-
-                                  <!-- Close Button -->
-                                  <button type="button" class="btn-close ms-auto position-relative"
-                                    data-bs-dismiss="modal" aria-label="Close" style="z-index: 10;">
-                                  </button>
-                                </div>
-
-                                <div class="d-flex justify-content-center align-items-center gap-3 mt-2 mb-2">
-
-                                  <!-- Zoom Out -->
-
-                                  <i class="pi pi-minus text-primary"
-                                    (click)="zoomRiskDocLevel = zoomRiskDocLevel - 0.2" pTooltip="Zoom out"
-                                    style="cursor: pointer; font-size: 16px;">
-                                  </i>
-
-                                  <!-- Current Zoom Percentage -->
-                                  <span class=" px-2 py-1 border rounded" style="color: black;border-color: black;">
-                                    {{ (zoomRiskDocLevel * 100) | number:'1.0-0' }}%
-                                  </span>
-                                  <!-- Zoom In -->
-                                  <i class="pi pi-plus cursor-pointer"
-                                    (click)="zoomRiskDocLevel = zoomRiskDocLevel + 0.2" pTooltip="Zoom in"
-                                    style="cursor: pointer !important; font-size: 16px;">
-                                  </i>
-                                  <!-- Reset -->
-                                  <button class="btn btn-sm btn-primary ms-2" (click)="zoomRiskDocLevel = 1"
-                                    style="cursor: pointer !important; font-size: 16px;">
-                                    Reset
-                                  </button>
-
-                                </div>
-                                <div class="modal-body text-center">
-                                  <!-- Image preview -->
-                                  <img *ngIf="previewRiskDoc?.mimeType?.startsWith('image/')"
-                                    [src]="previewRiskDoc.dataUrl" alt="Preview" class="img-fluid rounded shadow">
-
-                                  <!-- PDF preview using ng2-pdf-viewer -->
-                                  <pdf-viewer *ngIf="previewRiskDoc?.mimeType === 'application/pdf'"
-                                    [src]="previewRiskDoc.dataUrl" [render-text]="true" [original-size]="false"
-                                    style="display: block; height: 70vh;" [zoom]="zoomRiskDocLevel">
-                                  </pdf-viewer>
-
-                                  <!--  Unsupported formats -->
-                                  <div
-                                    *ngIf="previewRiskDoc && !previewRiskDoc.mimeType.startsWith('image/') && previewRiskDoc.mimeType !== 'application/pdf'">
-                                    <p>Preview not available for this file type.</p>
-                                    <a [href]="previewRiskDoc.dataUrl" download="{{ previewRiskDoc.name }}"
-                                      class="btn btn-primary btn-sm mt-2">
-                                      Download File
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
 
 
 
@@ -1946,7 +1791,159 @@
                 </div>
               </div>
             </div>
+            <!-- Add Risk Doc  Modal -->
+            <div class="modal fade" #addRiskDocumentModal id="addRiskDocumentModal" tabindex="-1" role="dialog"
+              aria-labelledby="addSectionLabel">
+              <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <h5 class="modal-title mt-2" id="addDocumentsLabel">
+                      Add document
+                      <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    </h5>
+                    <div class="upload-area mt-2 mb-1" (click)="fileInput.click()" [class.dragover]="isDragging"
+                      (drop)="onDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
 
+                      <div class="upload-content">
+                        <i class="pi pi-upload upload-icon"></i>
+
+                        <p class="upload-text">Click this area to upload file</p>
+
+
+                      </div>
+
+                      <input #fileInput type="file" (change)="onFileSelected($event)"
+                        accept=".pdf,.doc,.docx,.txt,.log,.jpg,.jpeg,.png" style="display: none;">
+                      <div class="selected-file" *ngIf="selectedFile">
+                        <i [ngClass]="getFileIcon(selectedFile.name)" class="file-icon"></i>
+                        <span class="file-name">{{ selectedFile.name }}</span>
+
+                        <button class="remove-btn" (click)="removeFile()" aria-label="Remove">
+                          <i class="pi pi-trash"></i>
+                        </button>
+                      </div>
+
+
+                    </div>
+                    <div class="mt-3 d-flex flex-column">
+                      <label for="documentType" class="mb-1 ">Document type</label>
+                      <p-dropdown [options]="" optionLabel="" optionValue="" class="form-control-sm"
+                        [style]="{ width: 'auto', maxWidth: '180px' }"></p-dropdown>
+                    </div>
+
+
+
+                    <div class="mt-4 d-flex justify-content-end ">
+                      <button type="button" class="btn btn-outline-primary me-2" data-bs-dismiss="modal">Cancel</button>
+                      <button type="button" class="btn btn-primary " id="saveDetails"
+                        (click)="saveRiskDoc()">{{'gis.quotation.save'
+                        |
+                        translate}}</button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <!-- Delete Client Doc   Modal -->
+            <div class="modal fade" id="deleteRiskDocModal" tabindex="-1" aria-labelledby="deleteRiskDocLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered ">
+                <div class="modal-content">
+                  <div class="modal-header" style="border-bottom: none;">
+                    <h5 class="delete-title" id="exampleModalLabel">
+                      Delete document
+                    </h5>
+                    <button type="button" class="btn-close red-close" data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="d-flex justify-content-center" id="deleteLabel">
+                      Are you sure you want to delete document?
+                    <div class="d-flex justify-content-center gap-3">
+
+
+                      <button type="button" class="btn btn-outline-primary" id="deleteNo" data-bs-dismiss="modal">
+                        {{ 'gis.quotation.cancel' | translate }}
+                      </button>
+
+                      <button type="button" class="btn btn-primary" id="deleteYes" data-bs-dismiss="modal"
+                        (click)="deleteRiskDoc()">
+                        {{ 'gis.quotation.delete' | translate }}
+                      </button>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Preview Client Doc Modal -->
+            <div class="modal fade" id="previewDocModal" tabindex="-1" aria-labelledby="previewDocModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header d-flex justify-content-center align-items-center position-relative"
+                    style="border-bottom: none;">
+                    <!-- Centered Title -->
+                    <h5 class="modal-title text-center m-0" id="previewDocModalLabel"
+                      style="position: absolute; left: 50%; transform: translateX(-50%);">
+                      {{ previewRiskDoc?.name }}
+                    </h5>
+
+                    <!-- Close Button -->
+                    <button type="button" class="btn-close ms-auto position-relative" data-bs-dismiss="modal"
+                      aria-label="Close" style="z-index: 10;">
+                    </button>
+                  </div>
+
+                  <div class="d-flex justify-content-center align-items-center gap-3 mt-2 mb-2">
+
+                    <!-- Zoom Out -->
+
+                    <i class="pi pi-minus text-primary" (click)="zoomRiskDocLevel = zoomRiskDocLevel - 0.2"
+                      pTooltip="Zoom out" style="cursor: pointer; font-size: 16px;">
+                    </i>
+
+                    <!-- Current Zoom Percentage -->
+                    <span class=" px-2 py-1 border rounded" style="color: black;border-color: black;">
+                      {{ (zoomRiskDocLevel * 100) | number:'1.0-0' }}%
+                    </span>
+                    <!-- Zoom In -->
+                    <i class="pi pi-plus cursor-pointer" (click)="zoomRiskDocLevel = zoomRiskDocLevel + 0.2"
+                      pTooltip="Zoom in" style="cursor: pointer !important; font-size: 16px;">
+                    </i>
+                    <!-- Reset -->
+                    <button class="btn btn-sm btn-primary ms-2" (click)="zoomRiskDocLevel = 1"
+                      style="cursor: pointer !important; font-size: 16px;">
+                      Reset
+                    </button>
+
+                  </div>
+                  <div class="modal-body text-center">
+                    <!-- Image preview -->
+                    <img *ngIf="previewRiskDoc?.mimeType?.startsWith('image/')" [src]="previewRiskDoc.dataUrl"
+                      alt="Preview" class="img-fluid rounded shadow">
+
+                    <!-- PDF preview using ng2-pdf-viewer -->
+                    <pdf-viewer *ngIf="previewRiskDoc?.mimeType === 'application/pdf'" [src]="previewRiskDoc.dataUrl"
+                      [render-text]="true" [original-size]="false" style="display: block; height: 70vh;"
+                      [zoom]="zoomRiskDocLevel">
+                    </pdf-viewer>
+
+                    <!--  Unsupported formats -->
+                    <div
+                      *ngIf="previewRiskDoc && !previewRiskDoc.mimeType.startsWith('image/') && previewRiskDoc.mimeType !== 'application/pdf'">
+                      <p>Preview not available for this file type.</p>
+                      <a [href]="previewRiskDoc.dataUrl" download="{{ previewRiskDoc.name }}"
+                        class="btn btn-primary btn-sm mt-2">
+                        Download File
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
 
 
