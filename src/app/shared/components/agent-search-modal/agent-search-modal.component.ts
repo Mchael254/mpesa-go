@@ -23,11 +23,7 @@ export class AgentSearchModalComponent implements AfterViewInit {
   @ViewChild('agentTable') agentTable!: Table;
   @ViewChild('closebutton') closebutton;
   @ViewChild('agentSearchModalElement') modalElementRef: ElementRef;
-<<<<<<< HEAD
   @Output() agentSelected = new EventEmitter<{ agentName: string; agentId: number; accountTypeId: number }>();
-=======
-  @Output() agentSelected = new EventEmitter<{ agentName: string; agentId: number }>();
->>>>>>> origin/develop
 
   private modalInstance: Modal;
 
@@ -237,7 +233,6 @@ export class AgentSearchModalComponent implements AfterViewInit {
   saveSelectedAgent() {
     this.agentId = Number(this.selectedAgent.id);
     this.agentName = this.selectedAgent.name;
-<<<<<<< HEAD
     const accountTypeId = Number(this.selectedAgent.accountTypeId);
     sessionStorage.setItem('agentId', JSON.stringify(this.agentId));
     sessionStorage.setItem('quotation_agent', JSON.stringify({
@@ -245,17 +240,11 @@ export class AgentSearchModalComponent implements AfterViewInit {
       name: this.agentName,
       accountTypeId: accountTypeId
     }));
-=======
-    sessionStorage.setItem('agentId', JSON.stringify(this.agentId));
->>>>>>> origin/develop
 
     this.agentSelected.emit({
       agentName: this.agentName,
       agentId: this.agentId,
-<<<<<<< HEAD
       accountTypeId: accountTypeId,
-=======
->>>>>>> origin/develop
     });
     this.closebutton.nativeElement.click();
   }
