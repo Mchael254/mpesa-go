@@ -6061,11 +6061,13 @@ export class RiskDetailsComponent {
 
   loadCommissions(): void {
     const subclassCode = this.selectedSubclassCode;
-    const quotationDetailsRaw = sessionStorage.getItem('quotationFormDetails');
-    const quotationDetails = quotationDetailsRaw ? JSON.parse(quotationDetailsRaw) : null;
+    
+    // Get agent data from quotation_agent in sessionStorage
+    const quotationAgentRaw = sessionStorage.getItem('quotation_agent');
+    const quotationAgent = quotationAgentRaw ? JSON.parse(quotationAgentRaw) : null;
 
-    this.accountCode = quotationDetails?.agent?.accountTypeId || 0;
-    this.agentCode = quotationDetails?.agent?.id || 0;
+    this.accountCode = quotationAgent?.accountTypeId;
+    this.agentCode = quotationAgent?.id;
 
     if (!this.accountCode) {
       this.globalMessagingService.displayErrorMessage('Error', 'Select an agent to proceed');
@@ -6074,7 +6076,7 @@ export class RiskDetailsComponent {
 
     const riskFormDetailsRaw = sessionStorage.getItem('riskFormDetails');
     const riskFormDetails = riskFormDetailsRaw ? JSON.parse(riskFormDetailsRaw) : null;
-    const binderCode = riskFormDetails?.premiumBand || 0;
+    const binderCode = riskFormDetails?.premiumBand;
 
     const cacheKey = `commissions_${this.selectedSubclassCode}_${this.accountCode}_${binderCode}`;
     const originalCacheKey = `original_commissions_${this.selectedSubclassCode}_${this.accountCode}_${binderCode}`;
