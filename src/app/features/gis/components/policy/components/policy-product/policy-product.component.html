@@ -24,6 +24,7 @@
                 </div>
             </div>
 
+
             <!-- Dynamic Product Policy Fields -->
             <form [formGroup]="policyDetailsForm" *ngIf="policyFormFields.length > 0">
                 <div class="row">
@@ -34,10 +35,31 @@
                                     [ngClass]="{ 'required': field.isMandatory === 'Y' }">
                                     {{ field.label || field.name }}
                                 </label>
+<!-- CLIENT FIELD - Handle specially -->
+<ng-container *ngIf="field.name === 'client'">
+  <div class="position-relative" style="cursor: pointer;">
+    <input 
+      type="text" 
+      class="form-control" 
+      id="clientInput"
+      [value]="selectedClient ? selectedClient.name : ''"
+      placeholder=""
+      (click)="showClientSearchModal = true"
+      style="cursor: pointer; ">
+    <i class="pi pi-search position-absolute"
+      style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
+  </div>
+  
+  <!-- Render modal conditionally -->
+  <app-client-search-modal 
+    *ngIf="showClientSearchModal"
+    (onClickSaveClient)="handleSaveClient($event)">
+  </app-client-search-modal>
+</ng-container>
 
                                 <!-- Text Input -->
                                 <ng-container
-                                    *ngIf="field.type === 'text' && !radioFields.includes(field.name) && policyDetailsForm.contains(field.name)">
+                                    *ngIf="field.type === 'text' && !radioFields.includes(field.name) &&  policyDetailsForm.contains(field.name)">
                                     <input type="text" class="form-control" [formControlName]="field.name" />
                                 </ng-container>
 
@@ -67,7 +89,7 @@
                                 </ng-container>
 
                                 <!-- Select/Dropdown -->
-                                <ng-container *ngIf="field.type === 'select' && policyDetailsForm.contains(field.name)">
+                                <ng-container *ngIf="field.type === 'select' &&  policyDetailsForm.contains(field.name)">
                                     <p-dropdown [formControlName]="field.name" [options]="getSelectOptions(field)"
                                         optionLabel="label" optionValue="value" [filter]="true" filterBy="label"
                                         [showClear]="true" placeholder=""
@@ -388,3 +410,4 @@
   </div>
 
 </div>
+

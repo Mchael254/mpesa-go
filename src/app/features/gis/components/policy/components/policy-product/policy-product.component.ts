@@ -44,6 +44,11 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
   currency: CurrencyDTO[];
   organizationId: number;
   userOrgDetails: any; // Store full user organization details
+  selectedClient: any = null;
+  showClientSearchModal: boolean = false;
+  @ViewChild('clientSearchModal') clientSearchModal: any;
+  selectedClientCode: number;
+  selectedClientName: any;
 
   constructor(
     private policyService: PolicyService,
@@ -52,6 +57,7 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private receiptService: ReceiptService,
     private localStorageService: LocalStorageService
+
   ) {
     this.policyDetailsForm = this.fb.group({});
   }
@@ -82,6 +88,7 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
     this.fetchProductPolicyOtherFields();
     // this.fetchExchangeRate();
     this.fetchProductPolicyCoinsuranceFields();
+
   }
   ngOnDestroy(): void { }
   ngAfterViewInit(): void { }
@@ -276,6 +283,11 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
    */
   buildDynamicFormControls(): void {
     this.policyFormFields.forEach(field => {
+
+      if (field.name === 'client') {
+      log.debug('⏭️ Skipping client field - will be handled by search modal');
+      return;
+    }
       if (field.name && !this.policyDetailsForm.get(field.name)) {
         const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
 
@@ -615,6 +627,74 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
   }
 
 
+
+handleSaveClient(eventData: any): void {
+  log.debug('Event received from Client search comp', eventData);
+  
+  if (!eventData || !eventData.id) {
+    log.warn('Invalid client data received');
+    return;
+  }
+
+
+  sessionStorage.setItem("SelectedClientDetails", JSON.stringify(eventData));
+
+  const clientCode = eventData.id;
+  
+  
+  const clientName = [eventData.firstName, eventData.lastName]
+    .filter(Boolean)
+    .join(' ')
+    .trim() ||
+    eventData.shortDescription ||
+    `Client-${clientCode}`;
+
+
+  this.selectedClientCode = clientCode;
+  this.selectedClientName = clientName;
+  this.selectedClient = {
+    id: clientCode,
+    name: clientName,
+    email: eventData.emailAddress || '',
+    ...eventData
+  };
+
+  // Store in session storage
+  sessionStorage.setItem("SelectedClientName", clientName);
+  sessionStorage.setItem("SelectedClientCode", JSON.stringify(clientCode));
+  sessionStorage.setItem("selectedClient", JSON.stringify(this.selectedClient));
+
+  
+  if (this.policyDetailsForm.contains('client')) {
+    this.policyDetailsForm.get('client')?.setValue(clientCode);
+    log.debug('Client form control updated:', clientCode);
+  } else {
+    log.debug('Client form control does not exist (expected - handled separately)');
+  }
+
+  
+  if (this.policyDetailsForm.contains('clientId')) {
+    this.policyDetailsForm.get('clientId')?.setValue(clientCode);
+    log.debug('ClientId form control updated:', clientCode);
+  }
+
+  // Close modal
+  this.showClientSearchModal = false;
+
+  // Blur active element to prevent issues
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
+
+  // Trigger change detection
+  this.cdr.detectChanges();
+  
+  log.debug('Client selection complete:', {
+    clientCode,
+    clientName,
+    selectedClient: this.selectedClient
+  });
+}
 
 
 
