@@ -146,4 +146,10 @@
 
 
 
+/* Disabled field styling */
+.disabled-field {
+  background-color: #e9ecef !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+}
 

@@ -61,8 +61,7 @@
       <p-table #dt (onLazyLoad)="lazyLoadTickets($event)" [lazy]="true" [value]="springTickets.content"
         [(selection)]="selectedSpringTickets" [paginator]="true" [rows]="pageSize" [rowHover]="true" [autoLayout]="true"
         [totalRecords]="totalRecords" [rowsPerPageOptions]="rowsPerPageOptions" [first]="first"
-        [showCurrentPageReport]="true"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records | Page {currentPage} of {totalPages}"
+        [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records"
         [scrollable]="true" scrollHeight="500px" responsiveLayout="scroll" [resizableColumns]="true"
         [globalFilterFields]="globalFilterFields">
         <ng-template pTemplate="header">

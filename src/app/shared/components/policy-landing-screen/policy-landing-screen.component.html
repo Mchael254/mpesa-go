@@ -245,7 +245,7 @@
               [rowsPerPageOptions]="rowsPerPageOptions" [rows]="pageSize" [totalRecords]="totalRecords" [first]="first"
               (onPage)="onPageChange($event)" [scrollable]="true" scrollHeight="500px"
               [tableStyle]="{'min-width': '50rem'}" [showCurrentPageReport]="true"
-              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records | Page {currentPage} of {totalPages}">
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records">
               <!-- Table Header -->
               <ng-template pTemplate="header">
                 <tr>
