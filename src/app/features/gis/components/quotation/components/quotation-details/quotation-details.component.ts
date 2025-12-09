@@ -3134,11 +3134,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.showAgentSearchModal = false
   }
 
-  onAgentSelected(event: { agentName: string; agentId: number }) {
+  onAgentSelected(event: { agentName: string; agentId: number; accountTypeId: number }) {
     log.debug("Agent selected from modal", event);
     const agentValue = {
       id: event.agentId,
-      name: event.agentName
+      name: event.agentName,
+      accountTypeId: event.accountTypeId
     };
     this.quotationForm.controls['agent'].setValue(agentValue);
     this.selectedAgent = agentValue;
