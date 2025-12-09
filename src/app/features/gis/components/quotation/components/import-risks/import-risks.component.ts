@@ -390,7 +390,7 @@ export class ImportRisksComponent {
   // }
   exportTemplate(): void {
     const link = document.createElement('a');
-    link.href = `/assets/data/Motor_upload_template.csv`;
+    link.href = `assets/data/Motor_upload_template.csv`;
     link.download = 'Motor_upload_template.csv';
     link.click();
   }
