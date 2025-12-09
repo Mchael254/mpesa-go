@@ -209,7 +209,7 @@ export class ProcessBatchComponent {
     fileReader.onloadend = () => {
       const base64String = fileReader.result as string;
       const pureBase64 = base64String.split(',')[1];
-      const payload: ReceiptUploadRequest[] = [
+      const payload: ReceiptUploadRequest = 
         {
           docData: pureBase64,
           docType: event.file.type,
@@ -221,13 +221,13 @@ export class ProcessBatchComponent {
           amount: event.amount,
           paymentMethod: null,
           policyNumber: null,
-        },
-      ];
-    this.dmsService.uploadFiles(payload).subscribe({
+        }
+      //response[0].uploadStatus
+    this.dmsService.uploadSingleFile(payload).subscribe({
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage(
             '',
-            response[0].uploadStatus
+            response.uploadStatus
           );
            if (this.DepositComponent) {
             this.DepositComponent.clearUploadedFile();
