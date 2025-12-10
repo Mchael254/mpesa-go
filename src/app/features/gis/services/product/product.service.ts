@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, forkJoin, map, retry, throwError } from 'rxjs';
 import { APP_CONFIG, AppConfigService } from '../../../../core/config/app-config-service';
@@ -61,16 +61,8 @@ export class ProductService {
       .pipe(
     )
   }
-  getAllProducts(code?:string,productName?:string): Observable<Products[]> {
-    let params = new HttpParams();
-    if (code) {
-    params = params.set('code', code);
-  }
-  if (productName) {
-    params = params.set('productName', productName);
-  }
-
-    return this.api.GET<Products[]>(`api/v1/products`,API_CONFIG.GIS_SETUPS_BASE_URL,{ params }).pipe(
+  getAllProducts(): Observable<Products[]> {
+    return this.api.GET<Products[]>(`api/v1/products`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
