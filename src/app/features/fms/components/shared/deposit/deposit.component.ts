@@ -41,17 +41,20 @@ export class DepositComponent {
         defaultOrg: OrganizationDTO;
         /** The currently selected organization, retrieved from session storage. */
         selectedOrg: OrganizationDTO;
+        selectedReceipt: any; 
         @Output() onFilePost = new EventEmitter<{
     file: File;
     slipNumber: string;
     amount: number;
   }>()
+  @Output() onDeposit = new EventEmitter<{ slipNumber: string; selectedRctBatch: any
+    amount: number;loggedInUser:number;branchCode:number;bankAccountCode:number;currencyCode:number;remarks:string}>()
   constructor(
     private fb:FormBuilder,
     private sessionStorage:SessionStorageService,
     private authService:AuthService,
     private globalMessagingService:GlobalMessagingService,
-    private  commonMethodsService:CommonMethodsService,
+    private commonMethodsService:CommonMethodsService,
     private paymentsService:PaymentsService
   ){
  
@@ -93,7 +96,7 @@ export class DepositComponent {
       bankAccount: ['', Validators.required],
       slipNumber: ['', Validators.required],
       amount: ['', Validators.required],
-      remarks: [''],
+      remarks: ['',Validators.required],
     });
   }
 /**
@@ -121,8 +124,10 @@ export class DepositComponent {
       const modalEl = bootstrap.Modal.getInstance(modal);
       if (modalEl) {
         modalEl.hide();
+
       }
     }
+    this.depositForm.reset();
   }
   /**
    * Central method to process and validate a selected file.
@@ -259,5 +264,22 @@ export class DepositComponent {
           this.commonMethodsService.handleApiError(err);
         },
       });
+  }
+  deposit(){
+     this.depositForm.markAllAsTouched();
+      if(this.depositForm.invalid){
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Please fill all the required fields marked with asterisk!'
+      );
+      return;
+    }
+    const formValue = this.depositForm.value;
+    const selectedAccount = formValue.bankAccount;
+    this.onDeposit.emit({slipNumber: formValue.slipNumber,
+      amount: formValue.amount,remarks:formValue.remarks,
+      loggedInUser:this.loggedInUser.code,branchCode:this.defaultBranch.id || 
+      this.selectedBranch.id,currencyCode:selectedAccount.currencyCode,bankAccountCode:selectedAccount.code,
+    selectedRctBatch: this.selectedBatchObj})
   }
 }

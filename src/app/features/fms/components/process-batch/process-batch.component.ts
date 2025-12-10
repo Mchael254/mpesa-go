@@ -209,34 +209,68 @@ export class ProcessBatchComponent {
     fileReader.onloadend = () => {
       const base64String = fileReader.result as string;
       const pureBase64 = base64String.split(',')[1];
-      const payload: ReceiptUploadRequest = 
-        {
-          docData: pureBase64,
-          docType: event.file.type,
-          originalFileName: event.file.name,
-          module: 'CB-RECEIPTS',
-          filename: event.file.name,
-          referenceNo: event.slipNumber,
-          docDescription: '',
-          amount: event.amount,
-          paymentMethod: null,
-          policyNumber: null,
-        }
+      const payload: ReceiptUploadRequest = {
+        docData: pureBase64,
+        docType: event.file.type,
+        originalFileName: event.file.name,
+        module: 'CB-RECEIPTS',
+        filename: event.file.name,
+        referenceNo: event.slipNumber,
+        docDescription: '',
+        amount: event.amount,
+        paymentMethod: null,
+        policyNumber: null,
+      };
       //response[0].uploadStatus
-    this.dmsService.uploadSingleFinanceDocument(payload).subscribe({
+      this.dmsService.uploadSingleFinanceDocument(payload).subscribe({
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage(
             '',
             response.uploadStatus
           );
-           if (this.DepositComponent) {
+          if (this.DepositComponent) {
             this.DepositComponent.clearUploadedFile();
           }
         },
-        error: (err) =>this.commonMethodsService.handleApiError(err)
+        error: (err) => this.commonMethodsService.handleApiError(err),
       });
     };
     fileReader.readAsDataURL(event.file);
+  }
+  handleDeposit(event: {
+    slipNumber: string;
+    amount: number;
+    loggedInUser: number;
+    branchCode: number;
+    bankAccountCode: number;
+    currencyCode: number;
+    remarks: string;
+    selectedRctBatch: any;
+  }) {
+    const payload = {
+      batchId: event.selectedRctBatch.batch_number,
+      paymentMode: 'CASH',
+      slipNumber: event.slipNumber,
+      amountDeposited: event.amount,
+      loggedInUserCode: event.loggedInUser,
+      branchCode: event.branchCode,
+      bankAccountCode: event.bankAccountCode,
+      currencyCode: event.currencyCode,
+      remarks: event.remarks,
+      state: 0,
+      differenceAmount: 0,
+    };
+    this.bankingService.deposit(payload).subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage('', response.msg);
+        if (this.DepositComponent) {
+          this.DepositComponent.closeDepositModal();
+        }
+      },
+      error: (err) => {
+        this.commonMethodsService.handleApiError(err);
+      },
+    });
   }
   /**
    * @description Navigates the user back to the main banking dashboard.
