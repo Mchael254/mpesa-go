@@ -151,9 +151,9 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
             this.cdr.detectChanges();
 
             // Patch currency field if it exists and fetch exchange rate
-            // Note: Exchange rate will be fetched after form controls are built
             if (this.policyDetailsForm.get('currency')) {
               this.policyDetailsForm.get('currency')?.setValue(this.defaultCurrencySymbol);
+              this.fetchExchangeRate(this.defaultCurrencySymbol);
             }
           }
         },
@@ -284,6 +284,10 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
     'facultativeSession',
     'currencyFixedRate'];
 
+  isExchangeRateVisible(): boolean {
+    return this.policyDetailsForm.get('currencyFixedRate')?.value === 'N';
+  }
+
 
   /**
    * Build dynamic product policy form controls
@@ -316,7 +320,8 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
         }
 
         if ((!defaultVal || defaultVal === '') && (field.type === 'radio' || field.name === 'ncdStatus' || this.radioFields.includes(field.name))) {
-          defaultVal = 'N';
+          // Default currencyFixedRate to 'Y' (Yes), others to 'N' (No)
+          defaultVal = field.name === 'currencyFixedRate' ? 'Y' : 'N';
         }
 
         // Default currency handling
@@ -362,7 +367,8 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
         }
 
         if ((!defaultVal || defaultVal === '') && (field.type === 'radio' || field.name === 'ncdStatus' || this.radioFields.includes(field.name))) {
-          defaultVal = 'N';
+          // Default currencyFixedRate to 'Y' (Yes), others to 'N' (No)
+          defaultVal = field.name === 'currencyFixedRate' ? 'Y' : 'N';
         }
 
         // Default currency handling
@@ -487,6 +493,10 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
       const jointAccountValue = this.policyDetailsForm.get('jointAccount')?.value;
       return jointAccountValue === 'Y';
     }
+    // exchangeRate is only visible when currencyFixedRate is 'N'
+    if (field.name === 'exchangeRate') {
+      return this.isExchangeRateVisible();
+    }
     return true;
   }
 
@@ -561,10 +571,19 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
           if (this.policyDetailsForm.get('exchangeRate')) {
             this.policyDetailsForm.get('exchangeRate')?.setValue(exchangeRate);
             log.debug('Exchange rate patched to form:', exchangeRate);
-            this.cdr.detectChanges();
           } else {
             log.warn('exchangeRate form control not found');
           }
+
+          // Also patch the currencyRate field with the same rate
+          if (this.policyDetailsForm.get('currencyRate')) {
+            this.policyDetailsForm.get('currencyRate')?.setValue(exchangeRate);
+            log.debug('Currency rate patched to form:', exchangeRate);
+          } else {
+            log.warn('currencyRate form control not found');
+          }
+
+          this.cdr.detectChanges();
 
           // Clear pending flag
           sessionStorage.removeItem('pendingExchangeRateCurrency');

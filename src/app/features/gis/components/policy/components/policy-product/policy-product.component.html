@@ -226,13 +226,18 @@
                                     <input type="number" class="form-control" [formControlName]="field.name" />
                                 </ng-container>
 
-                                <!-- Number Input - Currency Fields with currencyMask -->
+                                <!-- Number Input - Currency Rate (always disabled and greyed out) -->
                                 <ng-container
-                                    *ngIf="field.type === 'number' && ['currencyRate', 'exchangeRate'].includes(field.name) && policyDetailsForm.contains(field.name)">
+                                    *ngIf="field.type === 'number' && field.name === 'currencyRate' && policyDetailsForm.contains(field.name)">
+                                    <input type="text" class="form-control disabled-field" currencyMask
+                                        [options]="currencyObj" [formControlName]="field.name" readonly />
+                                </ng-container>
+
+                                <!-- Number Input - Exchange Rate (visible only when currencyFixedRate is 'N') -->
+                                <ng-container
+                                    *ngIf="field.type === 'number' && field.name === 'exchangeRate' && isExchangeRateVisible() && policyDetailsForm.contains(field.name)">
                                     <input type="text" class="form-control" currencyMask [options]="currencyObj"
-                                        [formControlName]="field.name"
-                                        [readonly]="field.name === 'exchangeRate' && policyDetailsForm.get('currencyFixedRate')?.value === 'Y'"
-                                        [ngClass]="{'disabled-field': field.name === 'exchangeRate' && policyDetailsForm.get('currencyFixedRate')?.value === 'Y'}" />
+                                        [formControlName]="field.name" />
                                 </ng-container>
 
                                 <!-- Select/Dropdown -->
@@ -345,13 +350,18 @@
                                     <input type="number" class="form-control" [formControlName]="field.name" />
                                 </ng-container>
 
-                                <!-- Number Input - Currency Fields -->
+                                <!-- Number Input - Currency Rate (always disabled and greyed out) -->
                                 <ng-container
-                                    *ngIf="field.type === 'number' && ['currencyRate', 'exchangeRate'].includes(field.name) && policyDetailsForm.contains(field.name)">
+                                    *ngIf="field.type === 'number' && field.name === 'currencyRate' && policyDetailsForm.contains(field.name)">
+                                    <input type="text" class="form-control disabled-field" currencyMask
+                                        [options]="currencyObj" [formControlName]="field.name" readonly />
+                                </ng-container>
+
+                                <!-- Number Input - Exchange Rate (visible only when currencyFixedRate is 'N') -->
+                                <ng-container
+                                    *ngIf="field.type === 'number' && field.name === 'exchangeRate' && isExchangeRateVisible() && policyDetailsForm.contains(field.name)">
                                     <input type="text" class="form-control" currencyMask [options]="currencyObj"
-                                        [formControlName]="field.name"
-                                        [readonly]="field.name === 'exchangeRate' && policyDetailsForm.get('currencyFixedRate')?.value === 'Y'"
-                                        [ngClass]="{'disabled-field': field.name === 'exchangeRate' && policyDetailsForm.get('currencyFixedRate')?.value === 'Y'}" />
+                                        [formControlName]="field.name" />
                                 </ng-container>
 
                                 <!-- Select/Dropdown -->
