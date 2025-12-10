@@ -1412,7 +1412,6 @@ export class ClientAllocationComponent {
       return;
     }
 
-    //const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
     if (!this.paymentMode) {
       this.globalMessagingService.displayErrorMessage(
         'Warning',
@@ -1449,30 +1448,28 @@ export class ClientAllocationComponent {
         }
       });
 
-      this.dmsService.uploadFiles(requests).subscribe({
+      this.dmsService.uploadMultipleFinanceDocuments(requests).subscribe({
         next: (response) => {
-          this.globalDocId = response[0].docId;
+          this.globalDocId = response.docId;
           this.globalMessagingService.displaySuccessMessage(
             'Success',
             'Receipt uploaded successfully'
           );
           this.fileUploaded = true;
-          if (response[0].docId) {
-            this.globalDocId = response[0].docId;
+         this.globalDocId = response.docId;
             // Store file in uploadedFiles array immediately
             const uploadedFile = {
-              docId: response[0].docId, // use the first docId from response since they are similar
+              docId: response.docId, 
               docName: this.selectedFile.name,
               contentType: this.selectedFile.type,
-              byteData: this.base64Output, // Store base64 for immediate use
+              byteData: this.base64Output, 
             };
             this.uploadedFiles.push(uploadedFile);
-          }
-          this.selectedFile = null;
+            this.selectedFile = null;
           this.base64Output = '';
           this.fileDescriptions = [];
           this.currentFileIndex = 0;
-          this.isFileUploadButtonDisabled = false; // Re-enable the "File Upload" button
+          this.isFileUploadButtonDisabled = false; 
           this.fileIsUploaded = true;
           this.fetchDocByDocId(this.globalDocId);
         },
@@ -1491,7 +1488,7 @@ export class ClientAllocationComponent {
       const fullMessage = `Failed to prepare file for upload. Please try again.\n\nReason: ${backendError}`;
 
       this.globalMessagingService.displayErrorMessage(
-        'Error occurred!', // A more accurate title
+        'Error occurred!', 
         fullMessage
       );
     }
