@@ -1,17 +1,20 @@
-import { ChangeDetectorRef, Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { LazyLoadEvent } from 'primeng/api';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { tap } from 'rxjs';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { QuotationsService } from '../../../features/gis/components/quotation/services/quotations/quotations.service';
-import { Pagination } from '../../data/common/pagination';
 import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
-import { Logger, untilDestroyed } from '../../shared.module';
+import { untilDestroyed } from '../../shared.module';
+import { Logger } from '../../services';
 import { Products } from '../../../features/gis/components/setups/data/gisDTO';
 import { ProductsService } from '../../../features/gis/components/setups/services/products/products.service';
+import { Modal } from 'bootstrap';
 
-// const log = new Logger('ProductSearchModalComponent');
+const log = new Logger('ProductSearchModalComponent');
 
 @Component({
   selector: 'app-product-search-modal',
@@ -19,33 +22,40 @@ import { ProductsService } from '../../../features/gis/components/setups/service
   styleUrls: ['./product-search-modal.component.css'],
   standalone: false
 })
-export class ProductSearchModalComponent {
+export class ProductSearchModalComponent implements OnInit, OnDestroy {
 
+  @ViewChild('productSearchModalElement') modalElementRef: ElementRef;
   @ViewChild('closebutton') closebutton;
+  @ViewChild('dt1') table: any;
   @Output() productSelected = new EventEmitter<{ productName: string; productCode: number }>();
 
+  private modalInstance: Modal;
+  private filterSubject = new Subject<void>();
 
   tableDetails: any = {
-    rows: [], // Initially empty array for rows
-    totalElements: 0 // Default total count
+    rows: [],
+    totalElements: 0
   };
-  pageSize: number = 20;
+  pageSize: number = 10;
   isSearching = false;
   searchTerm = '';
-  // public clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
-  filterObject: {
-    code: number, productName: string,
-  } = {
-      code: null, productName: '',
-    };
+  shouldLoadProducts = false;
+  hasTriggeredReset = false;
 
-  shortDescription: string;
+  filterObject: {
+    code: number | null;
+    productName: string;
+  } = {
+    code: null,
+    productName: ''
+  };
 
   productList: Products[];
-  ProductDescriptionArray: any = [];
   selectedProduct: Products;
   selectedProductCode: any;
-  code: string;
+
+  private _onShown?: () => void;
+  private _onHidden?: () => void;
 
   constructor(
     private router: Router,
@@ -54,12 +64,78 @@ export class ProductSearchModalComponent {
     public cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
     public productService: ProductsService,
+    private elementRef: ElementRef
+  ) {}
 
-  ) { }
+  ngOnInit(): void {
+    log.debug('ProductSearchModalComponent initialized');
+    
+    // Subscribe to filter changes with debounce
+    this.filterSubject
+      .pipe(
+        debounceTime(300),
+        untilDestroyed(this)
+      )
+      .subscribe(() => {
+        this.executeFilter();
+      });
+  }
 
-  ngOnDestroy(): void { }
+  ngAfterViewInit(): void {
+    const modalElement = this.modalElementRef?.nativeElement;
+    if (modalElement) {
+      this.modalInstance = new Modal(modalElement);
+      this.modalInstance.show();
 
-  // SEARCHING CLIENT USING KYC
+      // Store the listener references so we can remove them later
+      this._onShown = () => {
+        this.shouldLoadProducts = true;
+        if (!this.hasTriggeredReset) {
+          this.hasTriggeredReset = true;
+          this.cdr.detectChanges();
+          this.table?.reset();
+        }
+      };
+
+      this._onHidden = () => {
+        this.shouldLoadProducts = false;
+      };
+
+      modalElement.addEventListener('shown.bs.modal', this._onShown);
+      modalElement.addEventListener('hidden.bs.modal', this._onHidden);
+    }
+  }
+
+  hideModal(): void {
+    const modalElement = this.modalElementRef?.nativeElement;
+
+    if (this.modalInstance && modalElement && document.body.contains(modalElement)) {
+      setTimeout(() => {
+        try {
+          this.modalInstance?.hide();
+        } catch (err) {
+          log.error('Error while hiding modal:', err);
+        }
+      }, 0);
+    }
+  }
+
+  ngOnDestroy(): void {
+    const modalElement = this.modalElementRef?.nativeElement;
+
+    try {
+      this.modalInstance?.hide();
+    } catch (_) {}
+
+    // Clean up event listeners
+    if (modalElement) {
+      if (this._onShown) modalElement.removeEventListener('shown.bs.modal', this._onShown);
+      if (this._onHidden) modalElement.removeEventListener('hidden.bs.modal', this._onHidden);
+    }
+
+    this.modalInstance = null;
+  }
+
   getProducts(
     page: number,
     size: number,
@@ -67,147 +143,101 @@ export class ProductSearchModalComponent {
     productName: string
   ) {
     return this.productService
-      .fetchAllProducts(page, code, productName, size)
+      .fetchAllProducts(page, size, code, productName)
       .pipe(
-        untilDestroyed(this),
+        untilDestroyed(this)
       );
   }
-  /**
-   * The function "lazyLoadClients" is used to fetch clients data with pagination, sorting, and filtering options.
-   * @param {LazyLoadEvent | TableLazyLoadEvent} event - The `event` parameter is of type `LazyLoadEvent` or
-   * `TableLazyLoadEvent`. It is used to determine the pagination, sorting, and filtering options for fetching clients.
-  */
 
-  filter(event, pageIndex: number = 0, pageSize: number = 1000) {
-    this.productList = null; // Initialize with an empty array or appropriate structure
-    // let columnName;
-    // let columnValue;
-
-    // if (this.shortDescription) {
-    //   columnName = "shortDescription";
-    //   columnValue = this.shortDescription
-    // }
-
-
+  executeFilter(): void {
+    this.productList = null;
     this.isSearching = true;
     this.spinner.show();
-    this.productService.fetchAllProducts(
-      pageIndex, this.filterObject?.code,
-      this.filterObject?.productName, pageSize,
+    this.table?.reset(); // Reset pagination to first page
 
-    ).subscribe((data) => {
-      this.productList = data;
-      this.spinner.hide();
-    },
+    this.productService.fetchAllProducts(
+      0, // Start from first page
+      this.pageSize, // Use actual page size
+      this.filterObject?.code,
+      this.filterObject?.productName
+    ).subscribe(
+      (data) => {
+        this.productList = data;
+        this.tableDetails.rows = data;
+        this.tableDetails.totalElements = data.length;
+        this.spinner.hide();
+        this.cdr.detectChanges();
+      },
       error => {
+        log.error('Error fetching products:', error);
         this.spinner.hide();
       }
     );
   }
 
-  /**
-   * - Get A specific client's details on select.
-   * - populate the relevant fields with the client details.
-   * - Retrieves and logs client type and country.
-   * - Invokes 'getCountries()' to fetch countries data.
-   * - Calls 'saveClient()' and closes the modal.
-   * @method loadClientDetails
-   * @param {number} id - ID of the client to load.
-   * @return {void}
-   */
-  onProductSelected(product) {
+  onProductSelected(product: Products) {
     this.selectedProduct = product;
-    console.log("Selected Product:",this.selectedProduct)
-    this.productSelected.emit({
-        productName: this.selectedProduct.description,
-        productCode: this.selectedProduct.code
-      });
-    this.closebutton.nativeElement.click();
-
-
+    log.debug('Selected Product:', this.selectedProduct);
   }
 
-  /**
-   * Saves essential client details for further processing.
-   * - Assigns client ID, name, email, and phone from 'clientDetails'.
-   * @method saveClient
-   * @return {void}
-   */
-  // saveclient() {
-  //   this.clientCode = Number(this.clientDetails.id);
-  //   this.clientName =
-  //     this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
-  //   sessionStorage.setItem('clientCode', this.clientCode);
-
-  // // Emit the clientName and clientCode as an object
-  // this.clientSelected.emit({
-  //   clientName: this.clientName,
-  //   clientCode: this.clientCode,
-  // });
-  // }
-
-  inputCode(event) {
-    // const value = (event.target as HTMLInputElement).value;
-    const value = +(event.target as HTMLInputElement).value;
-    // this.code = value
-    this.filterObject['code'] = value;
-
-  }
-
-  inputDescription(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['productName'] = value;
-  }
-
-  lazyLoadProducts(event:LazyLoadEvent | TableLazyLoadEvent){
-      // const pageIndex = event.first / event.rows;
-      // const sortField = event.sortField;
-      // const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
-      // const pageSize = event.rows;
-
-      const pageIndex = event.first / event.rows;
-      const pageSize = event.rows; // Number of items per page
-      const code = null
-      const productName = null;
-
-
-      if (this.isSearching) {
-        const searchEvent = {
-          target: {value: this.searchTerm}
-        };
-        this.filter(searchEvent, pageIndex, pageSize);
-      }
-      else {
-        this.getProducts(pageIndex,pageSize,code,productName)
-          .pipe(
-            untilDestroyed(this),
-            tap((data) => console.log(`Fetching products>>>`, data))
-          )
-          .subscribe(
-            (data: any[]) => {
-              data.forEach( product => {
-                // client.clientTypeName = client.clientType.clientTypeName;
-                // client.clientFullName = client.firstName + ' ' + (client.lastName || ''); //the client.clientFullName will be set to just firstName,
-                // // as the null value for lastName is handled  using the logical OR (||) operator
-              });
-              this.productList = data;
-              this.tableDetails.rows = this.productList;
-                // Perform manual pagination
-            const paginatedData = data.slice(
-              pageIndex * pageSize,
-              (pageIndex + 1) * pageSize
-            );
-            // Update the table with paginated data
-            this.tableDetails.rows = paginatedData;
-            this.tableDetails.totalElements = data.length; // Total number of records
-              // this.tableDetails.totalElements = this.clientsData?.totalElements;
-              this.cdr.detectChanges();
-              this.spinner.hide();
-            },
-            error => {
-              this.spinner.hide();
-            }
-          );
-      }
+  saveSelectedProduct(): void {
+    if (!this.selectedProduct) {
+      log.warn('No product selected');
+      return;
     }
+
+    this.productSelected.emit({
+      productName: this.selectedProduct.description,
+      productCode: this.selectedProduct.code
+    });
+
+    this.hideModal();
+  }
+
+  inputCode(event: any) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject.code = value ? +value : null;
+    this.filterSubject.next(); // Trigger debounced filter
+  }
+
+  inputDescription(event: any) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject.productName = value;
+    this.filterSubject.next(); // Trigger debounced filter
+  }
+
+  lazyLoadProducts(event: LazyLoadEvent | TableLazyLoadEvent) {
+    // Only load if modal is shown
+    if (!this.shouldLoadProducts) {
+      return;
+    }
+
+    const pageIndex = Math.floor(event.first / event.rows);
+    const pageSize = event.rows;
+
+    if (this.isSearching) {
+      // If we're already searching/filtering, don't reload
+      return;
+    }
+
+    this.spinner.show();
+    this.getProducts(pageIndex, pageSize, null, null)
+      .pipe(
+        untilDestroyed(this),
+        tap((data) => log.debug('Fetching products>>>', data))
+      )
+      .subscribe(
+        (data: any[]) => {
+          this.productList = data;
+          this.tableDetails.rows = data;
+          this.tableDetails.totalElements = data.length;
+          this.cdr.detectChanges();
+          this.spinner.hide();
+        },
+        error => {
+          log.error('Error loading products:', error);
+          this.spinner.hide();
+        }
+      );
+  }
 }

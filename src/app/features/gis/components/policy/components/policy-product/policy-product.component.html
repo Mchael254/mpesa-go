@@ -51,6 +51,28 @@
                                     </app-client-search-modal>
                                 </ng-container>
 
+
+    <ng-container *ngIf="field.name === 'product'">
+  <div class="position-relative" style="cursor: pointer;">
+    <input 
+      type="text" 
+      class="form-control" 
+      id="productInput"
+      [value]="selectedProduct ? selectedProduct.name : ''"
+      placeholder=""
+      (click)="showProductSearchModal = true"
+      style="cursor: pointer;">
+    <i class="pi pi-search position-absolute"
+      style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
+  </div>
+  
+  <app-product-search-modal 
+    *ngIf="showProductSearchModal"
+    (productSelected)="handleSelectedProduct($event)">
+  </app-product-search-modal>
+</ng-container>
+
+
                                 <!-- Text Input -->
                                 <ng-container
                                     *ngIf="field.type === 'text' && !radioFields.includes(field.name) &&  policyDetailsForm.contains(field.name)">
@@ -422,4 +444,8 @@
         </div>
     </div>
 
+<<<<<<< Updated upstream
 </div>
+=======
+
+>>>>>>> Stashed changes
