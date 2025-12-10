@@ -444,6 +444,7 @@ export class NewBankingProcessComponent implements OnInit {
         if (this.DepositComponent) {
           this.DepositComponent.closeDepositModal();
         }
+        this.fetchReceipts();
       },
       error: (err) => {
         this.commonMethodsService.handleApiError(err);
