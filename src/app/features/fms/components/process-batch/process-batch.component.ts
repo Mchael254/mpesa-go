@@ -223,7 +223,7 @@ export class ProcessBatchComponent {
           policyNumber: null,
         }
       //response[0].uploadStatus
-    this.dmsService.uploadSingleFile(payload).subscribe({
+    this.dmsService.uploadSingleFinanceDocument(payload).subscribe({
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage(
             '',
