@@ -37,11 +37,26 @@
                   >
                     <option
                       *ngFor="let accounts of bankAccounts"
-                      [value]="accounts.number"
+                      [ngValue]="accounts"
                     >
                       {{ accounts.name }}, {{ accounts.number }}
                     </option>
                   </select>
+                  <div
+                    *ngIf="
+                      depositForm.get('bankAccount')?.invalid &&
+                      (depositForm.get('bankAccount')?.dirty ||
+                        depositForm.get('bankAccount')?.touched)
+                    "
+                    class="text-danger mt-1"
+                    style="font-size: 0.8rem"
+                  >
+                    <div
+                      *ngIf="depositForm.get('bankAccount')?.errors?.['required']"
+                    >
+                      bank is required
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="col-6">
@@ -55,6 +70,21 @@
                     id="bankingSlip"
                     formControlName="slipNumber"
                   />
+                  <div
+                    *ngIf="
+                      depositForm.get('slipNumber')?.invalid &&
+                      (depositForm.get('slipNumber')?.dirty ||
+                        depositForm.get('slipNumber')?.touched)
+                    "
+                    class="text-danger mt-1"
+                    style="font-size: 0.8rem"
+                  >
+                    <div
+                      *ngIf="depositForm.get('slipNumber')?.errors?.['required']"
+                    >
+                      banking slip is required
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="col-6">
@@ -74,7 +104,7 @@
               <div class="col-6">
                 <div class="form-group">
                   <div class="form-group mb-3">
-                    <label for="remarks" class="form-label">{{
+                    <label for="remarks" class="form-label required">{{
                       "fms.banking.remarksComments" | translate
                     }}</label>
                     <input
@@ -83,6 +113,21 @@
                       id="remarks"
                       formControlName="remarks"
                     />
+                    <div
+                      *ngIf="
+                        depositForm.get('remarks')?.invalid &&
+                        (depositForm.get('remarks')?.dirty ||
+                          depositForm.get('remarks')?.touched)
+                      "
+                      class="text-danger mt-1"
+                      style="font-size: 0.8rem"
+                    >
+                      <div
+                        *ngIf="depositForm.get('remarks')?.errors?.['required']"
+                      >
+                        remark is required
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -163,7 +208,7 @@
         >
           {{ "fms.receipt-management.cancel" | translate }}
         </button>
-        <button type="button" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" (click)="deposit()">
           {{ "crm.saveChanges" | translate }}
         </button>
       </div>

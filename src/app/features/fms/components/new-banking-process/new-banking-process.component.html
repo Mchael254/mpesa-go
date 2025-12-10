@@ -312,4 +312,8 @@
   (onReassignSubmit)="handleReassignment($event)"
   (onAssignSubmit)="handleAssignment($event)"
 ></app-users>
-<app-deposit #deposit (onFilePost)="handleFilePost($event)"></app-deposit>
+<app-deposit
+  #deposit
+  (onFilePost)="handleFilePost($event)"
+  (onDeposit)="handleDeposit($event)"
+></app-deposit>
