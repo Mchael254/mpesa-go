@@ -266,6 +266,7 @@ export class ProcessBatchComponent {
         if (this.DepositComponent) {
           this.DepositComponent.closeDepositModal();
         }
+        this.fetchBatches();
       },
       error: (err) => {
         this.commonMethodsService.handleApiError(err);
