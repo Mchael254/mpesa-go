@@ -299,11 +299,6 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
     this.policyFormFields.forEach(field => {
 
       if (field.name === 'client') {
-<<<<<<< Updated upstream
-        log.debug('⏭️ Skipping client field - will be handled by search modal');
-        return;
-      }
-=======
       log.debug('⏭️ Skipping client field - will be handled by search modal');
       return;
     }
@@ -312,7 +307,6 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
       log.debug('⏭️ Skipping product field - will be handled by search modal');
       return;
     }
->>>>>>> Stashed changes
       if (field.name && !this.policyDetailsForm.get(field.name)) {
         const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
 
