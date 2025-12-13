@@ -86,4 +86,8 @@ export class BankingProcessService {
   detach(requestBody):Observable<any>{
 return this.api.POST<any>(`receipts/batches/detach`,requestBody,API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL)
   }
+  deposit(requestBody):Observable<any>{
+    return this.api.POST<any>(`receipts/deposits`,requestBody,API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL)
+
+  }
 }

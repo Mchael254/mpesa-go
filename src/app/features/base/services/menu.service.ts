@@ -1095,7 +1095,7 @@ subList:[
         },
          {
           name: this.translate.instant('base-fms.banking'),
-          link: '/home/fms/banking-process',
+          link: '/home/fms/banking-dashboard',
         },
         {
           name: this.translate.instant('base-fms.receiptingExceptions'),

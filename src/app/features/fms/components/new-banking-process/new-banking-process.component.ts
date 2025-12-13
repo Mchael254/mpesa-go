@@ -106,7 +106,7 @@ export class NewBankingProcessComponent implements OnInit {
     private sessionStorage: SessionStorageService,
     private authService: AuthService,
     private dmsService: DmsService,
-    private commonMethodsService: CommonMethodsService,
+    private commonMethodsService: CommonMethodsService
   ) {}
   /**
    * @description Angular lifecycle hook that runs on component initialization.
@@ -369,7 +369,7 @@ export class NewBankingProcessComponent implements OnInit {
     this.bankingService.reAssignUser(requestBody).subscribe({
       next: (response) => {
         this.globalMessagingService.displaySuccessMessage('', response.msg);
-        this.fetchReceipts(); // Refresh this parent's data
+        this.fetchReceipts();
       },
       error: (err) => this.commonMethodsService.handleApiError(err),
     });
@@ -387,35 +387,70 @@ export class NewBankingProcessComponent implements OnInit {
     fileReader.onloadend = () => {
       const base64String = fileReader.result as string;
       const pureBase64 = base64String.split(',')[1];
-      const payload: ReceiptUploadRequest= 
-        {
-          docData: pureBase64,
-          docType: event.file.type,
-          originalFileName: event.file.name,
-          module: 'CB-RECEIPTS',
-          filename: event.file.name,
-          referenceNo: event.slipNumber,
-          docDescription: '',
-          amount: event.amount,
-          paymentMethod: null,
-          policyNumber: null,
-        }
-       this.dmsService.uploadSingleFinanceDocument(payload).subscribe({
+      const payload: ReceiptUploadRequest = {
+        docData: pureBase64,
+        docType: event.file.type,
+        originalFileName: event.file.name,
+        module: 'CB-RECEIPTS',
+        filename: event.file.name,
+        referenceNo: event.slipNumber,
+        docDescription: '',
+        amount: event.amount,
+        paymentMethod: null,
+        policyNumber: null,
+      };
+      this.dmsService.uploadSingleFinanceDocument(payload).subscribe({
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage(
             '',
             response.uploadStatus
           );
-           if (this.DepositComponent) {
-                      this.DepositComponent.clearUploadedFile();
-                    }
+          if (this.DepositComponent) {
+            this.DepositComponent.closeDepositModal();
+          }
         },
         error: (err) => this.commonMethodsService.handleApiError(err),
       });
     };
     fileReader.readAsDataURL(event.file);
   }
-
+  handleDeposit(event: {
+    slipNumber: string;
+    amount: number;
+    loggedInUser: number;
+    branchCode: number;
+    bankAccountCode: number;
+    currencyCode: number;
+    remarks: string;
+    selectedRctBatch: any;
+  }) {
+    const formValue = this.rctsRetrievalForm.value;
+    const payload = {
+      batchId: event.selectedRctBatch.batchAssignmentId,
+      paymentMode: formValue.paymentMethod,
+      slipNumber: event.slipNumber,
+      amountDeposited: event.amount,
+      loggedInUserCode: event.loggedInUser,
+      branchCode: event.branchCode,
+      bankAccountCode: event.bankAccountCode,
+      currencyCode: event.currencyCode,
+      remarks: event.remarks,
+      state: 0,
+      differenceAmount: 0,
+    };
+    this.bankingService.deposit(payload).subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage('', response.msg);
+        if (this.DepositComponent) {
+          this.DepositComponent.closeDepositModal();
+        }
+        this.fetchReceipts();
+      },
+      error: (err) => {
+        this.commonMethodsService.handleApiError(err);
+      },
+    });
+  }
   /**
    * @description Navigates the user to the next step in the banking process (Create Batches).
    */
