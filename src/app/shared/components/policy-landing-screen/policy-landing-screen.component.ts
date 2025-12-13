@@ -421,11 +421,11 @@ export class PolicyLandingScreenComponent implements OnInit {
   }
 
 
-goToNewPolicy() {
+  goToNewPolicy() {
 
-  
-   this.router.navigate(['/home/gis/policy/policy-product']);
-}
+
+    this.router.navigate(['/home/gis/policy/policy-product']);
+  }
 
 
 

@@ -57,6 +57,7 @@ export class PolicyService {
     return this.api.GET<any>(`/v2/policies?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  
   getAllPolicy(page: number = 0, size: number = 10, filterField?: string, filterValue?: string): Observable<any> {
     let url = `v2/policies?pageNo=${page}&pageSize=${size}`;
     if (filterField && filterValue) {
