@@ -1,0 +1,21 @@
+::ng-deep .p-datatable table {
+  border-collapse: collapse !important;
+}
+
+::ng-deep .p-datatable th,
+::ng-deep .p-datatable td {
+  border: none !important;
+}
+
+.no-border-bottom {
+  border-bottom: none !important;
+  box-shadow: none !important; 
+}
+
+::ng-deep .p-datatable .p-paginator {
+  z-index: 1050 !important;
+}
+
+::ng-deep .p-paginator-rpp-options {
+  z-index: 2000 !important;
+}
