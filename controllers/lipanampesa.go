@@ -245,45 +245,4 @@ func StkPushCallback(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
-// confirmPayment queries the status of an STK push payment
-func ConfirmPayment(c *gin.Context) {
-	checkoutRequestID := c.Param("CheckoutRequestID")
 
-	accessToken, exists := c.Get("safaricom_access_token")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Access token missing"})
-		return
-	}
-
-	timestamp := utils.GetTimeStamp()
-	passwordStr := os.Getenv("BUSINESS_SHORT_CODE") + os.Getenv("PASS_KEY") + timestamp
-	password := base64.StdEncoding.EncodeToString([]byte(passwordStr))
-
-	payload := map[string]interface{}{
-		"BusinessShortCode": os.Getenv("BUSINESS_SHORT_CODE"),
-		"Password":          password,
-		"Timestamp":         timestamp,
-		"CheckoutRequestID": checkoutRequestID,
-	}
-
-	jsonPayload, _ := json.Marshal(payload)
-	req, err := http.NewRequest("POST", "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query", bytes.NewBuffer(jsonPayload))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to create request", "error": err.Error()})
-		return
-	}
-
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, gin.H{"message": "Query failed", "error": err.Error()})
-		return
-	}
-	defer resp.Body.Close()
-
-	bodyResp, _ := io.ReadAll(resp.Body)
-	c.Data(resp.StatusCode, "application/json", bodyResp)
-}

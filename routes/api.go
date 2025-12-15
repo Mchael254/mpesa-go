@@ -12,7 +12,7 @@ func RegisterMpesaRoutes(rg *gin.RouterGroup) {
 	// Routes that require Access Token Middleware
 	rg.POST("/stkPush", middlewares.AccessTokenMiddleware(), controllers.InitiateSTKPush)
 
-	rg.POST("/confirmPayment/:CheckoutRequestID", middlewares.AccessTokenMiddleware(), controllers.ConfirmPayment)
+	// rg.POST("/confirmPayment/:CheckoutRequestID", middlewares.AccessTokenMiddleware(), controllers.ConfirmPayment)
 
 	// Callback route does NOT need token middleware
 	rg.POST("/stkPushCallback/:Order_ID", controllers.StkPushCallback)
