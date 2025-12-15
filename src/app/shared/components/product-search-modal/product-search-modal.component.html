@@ -1,60 +1,91 @@
-<div class="modal fade" id="productSearchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered   modal-fade" >
-      <div class="modal-content">
+<div #productSearchModalElement class="modal fade" id="productSearchModal" tabindex="-1" aria-labelledby="productSearchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 700px;">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fs-4 fw-bold text-primary" id="productSearchModalLabel">
+          {{ 'gis.quotation.select_a_product' | translate }}
+        </h5>
+        <button type="button" class="btn-close" (click)="hideModal()" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body pt-3 pb-3">
   
-        <div class="modal-body">
-          <button type="button" #closebutton class="float-end btn-close"
-            data-bs-dismiss="modal" aria-label="Close"></button>
-          <p class="text-start" id="selectProduct"> {{'gis.quotation.select_a_product' | translate}}</p>
-  
-          <p-table
-            #dt1
-            (onLazyLoad)="lazyLoadProducts($event)"
-            [autoLayout]="true"
-            [lazy]="true"
-            [paginator]="true"
-            [rowHover]="true"
-            [resizableColumns]="true"
-            [showCurrentPageReport]="true"
-            [rows]="pageSize || 5"
-            [totalRecords]="tableDetails.totalElements"
-            [value]="productList"
-            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-            responsiveLayout="stack"
-            [scrollable]="true"
-            scrollHeight="400px"
-            currentPageReportTemplate="{first} - {last} of {totalRecords}"
-       
-            styleClass="p-datatable-sm">
-  
-            <ng-template pTemplate="header">
-              <tr>
-                <th pSortableColumn="name" class="flexible-header">{{'gis.quotation.code' | translate}}</th>
-                <th pSortableColumn="id" class="flexible-header">{{'gis.quotation.description' | translate}}</th>
-              </tr>
-              <tr>
-                <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputCode($event)"></th>
-                <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputDescription($event)"></th>
-              </tr>
-            </ng-template>
-  
-            <ng-template pTemplate="body" let-product>
-              <tr [pSelectableRow]="true" (click)="onProductSelected(product)"
-              [class.p-highlight]="product === selectedProduct" >
-                <td>{{product.code}}</td>
-                <td>{{ product.description |sentenceCase}}</td>
-              </tr>
-            </ng-template>
-  
-            <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="4">{{'gis.quotation.no_product_found' | translate}}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-          <br>
-        </div>
+        <!-- Products Table -->
+        <p-table
+          #dt1
+          (onLazyLoad)="lazyLoadProducts($event)"
+          [autoLayout]="true"
+          [lazy]="true"
+          [paginator]="true"
+          paginatorPosition="bottom"
+          [rowHover]="true"
+          [resizableColumns]="false"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="tableDetails.totalElements"
+          [value]="productList"
+          [rowsPerPageOptions]="[4, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          scrollHeight="400px"
+          styleClass="p-datatable-sm table table-hover"
+          [globalFilterFields]="['code', 'description']">
+
+          <ng-template pTemplate="header">
+            <tr style="background-color: #ffffff; font-weight: 700; font-size: 20px;">
+              <th style="padding: 12px; text-align: left; width: 50%;" >
+                {{ 'gis.quotation.id' | translate }}
+                <p-sortIcon field="id"></p-sortIcon>
+              </th>
+              <th style="padding: 12px; text-align: left; width: 50%;">
+                {{ 'gis.quotation.product' | translate }}
+                <p-sortIcon field="product"></p-sortIcon>
+              </th>
+            </tr>
+            <tr>
+              <td>
+                <input type="text" class="form-control mt-2 mb-2" style="width: 30%;" placeholder="" (input)="inputCode($event)">
+              </td>
+              <td>
+                <input type="text" class="form-control mt-2 mb-2" style="width: 30%;" placeholder="" (input)="inputDescription($event)">
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-product>
+            <tr 
+              (click)="onProductSelected(product)"
+              [class.p-highlight]="product === selectedProduct"
+              style="cursor: pointer; background-color: #f8f9fa;"
+              [style.background-color]="product === selectedProduct ? '#e8f4f8' : '#f8f9fa'"
+              onmouseover="this.style.backgroundColor='#f0f0f0'"
+              onmouseout="this.style.backgroundColor=this.style.backgroundColor === '#e8f4f8' ? '#e8f4f8' : '#f8f9fa'">
+              <td style="padding: 12px; color: #666;">{{ product.code }}</td>
+              <td style="padding: 12px; color: #666;">{{ product.description | sentenceCase }}</td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="2" class="text-center py-4" style="color: #999;">
+                {{ 'gis.quotation.no_product_found' | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer border-top pt-4 pb-4">
+        <button type="button" class="btn btn-outline-primary px-4" style="min-width: 120px;" (click)="hideModal()">
+          {{ 'gis.policy.cancel' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary px-4" style="min-width: 120px; background-color: #0066cc;" (click)="saveSelectedProduct()">
+          {{ 'gis.quotation.save' | translate }}
+        </button>
       </div>
     </div>
   </div>
-  
+</div>

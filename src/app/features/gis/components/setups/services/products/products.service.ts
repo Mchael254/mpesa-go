@@ -156,9 +156,9 @@ export class ProductsService {
 
   fetchAllProducts(
     pageNo: number,
-    code: number,
-    productName: string,
-    pageSize: number
+    pageSize: number,
+    code?: number,
+    productName?: string,
   ): Observable<Products[]> {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
@@ -167,12 +167,13 @@ export class ProductsService {
     paramsObj['pageSize'] = pageSize.toString();
 
     // Add optional parameters if provided
-    if (code) {
-      paramsObj['code'] = code.toString();
-    }
-    if (productName) {
-      paramsObj['productName'] = productName;
-    }
+     // Only add optional params if they exist
+  if (code !== undefined && code !== null) {
+    paramsObj['code'] = code.toString();
+  }
+  if (productName) {
+    paramsObj['productName'] = productName;
+  }
     const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET<Products[]>(`api/v1/products?`, API_CONFIG.GIS_SETUPS_BASE_URL, params);

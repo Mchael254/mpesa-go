@@ -49,6 +49,9 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
   @ViewChild('clientSearchModal') clientSearchModal: any;
   selectedClientCode: number;
   selectedClientName: any;
+  @ViewChild('productSearchModal') productSearchModal: any;
+  showProductSearchModal: boolean = false;
+  selectedProduct: any;
 
   constructor(
     private policyService: PolicyService,
@@ -296,9 +299,14 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
     this.policyFormFields.forEach(field => {
 
       if (field.name === 'client') {
-        log.debug('⏭️ Skipping client field - will be handled by search modal');
-        return;
-      }
+      log.debug('⏭️ Skipping client field - will be handled by search modal');
+      return;
+    }
+
+    if (field.name === 'product') {
+      log.debug('⏭️ Skipping product field - will be handled by search modal');
+      return;
+    }
       if (field.name && !this.policyDetailsForm.get(field.name)) {
         const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
 
@@ -744,6 +752,52 @@ export class PolicyProductComponent implements OnInit, OnDestroy {
       selectedClient: this.selectedClient
     });
   }
+
+handleSelectedProduct(event: any): void {
+  log.debug('Product selected from modal:', event);
+
+  if (!event || !event.productCode) {
+    log.warn('Invalid product data received');
+    return;
+  }
+
+  this.selectedProduct = {
+    code: event.productCode,
+    name: event.productName,
+    ...event
+  };
+
+  // Store in session storage if needed
+  sessionStorage.setItem('SelectedProduct', JSON.stringify(this.selectedProduct));
+  sessionStorage.setItem('SelectedProductCode', JSON.stringify(event.productCode));
+  sessionStorage.setItem('SelectedProductName', event.productName);
+
+  // Update form control if it exists
+  if (this.policyDetailsForm.contains('product')) {
+    this.policyDetailsForm.get('product')?.setValue(event.productCode);
+    log.debug('Product form control updated:', event.productCode);
+  } else if (this.policyDetailsForm.contains('productCode')) {
+    this.policyDetailsForm.get('productCode')?.setValue(event.productCode);
+    log.debug('ProductCode form control updated:', event.productCode);
+  }
+
+  // Close modal
+  this.showProductSearchModal = false;
+
+  // Blur active element
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
+
+  // Trigger change detection
+  this.cdr.detectChanges();
+
+  log.debug('Product selection complete:', {
+    productCode: event.productCode,
+    productName: event.productName,
+    selectedProduct: this.selectedProduct
+  });
+}
 
 
 
