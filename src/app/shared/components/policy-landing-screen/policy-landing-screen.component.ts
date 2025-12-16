@@ -65,6 +65,11 @@ export class PolicyLandingScreenComponent implements OnInit {
   // Search properties
   private searchSubject = new Subject<{ field: string, value: string }>();
 
+  // Client Filter properties
+  isClientSearchModalVisible: boolean = false;
+  selectedClientCode: string | number | null = null;
+  selectedClientName: string = '';
+
 
   constructor(
     private session_service: SessionStorageService,
@@ -425,6 +430,33 @@ export class PolicyLandingScreenComponent implements OnInit {
 
 
     this.router.navigate(['/home/gis/policy/policy-product']);
+  }
+
+  // Client Search Modal Methods
+  openClientSearchModal() {
+    this.isClientSearchModalVisible = true;
+  }
+
+  onClientSelected(event: any) {
+    log.debug('Client Selected from Modal:', event);
+    if (event) {
+      // Assuming event is ClientDTO-like or the object emitted by onClickSaveClient
+      this.selectedClientCode = event.id; // clientCode
+      const firstName = event.firstName || '';
+      const lastName = event.lastName || '';
+      this.selectedClientName = `${firstName} ${lastName}`.trim();
+
+      // Trigger search with clientCode
+      this.searchPolicy('clientCode', this.selectedClientCode.toString());
+    }
+    this.isClientSearchModalVisible = false;
+  }
+
+  clearClientFilter() {
+    this.selectedClientCode = null;
+    this.selectedClientName = '';
+    // Clear the search. 
+    this.searchPolicy('clientCode', '');
   }
 
 

@@ -52,25 +52,19 @@
                                 </ng-container>
 
 
-    <ng-container *ngIf="field.name === 'product'">
-  <div class="position-relative" style="cursor: pointer;">
-    <input 
-      type="text" 
-      class="form-control" 
-      id="productInput"
-      [value]="selectedProduct ? selectedProduct.name : ''"
-      placeholder=""
-      (click)="showProductSearchModal = true"
-      style="cursor: pointer;">
-    <i class="pi pi-search position-absolute"
-      style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
-  </div>
-  
-  <app-product-search-modal 
-    *ngIf="showProductSearchModal"
-    (productSelected)="handleSelectedProduct($event)">
-  </app-product-search-modal>
-</ng-container>
+                                <ng-container *ngIf="field.name === 'product'">
+                                    <div class="position-relative" style="cursor: pointer;">
+                                        <input type="text" class="form-control" id="productInput"
+                                            [value]="selectedProduct ? selectedProduct.name : ''" placeholder=""
+                                            (click)="showProductSearchModal = true" style="cursor: pointer;">
+                                        <i class="pi pi-search position-absolute"
+                                            style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
+                                    </div>
+
+                                    <app-product-search-modal *ngIf="showProductSearchModal"
+                                        (productSelected)="handleSelectedProduct($event)">
+                                    </app-product-search-modal>
+                                </ng-container>
 
 
                                 <!-- Text Input -->
@@ -251,8 +245,8 @@
                                 <!-- Number Input - Currency Rate (always disabled and greyed out) -->
                                 <ng-container
                                     *ngIf="field.type === 'number' && field.name === 'currencyRate' && policyDetailsForm.contains(field.name)">
-                                    <input type="text" class="form-control disabled-field" currencyMask
-                                        [options]="currencyObj" [formControlName]="field.name" readonly />
+                                    <input type="number" class="form-control disabled-field"
+                                        [formControlName]="field.name" readonly />
                                 </ng-container>
 
                                 <!-- Number Input - Exchange Rate (visible only when currencyFixedRate is 'N') -->
@@ -443,4 +437,3 @@
             </form>
         </div>
     </div>
-

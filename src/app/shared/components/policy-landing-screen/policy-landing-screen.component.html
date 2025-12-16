@@ -259,8 +259,24 @@
                 </tr>
                 <tr class="filter-row">
                   <td *ngFor="let col of policyColumns" [hidden]="!col.visible">
-                    <input *ngIf="col.filterable" class="form-control form-control-sm" pInputText type="text"
-                      (input)="onSearchInput($any($event.target).value, col.field)" />
+                    <ng-container *ngIf="col.field === 'clientName'; else defaultFilter">
+                      <div class="position-relative">
+                        <input type="text" class="form-control form-control-sm" [value]="selectedClientName" readonly
+                          style="background-color: white; cursor: pointer; padding-right: 2rem;"
+                          (click)="openClientSearchModal()">
+
+                        <!-- Clear button with X icon - only shows when there's a value -->
+                        <button *ngIf="selectedClientName" class="btn btn-sm position-absolute"
+                          style="right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; z-index: 5;"
+                          (click)="clearClientFilter()">
+                          <i class="pi pi-times"></i>
+                        </button>
+                      </div>
+                    </ng-container>
+                    <ng-template #defaultFilter>
+                      <input *ngIf="col.filterable" class="form-control form-control-sm" pInputText type="text"
+                        (input)="onSearchInput($any($event.target).value, col.field)" />
+                    </ng-template>
                   </td>
                 </tr>
               </ng-template>
@@ -307,7 +323,7 @@
               <ng-template pTemplate="emptymessage">
                 <tr>
                   <td [attr.colspan]="policyColumns.length" class="text-center text-muted">
-                    No policies found.
+                    No records found for the selected filter or search criteria.
                   </td>
                 </tr>
               </ng-template>
@@ -315,7 +331,7 @@
           </div>
 
           <div *ngIf="policiesLoaded && (!policies || policies.length === 0)" class="text-muted">
-            No policies available.
+            No records found for the selected filter or search criteria.
           </div>
 
           <div *ngIf="!policiesLoaded" class="d-flex justify-content-center align-items-center"
@@ -323,6 +339,10 @@
             <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium"
               bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
           </div>
+
+          <app-client-search-modal *ngIf="isClientSearchModalVisible" (onClickSaveClient)="onClientSelected($event)"
+            (modalClosed)="isClientSearchModalVisible = false">
+          </app-client-search-modal>
 
         </div>
       </ng-container>
